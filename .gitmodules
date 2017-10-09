@@ -1,0 +1,3 @@
+[submodule "WinApi"]
+	path = WinApi
+	url = https://github.com/kwiato88/WinApi.git
