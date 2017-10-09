@@ -12,6 +12,7 @@ link_directories(
 
 add_subdirectory(WinApi)
 add_subdirectory(Utils)
+add_subdirectory(nppOpenFile)
 
 add_library(
     nppCTagPlugin
@@ -135,36 +136,6 @@ target_link_libraries(
     nppIncludeBrowser
     nppUtils
     winApiUtils
-)
-
-add_library(
-    nppOpenFile
-    SHARED
-    nppOpenFile/Source/dllmain.cpp
-    nppOpenFile/Source/OpenFilePlugin.cpp
-    nppOpenFile/Source/findFile.cpp
-    nppOpenFile/Source/OpenFileDialog.cpp
-    # RESOURCES
-    Resource/OpenFileDialog.rc
-    Resource/OpenFilePluginDetail.rc
-)
-
-target_include_directories(
-    nppOpenFile
-    PUBLIC
-    PluginInterface
-    Utils/Interfaces
-    Utils/Include
-    WinApi/Include
-    nppOpenFile/Include
-    D:/boost_1_61_0
-)
-
-target_link_libraries(
-    nppOpenFile
-    nppUtils
-    winApiUtils
-    comctl32
 )
 
 add_executable(
