@@ -11,32 +11,7 @@ link_directories(
 )
 
 add_subdirectory(WinApi)
-
-add_library(
-    nppUtils
-    STATIC
-    Utils/Source/ShellCommand.cpp
-    Utils/Source/EditorData.cpp
-    Utils/Source/Logger.cpp
-    Utils/Source/Log.cpp
-    Utils/Source/NppTextReader.cpp
-    Utils/Source/NppMessagePrinter.cpp
-    Utils/Source/NppLocationGetter.cpp
-    Utils/Source/NppLocationSetter.cpp
-    Utils/Source/NppListViewSelector.cpp
-    Utils/Source/NppPathGetter.cpp
-    Utils/Source/NppPathsSelector.cpp
-)
-
-target_include_directories(
-    nppUtils
-    PUBLIC
-    PluginInterface
-    Utils/Interfaces
-    Utils/Include
-    WinApi/Include
-    D:/boost_1_61_0
-)
+add_subdirectory(Utils)
 
 add_library(
     nppCTagPlugin
