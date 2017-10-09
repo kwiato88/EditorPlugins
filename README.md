@@ -10,7 +10,7 @@ Functions:
 
 ## Include browser plugin
 
-Parses files/modules includes hierarchy in specifed directories.
+Parses files/modules includes hierarchy in specified directories.
 Supported languages: C/C++, ttcn3.  
 Functions:
 
@@ -39,14 +39,14 @@ Allowed directories mapping:
 
 ## CTags plugin
 
-### Funcionality:
+### Functionality:
  * jump to selected tag;
  * navigate through tags;
  * support many tag files;
  * generate tag file for many source directories;
    (recursive generation for directories);
  * show children tags for selected tag (c, c++);
- * show tag hierachy for selected tag (c, c++);
+ * show tag hierarchy for selected tag (c, c++);
  * search tag bases on its attributes (c, c++);
  * supports extension fields;
  * remembers tag files paths after application restart.
@@ -54,7 +54,7 @@ Allowed directories mapping:
 ### Configuration:
 Plugin has a configuration file (nppCTagPlugin.ini) in Notepad++ plugins
 configuration directory. __Do not modify configuration file while Notepad++
-is runing__. All you changes will be overriden by plugin on exit.  
+is running__. All you changes will be overridden by plugin on exit.
 
 __Example configuration file:__
 ```
@@ -95,9 +95,9 @@ __Description:__
      'listView' (default: 'gridView')
 
    * tagsReader : tag file reader type. Values: 'internal'
-     or 'readTagsExe' (default: 'interal).
+     or 'readTagsExe' (default: 'interal').
      * 'internal' - use plugin
-       internal implementation to serach in tag file
+       internal implementation to search in tag file
      * 'readTagsExe' - use external tool to read tag file.
        See 'readTagsPath' configuration parameter
 
@@ -107,13 +107,13 @@ __Description:__
    * useCache : load tags from defined files to memory. Use loaded
      tags instead of searching through files every time. Tags cache
      is updated when last load time is older than last write time for
-     tag file (dafault: false). It is advised to use tag info and
-     tag hierachy function with 'useCache' set to 'true' due to
-     perfomance issues.
+     tag file (default: false). It is advised to use tag info and
+     tag hierarchy function with 'useCache' set to 'true' due to
+     performance issues.
 
- * [Fields] : specify which extension fileds are to be generated
+ * [Fields] : specify which extension fields are to be generated
     by generate tags function. Specify which extension fields
-    are to be displayed in select tags view (applies to to 'gridView' only)
+    are to be displayed in select tags view (applies to 'gridView' only)
 
  * [Logs] : plugin logs are stored in file 'nppCTagPlugin.logs'
    in plugins configuration dir
@@ -122,4 +122,3 @@ __Description:__
    * severity: logging severity. Values: 'debug', 'info', 'warning', 'error' (default: 'info')
 
  * [TagFiles] : Last used tags files. Section updated by plugin
- 
