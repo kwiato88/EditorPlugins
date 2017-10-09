@@ -1,1 +1,1 @@
-dir .\Build\Release\*MT.exe | ForEach-Object { & $_.FullName }
+dir .\Build\nppCtagPlugin\Release\*MT.exe | ForEach-Object { & $_.FullName }

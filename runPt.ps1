@@ -1,1 +1,1 @@
-dir .\Build\Release\*PT.exe | ForEach-Object { & $_.FullName }
+dir .\Build\nppCtagPlugin\Release\*PT.exe | ForEach-Object { & $_.FullName }
