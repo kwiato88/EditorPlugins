@@ -14,6 +14,7 @@ add_subdirectory(WinApi)
 add_subdirectory(Utils)
 add_subdirectory(nppOpenFile)
 add_subdirectory(nppIncludeBrowser)
+add_subdirectory(nppHeaderSourceSwitcher)
 
 add_library(
     nppCTagPlugin
@@ -77,36 +78,6 @@ target_link_libraries(
     winApiUtils
     comctl32
 )
-
-add_library(
-    nppHeaderSourceSwitcher
-    SHARED
-    nppHeaderSourceSwitcher/Source/dllmain.cpp
-    nppHeaderSourceSwitcher/Source/SwitcherPlugin.cpp
-    nppHeaderSourceSwitcher/Source/SwitcherFunction.cpp
-    nppHeaderSourceSwitcher/Source/SwitchFile.cpp
-    # RESOURCES
-    Resource/HeaderSourcePluginDetail.rc
-)
-
-target_include_directories(
-    nppHeaderSourceSwitcher
-    PUBLIC
-    PluginInterface
-    Utils/Interfaces
-    Utils/Include
-    WinApi/Include
-    nppHeaderSourceSwitcher/Include
-    D:/boost_1_61_0
-)
-
-target_link_libraries(
-    nppHeaderSourceSwitcher
-    nppUtils
-    winApiUtils
-)
-
-
 
 add_executable(
     CTagsTests
@@ -235,31 +206,6 @@ target_link_libraries(
     CTagsPT
     D:/googletest-release-1.6.0/Build/Release/gtest.lib
     D:/googletest-release-1.6.0/Build/Release/gtest_main.lib
-)
-
-add_executable(
-    HeaderSourceSwitchTests
-    nppHeaderSourceSwitcher/Source/SwitchFile.cpp
-    nppHeaderSourceSwitcher/Tests/SwitchFileTS.cpp
-    nppHeaderSourceSwitcher/Tests/ValidateTS.cpp
-)
-
-target_include_directories(
-    HeaderSourceSwitchTests
-    PUBLIC
-    Utils/Interfaces
-    nppHeaderSourceSwitcher/Include
-    D:/boost_1_61_0
-    D:/googletest-release-1.6.0/include
-    D:/googlemock-release-1.6.0/include
-)
-
-target_link_libraries(
-    HeaderSourceSwitchTests
-    PUBLIC
-    gtest.lib
-    gmock.lib
-    gtest_main.lib
 )
 
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
