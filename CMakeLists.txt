@@ -34,7 +34,7 @@ target_include_directories(
     PluginInterface
     Utils/Interfaces
     Utils/Include
-    WinApiUtils/Include
+    WinApi/Include
     D:/boost_1_61_0
 )
 
@@ -74,10 +74,10 @@ add_library(
     nppCtagPlugin/Source/CppTagBuilder.cpp
     nppCtagPlugin/Source/GenericKindTagBuilder.cpp
     # RESOURCES
-    Resource/ListBoxDialog.rc
-    Resource/GridDialog.rc
-    Resource/TreeDialog.rc
-    Resource/SelectPathsDialog.rc
+    WinApi/Resource/ListBoxDialog.rc
+    WinApi/Resource/GridDialog.rc
+    WinApi/Resource/TreeDialog.rc
+    WinApi/Resource/SelectPathsDialog.rc
     Resource/CppSearchDialog.rc
     Resource/TagHierarchyDialog.rc
     Resource/CTagsPluginDetail.rc
@@ -89,7 +89,7 @@ target_include_directories(
     PluginInterface
     Utils/Interfaces
     Utils/Include
-    WinApiUtils/Include
+    WinApi/Include
     nppCtagPlugin/Include
     D:/boost_1_61_0
 )
@@ -118,7 +118,7 @@ target_include_directories(
     PluginInterface
     Utils/Interfaces
     Utils/Include
-    WinApiUtils/Include
+    WinApi/Include
     nppHeaderSourceSwitcher/Include
     D:/boost_1_61_0
 )
@@ -141,7 +141,7 @@ add_library(
     nppIncludeBrowser/Source/MutilpeFilesIncludeBrowser.cpp
     nppIncludeBrowser/Source/IncludeBrowserController.cpp
     # RESOURCES
-    Resource/ListBoxDialog.rc
+    WinApi/Resource/ListBoxDialog.rc
     Resource/IncludeBrowserPluginDetail.rc
 )
 
@@ -151,7 +151,7 @@ target_include_directories(
     PluginInterface
     Utils/Interfaces
     Utils/Include
-    WinApiUtils/Include
+    WinApi/Include
     nppIncludeBrowser/Include
     D:/boost_1_61_0
 )
@@ -180,7 +180,7 @@ target_include_directories(
     PluginInterface
     Utils/Interfaces
     Utils/Include
-    WinApiUtils/Include
+    WinApi/Include
     nppOpenFile/Include
     D:/boost_1_61_0
 )
