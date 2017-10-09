@@ -13,6 +13,7 @@ link_directories(
 add_subdirectory(WinApi)
 add_subdirectory(Utils)
 add_subdirectory(nppOpenFile)
+add_subdirectory(nppIncludeBrowser)
 
 add_library(
     nppCTagPlugin
@@ -105,38 +106,7 @@ target_link_libraries(
     winApiUtils
 )
 
-add_library(
-    nppIncludeBrowser
-    SHARED
-    nppIncludeBrowser/Source/dllmain.cpp
-    nppIncludeBrowser/Source/IncludeBrowserPlugin.cpp
-    nppIncludeBrowser/Source/FindCppInclude.cpp
-    nppIncludeBrowser/Source/FindInclude.cpp
-    nppIncludeBrowser/Source/FindTtcnInclude.cpp
-    nppIncludeBrowser/Source/IncludeBrowser.cpp
-    nppIncludeBrowser/Source/MutilpeFilesIncludeBrowser.cpp
-    nppIncludeBrowser/Source/IncludeBrowserController.cpp
-    # RESOURCES
-    WinApi/Resource/ListBoxDialog.rc
-    Resource/IncludeBrowserPluginDetail.rc
-)
 
-target_include_directories(
-    nppIncludeBrowser
-    PUBLIC
-    PluginInterface
-    Utils/Interfaces
-    Utils/Include
-    WinApi/Include
-    nppIncludeBrowser/Include
-    D:/boost_1_61_0
-)
-
-target_link_libraries(
-    nppIncludeBrowser
-    nppUtils
-    winApiUtils
-)
 
 add_executable(
     CTagsTests
@@ -265,31 +235,6 @@ target_link_libraries(
     CTagsPT
     D:/googletest-release-1.6.0/Build/Release/gtest.lib
     D:/googletest-release-1.6.0/Build/Release/gtest_main.lib
-)
-
-add_executable(
-    IncludeBrowserTests
-    nppIncludeBrowser/Source/FindCppInclude.cpp
-    nppIncludeBrowser/Source/FindInclude.cpp
-    nppIncludeBrowser/Source/FindTtcnInclude.cpp
-    nppIncludeBrowser/Tests/FindIncludeTS.cpp
-)
-
-target_include_directories(
-    IncludeBrowserTests
-    PUBLIC
-    Utils/Interfaces
-    nppIncludeBrowser/Include
-    D:/boost_1_61_0
-    D:/googletest-release-1.6.0/include
-    D:/googlemock-release-1.6.0/include
-)
-
-target_link_libraries(
-    IncludeBrowserTests
-    gtest.lib
-    gmock.lib
-    gtest_main.lib
 )
 
 add_executable(
