@@ -25,7 +25,7 @@ struct LoggerEnvironment : public Environment
 	{
 		Logger::enable();
 		Logger::setLogLevel(Logger::Level::debug);
-		Logger::init("D:\\userdata\\pikwiatk\\My Documents\\nppPlugins\\nppCtagPlugin\\logs.txt");
+		Logger::init("D:\\test\\EditorPlugins\\logs.txt");
 	}
 };
 
@@ -72,7 +72,7 @@ struct CtagsPerformanceTests : public Test
 		tagsReader
 	};
 
-	std::string bigTagsFilePath = "D:\\userdata\\pikwiatk\\My Documents\\nppPlugins\\nppCtagPlugin\\nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
+	std::string bigTagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
 
 	std::vector<double> results;
 
