@@ -26,6 +26,12 @@ target_include_directories(
     D:/boost_1_61_0
 )
 
+add_dependencies(
+    nppHeaderSourceSwitcher
+    nppUtils
+    winApiUtils
+)
+
 target_link_libraries(
     nppHeaderSourceSwitcher
     nppUtils

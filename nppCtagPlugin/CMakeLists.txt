@@ -60,6 +60,12 @@ target_include_directories(
     D:/boost_1_61_0
 )
 
+add_dependencies(
+    nppCTagPlugin
+    nppUtils
+    winApiUtils
+)
+
 target_link_libraries(
     nppCTagPlugin
     nppUtils
