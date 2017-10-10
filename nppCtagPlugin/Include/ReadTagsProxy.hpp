@@ -4,7 +4,6 @@
 #include <memory>
 #include <functional>
 #include "ITagsReader.hpp"
-#include "IMessagePrinter.hpp"
 #include "IConfiguration.hpp"
 
 namespace CTagsPlugin
@@ -17,8 +16,7 @@ class ReadTagsProxy : public ITagsReader
 public:
 	ReadTagsProxy(
 	    IConfiguration& p_config,
-        TagFilePathProvider p_provider,
-		std::shared_ptr<Plugin::IMessagePrinter> p_printer);
+        TagFilePathProvider p_provider);
 
 	/**
 	 * @throw TagsReaderException
@@ -33,7 +31,6 @@ private:
 
 	IConfiguration& m_config;
     TagFilePathProvider m_tagsFile;
-	std::shared_ptr<Plugin::IMessagePrinter> m_printer;
 };
 
 } // namespace CTagsPlugin

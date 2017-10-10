@@ -211,7 +211,7 @@ void TagsPlugin::createTagsController()
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
 {
-    return std::make_unique<CTagsPlugin::ReadTagsProxy>(m_config,[=](){ return p_tagFilePath; } , m_printer);
+    return std::make_unique<CTagsPlugin::ReadTagsProxy>(m_config,[=](){ return p_tagFilePath; });
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagFileReader(const std::string& p_tagFilePath)

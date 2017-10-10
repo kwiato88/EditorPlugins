@@ -31,11 +31,9 @@ void fixAddrField(Tag& p_tag)
 
 ReadTagsProxy::ReadTagsProxy(
     IConfiguration& p_config,
-    TagFilePathProvider p_provider,
-	std::shared_ptr<Plugin::IMessagePrinter> p_printer)
+    TagFilePathProvider p_provider)
 	: m_config(p_config),
-      m_tagsFile(p_provider),
-	  m_printer(p_printer)
+      m_tagsFile(p_provider)
 {
 }
 
