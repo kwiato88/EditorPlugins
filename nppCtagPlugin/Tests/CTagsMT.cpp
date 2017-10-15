@@ -6,6 +6,7 @@
 #include <sstream>
 #include <memory>
 #include <algorithm>
+#include <cstdlib>
 
 #include "CppTag.hpp"
 #include "CppIsTagWithAtt.hpp"
@@ -29,13 +30,19 @@ namespace CTagsPlugin
 {
 using namespace ::testing;
 
+static std::string rootPath;
+static std::string rootPathWith2Slash;
+
 struct LoggerEnvironment : public Environment
 {
 	void SetUp()
 	{
+		rootPath = std::getenv("projectRootPath");
+		rootPathWith2Slash = std::getenv("projectRootPathWith2Slash");
+
 		Logger::enable();
 		Logger::setLogLevel(Logger::Level::debug);
-		Logger::init("D:\\test\\EditorPlugins\\logs.txt");
+		Logger::init(rootPath  + "logs.txt");
 	}
 };
 
@@ -81,7 +88,7 @@ struct CTagsMT : public Test
 	}
 	void setPathToFileWithInvalidTags()
 	{
-		tagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
+		tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
 	}
 
 	std::shared_ptr<NiceMock<Plugin::LocationGetterMock>> locationGetter = std::make_shared<NiceMock<Plugin::LocationGetterMock>>();
@@ -100,8 +107,7 @@ struct CTagsMT : public Test
 		std::make_unique<TagHierarchySelectorProxy>(hierSelector),
 		tagsReader
 	};
-
-	std::string tagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile.txt";
+	std::string tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile.txt";
 };
 
 bool assertCppTag(const CppTag& p_expeced, const Tag& p_actual)
@@ -491,7 +497,7 @@ TEST_F(GoTagInHierarchyMT, shoudGoToSelectedBaseClass)
 {
 	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
 	TagHolder baseTag =
-		parseTag("Tag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\Tag.hpp\t/^struct Tag$/;\"\ts\tlanguage:C++\tnamespace:CTagsPlugin");
+		parseTag("Tag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\Tag.hpp\t/^struct Tag$/;\"\ts\tlanguage:C++\tnamespace:CTagsPlugin");
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
 	{ "CTagsPlugin::Tag" })))
 		.WillOnce(Return(baseTag));
@@ -637,7 +643,7 @@ struct ManageLocationMT : public CTagsMT
 		EXPECT_CALL(*locationSetter, setColumn(0));
 	}
 
-	const std::string beginingFile = "fiePath";
+	const std::string beginingFile = "filePath";
 	const int beginingLineNum = 5;
 	const int beginingColNum = 24;
 };
@@ -738,7 +744,7 @@ struct TagFileReader_SortedFileMT : public TagFileReaderMT, public WithParamInte
 	}
 	static void SetUpTestCase()
 	{
-		s_tagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_SortedFile.txt";
+		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_SortedFile.txt";
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),
@@ -755,7 +761,7 @@ TEST_P(TagFileReader_SortedFileMT, shouldFindUniqueTagByName)
 	EXPECT_THAT(
 		tagsReader->findTag("Internal"),
 		CppTagsAreExact(std::vector<TagHolder>{
-			parseTag("Internal\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^    Internal,$/;\"\te\tlanguage:C++\tenum:CTagsPlugin::TagReaderType\taccess:public")
+			parseTag("Internal\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^    Internal,$/;\"\te\tlanguage:C++\tenum:CTagsPlugin::TagReaderType\taccess:public")
 	}));
 }
 TEST_P(TagFileReader_SortedFileMT, shouldFindMultipleTagsByName)
@@ -763,16 +769,16 @@ TEST_P(TagFileReader_SortedFileMT, shouldFindMultipleTagsByName)
 	EXPECT_THAT(
 		tagsReader->findTag("findTag"),
 		CppTagsAreExact(std::vector<TagHolder>{
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\CTagsNavigator.cpp\t/^std::vector<TagHolder> findTag(boost::shared_ptr<ITagsReader> p_tagsReader, const T& p_toFind)$/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anone618ad160108\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\Plugin.cpp\t/^void TagsPlugin::findTag()$/;\"\tf\tlanguage:C++\tclass:NppPlugin::TagsPlugin\ttyperef:typename:void"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>")
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\CTagsNavigator.cpp\t/^std::vector<TagHolder> findTag(boost::shared_ptr<ITagsReader> p_tagsReader, const T& p_toFind)$/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anone618ad160108\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\Plugin.cpp\t/^void TagsPlugin::findTag()$/;\"\tf\tlanguage:C++\tclass:NppPlugin::TagsPlugin\ttyperef:typename:void"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>")
 	}));
 
 }
@@ -785,7 +791,7 @@ TEST_P(TagFileReader_SortedFileMT, shouldGoToFirstTagInTagFile_SortedTagFile)
 	EXPECT_THAT(
 		tagsReader->findTag("Access"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("Access\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Access$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag\taccess:public")
+		parseTag("Access\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Access$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag\taccess:public")
 	}));
 }
 TEST_P(TagFileReader_SortedFileMT, shouldGoToLastTagInTagFile)
@@ -793,7 +799,7 @@ TEST_P(TagFileReader_SortedFileMT, shouldGoToLastTagInTagFile)
 	EXPECT_THAT(
 		tagsReader->findTag("valueOr"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("valueOr\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ConfigGetter.cpp\t/^OutputType valueOr(const InputType& p_value, const std::map<InputType, OutputType>& p_conversion/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anonaf07affa0108\ttyperef:typename:OutputType")
+		parseTag("valueOr\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ConfigGetter.cpp\t/^OutputType valueOr(const InputType& p_value, const std::map<InputType, OutputType>& p_conversion/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anonaf07affa0108\ttyperef:typename:OutputType")
 	}));
 }
 TEST_P(TagFileReader_SortedFileMT, shouldFindUniqueTagByMatcher)
@@ -801,7 +807,7 @@ TEST_P(TagFileReader_SortedFileMT, shouldFindUniqueTagByMatcher)
 	EXPECT_THAT(
 		tagsReader->findTag(tagMatcher_TagHolderClass()),
 		CppTagsAreExact(std::vector<TagHolder>{
-			parseTag("TagHolder\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\TagHolder.hpp\t/^class TagHolder$/;\"\tc\tlanguage:C++\tnamespace:CTagsPlugin")
+			parseTag("TagHolder\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\TagHolder.hpp\t/^class TagHolder$/;\"\tc\tlanguage:C++\tnamespace:CTagsPlugin")
 	}));
 }
 TEST_P(TagFileReader_SortedFileMT, shouldFindMultipleTagsByMatcher)
@@ -809,12 +815,12 @@ TEST_P(TagFileReader_SortedFileMT, shouldFindMultipleTagsByMatcher)
 	EXPECT_THAT(
 		tagsReader->findTag(tagMatcher_IsEnumeration()),
 		CppTagsAreExact(std::vector<TagHolder>{
-			parseTag("Access\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Access$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag	access:public"),
-			parseTag("FileFormat\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^enum class FileFormat$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin::__anon4c9e38480108\tfile:"),
-			parseTag("Kind\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Kind$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag\taccess:public"),
-			parseTag("SelectTagsViewType\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^enum class SelectTagsViewType$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin"),
-			parseTag("SelectorType\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\SelectorType.hpp\t/^enum class SelectorType$/;\"\tg\tlanguage:C++"),
-			parseTag("TagReaderType\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^enum class TagReaderType$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin")
+			parseTag("Access\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Access$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag	access:public"),
+			parseTag("FileFormat\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^enum class FileFormat$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin::__anon4c9e38480108\tfile:"),
+			parseTag("Kind\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\CppTag.hpp\t/^    enum class Kind$/;\"\tg\tlanguage:C++\tstruct:CTagsPlugin::CppTag\taccess:public"),
+			parseTag("SelectTagsViewType\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^enum class SelectTagsViewType$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin"),
+			parseTag("SelectorType\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\SelectorType.hpp\t/^enum class SelectorType$/;\"\tg\tlanguage:C++"),
+			parseTag("TagReaderType\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^enum class TagReaderType$/;\"\tg\tlanguage:C++\tnamespace:CTagsPlugin")
 	}));
 }
 TEST_P(TagFileReader_SortedFileMT, shouldNotFindAnyTagByMatcher)
@@ -861,7 +867,7 @@ struct TagFileReader_UnsortedFileMT : public TagFileReaderMT, public WithParamIn
 	}
 	static void SetUpTestCase()
 	{
-		s_tagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_UnsortedFile.txt";
+		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_UnsortedFile.txt";
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),
@@ -879,7 +885,7 @@ TEST_P(TagFileReader_UnsortedFileMT, shouldFindUniqueTagByName)
 	EXPECT_THAT(
 		tagsReader->findTag("Internal"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("Internal\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^    Internal,$/;\"\te\tlanguage:C++\tenum:CTagsPlugin::TagReaderType\taccess:public")
+		parseTag("Internal\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\IConfiguration.hpp\t/^    Internal,$/;\"\te\tlanguage:C++\tenum:CTagsPlugin::TagReaderType\taccess:public")
 	}));
 }
 TEST_P(TagFileReader_UnsortedFileMT, shouldFindMultipleTagsByName)
@@ -887,16 +893,16 @@ TEST_P(TagFileReader_UnsortedFileMT, shouldFindMultipleTagsByName)
 	EXPECT_THAT(
 		tagsReader->findTag("findTag"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\CTagsNavigator.cpp\t/^std::vector<TagHolder> findTag(boost::shared_ptr<ITagsReader> p_tagsReader, const T& p_toFind)$/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anone618ad160108\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\Plugin.cpp\t/^void TagsPlugin::findTag()$/;\"\tf\tlanguage:C++\tclass:NppPlugin::TagsPlugin\ttyperef:typename:void"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>"),
-			parseTag("findTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>")
+		    parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\CTagsNavigator.cpp\t/^std::vector<TagHolder> findTag(boost::shared_ptr<ITagsReader> p_tagsReader, const T& p_toFind)$/;\"\tf\tlanguage:C++\tnamespace:CTagsPlugin::__anone618ad160108\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\FileScopedTagFilteringReader.cpp\t/^std::vector<TagHolder> FileScopedTagFilteringReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::FileScopedTagFilteringReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\MultipleTagFilesReader.cpp\t/^std::vector<TagHolder> MultipleTagFilesReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::MultipleTagFilesReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\Plugin.cpp\t/^void TagsPlugin::findTag()$/;\"\tf\tlanguage:C++\tclass:NppPlugin::TagsPlugin\ttyperef:typename:void"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\ReadTagsProxy.cpp\t/^std::vector<TagHolder> ReadTagsProxy::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::ReadTagsProxy\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(const std::string& p_tagName) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>"),
+			parseTag("findTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Source\\\\TagFileReader.cpp\t/^std::vector<TagHolder> TagFileReader::findTag(TagMatcher p_matcher) const$/;\"\tf\tlanguage:C++\tclass:CTagsPlugin::TagFileReader\ttyperef:typename:std::vector<TagHolder>")
 	}));
 }
 TEST_P(TagFileReader_UnsortedFileMT, shouldNotFindAnyTagByName)
@@ -908,7 +914,7 @@ TEST_P(TagFileReader_UnsortedFileMT, shouldGoToFirstTagInTagFile)
 	EXPECT_THAT(
 		tagsReader->findTag("BUILDTAG_HPP"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("BUILDTAG_HPP\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\BuildTag.hpp\t/^#define BUILDTAG_HPP$/;\"\td\tlanguage:C++")
+		parseTag("BUILDTAG_HPP\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\BuildTag.hpp\t/^#define BUILDTAG_HPP$/;\"\td\tlanguage:C++")
 	}));
 }
 TEST_P(TagFileReader_UnsortedFileMT, shouldGoToLastTagInTagFile)
@@ -916,7 +922,7 @@ TEST_P(TagFileReader_UnsortedFileMT, shouldGoToLastTagInTagFile)
 	EXPECT_THAT(
 		tagsReader->findTag("OtherTestTag"),
 		CppTagsAreExact(std::vector<TagHolder>{
-		parseTag("OtherTestTag\tD:\\\\test\\\\EditorPlugins\\\\nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Tests\\\\TagParserTS.cpp\t/^struct OtherTestTag: public Tag$/;\"\ts\tlanguage:C++\tnamespace:CTagsPlugin\tfile:\tinherits:Tag")
+		parseTag("OtherTestTag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Tests\\\\TagParserTS.cpp\t/^struct OtherTestTag: public Tag$/;\"\ts\tlanguage:C++\tnamespace:CTagsPlugin\tfile:\tinherits:Tag")
 	}));
 }
 

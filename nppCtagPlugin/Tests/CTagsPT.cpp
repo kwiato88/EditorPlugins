@@ -19,13 +19,17 @@ namespace CTagsPlugin
 {
 using namespace ::testing;
 
+static std::string rootPath;
+
 struct LoggerEnvironment : public Environment
 {
 	void SetUp()
 	{
+		rootPath = std::getenv("projectRootPath");
+
 		Logger::enable();
 		Logger::setLogLevel(Logger::Level::debug);
-		Logger::init("D:\\test\\EditorPlugins\\logs.txt");
+		Logger::init(rootPath + "logs.txt");
 	}
 };
 
@@ -72,7 +76,7 @@ struct CtagsPerformanceTests : public Test
 		tagsReader
 	};
 
-	std::string bigTagsFilePath = "D:\\test\\EditorPlugins\\nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
+	std::string bigTagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
 
 	std::vector<double> results;
 
