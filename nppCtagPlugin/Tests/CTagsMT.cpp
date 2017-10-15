@@ -729,6 +729,18 @@ struct TagFileReaderMT : public CTagsMT
 
 };
 
+TEST_F(TagFileReaderMT, shouldThrowWhenGivenNotExistingTagFile)
+{
+	auto reader = buildTagReader(Reader::Native, rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\notExistingFile.txt");
+	ASSERT_THROW(reader->findTag("tagName"), TagsReaderException);
+}
+
+TEST_F(TagFileReaderMT, shouldThrowWhenGivenEmptyTagFile)
+{
+	auto reader = buildTagReader(Reader::Native, rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_empty.txt");
+	ASSERT_THROW(reader->findTag("tagName"), TagsReaderException);
+}
+
 struct TagFileReader_SortedFileMT : public TagFileReaderMT, public WithParamInterface<Reader>
 {
 	static std::string s_tagsFilePath;
