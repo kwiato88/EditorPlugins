@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <numeric>
 #include <boost/timer.hpp>
+#include "TestsGlobals.hpp"
 
 #include "CppTag.hpp"
 #include "CTagsNavigator.hpp"
@@ -18,22 +19,6 @@
 namespace CTagsPlugin
 {
 using namespace ::testing;
-
-static std::string rootPath;
-
-struct LoggerEnvironment : public Environment
-{
-	void SetUp()
-	{
-		rootPath = std::getenv("projectRootPath");
-
-		Logger::enable();
-		Logger::setLogLevel(Logger::Level::debug);
-		Logger::init(rootPath + "logs.txt");
-	}
-};
-
-::testing::Environment* const foo_env = ::testing::AddGlobalTestEnvironment(new LoggerEnvironment);
 
 struct LocationGetterStub : public Plugin::ILocationGetter
 {

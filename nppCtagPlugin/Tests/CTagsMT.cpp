@@ -6,7 +6,7 @@
 #include <sstream>
 #include <memory>
 #include <algorithm>
-#include <cstdlib>
+#include "TestsGlobals.hpp"
 
 #include "CppTag.hpp"
 #include "CppIsTagWithAtt.hpp"
@@ -29,24 +29,6 @@
 namespace CTagsPlugin
 {
 using namespace ::testing;
-
-static std::string rootPath;
-static std::string rootPathWith2Slash;
-
-struct LoggerEnvironment : public Environment
-{
-	void SetUp()
-	{
-		rootPath = std::getenv("projectRootPath");
-		rootPathWith2Slash = std::getenv("projectRootPathWith2Slash");
-
-		Logger::enable();
-		Logger::setLogLevel(Logger::Level::debug);
-		Logger::init(rootPath  + "logs.txt");
-	}
-};
-
-::testing::Environment* const foo_env = ::testing::AddGlobalTestEnvironment(new LoggerEnvironment);
 
 class TagHierarchySelectorProxy : public ITagHierarchySelector
 {

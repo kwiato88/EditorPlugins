@@ -157,6 +157,7 @@ add_executable(
     ../Utils/Source/Log.cpp
     ../Utils/Source/Logger.cpp
     Tests/CTagsMT.cpp
+    Tests/TestsMain.cpp
 )
 
 target_include_directories(
@@ -184,7 +185,6 @@ target_link_libraries(
     CTagsTags
     D:/googletest-release-1.6.0/Build/Release/gtest.lib
     D:/googlemock-release-1.6.0/Build/Release/gmock.lib
-    D:/googletest-release-1.6.0/Build/Release/gtest_main.lib
 )
 
 add_executable(
@@ -192,6 +192,7 @@ add_executable(
     ../Utils/Source/Log.cpp
     ../Utils/Source/Logger.cpp
     Tests/CTagsPT.cpp
+    Tests/TestsMain.cpp
 )
 
 target_include_directories(
@@ -202,6 +203,7 @@ target_include_directories(
     Include
     D:/boost_1_61_0
     D:/googletest-release-1.6.0/include
+    D:/googlemock-release-1.6.0/include
 )
 
 add_dependencies(
@@ -217,7 +219,7 @@ target_link_libraries(
     CTagsReader
     CTagsTags
     D:/googletest-release-1.6.0/Build/Release/gtest.lib
-    D:/googletest-release-1.6.0/Build/Release/gtest_main.lib
+    D:/googlemock-release-1.6.0/Build/Release/gmock.lib
 )
 
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
