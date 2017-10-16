@@ -53,27 +53,6 @@ void CTagsMT::setPathToFileWithInvalidTags()
 	tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
 }
 
-struct GoToCppTagMT : public CTagsMT
-{
-	GoToCppTagMT()
-	{
-		expectGetAnyLocation();
-	}
-};
-
-TEST_F(GoToCppTagMT, goToClassWithName)
-{
-	Cpp::IsTagWithAtt matcher(
-		".*CTagsNa.*",
-		{ CppTag::Kind::Class },
-		{ CppTag::Access::None, CppTag::Access::Private, CppTag::Access::Protected, CppTag::Access::Public });
-
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\CTagsNavigator.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(18));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goToTag(matcher);
-}
-
 struct ManageLocationMT : public CTagsMT
 {
 	void getBeginingLocation()

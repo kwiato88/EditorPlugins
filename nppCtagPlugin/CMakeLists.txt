@@ -160,6 +160,7 @@ add_executable(
     Tests/GoToTagMT.cpp
     Tests/GoToChildTagMT.cpp
     Tests/GoToTagInHierarchyMT.cpp
+    Tests/GoToCppTagMT.cpp
     Tests/DescribeTags.cpp
     Tests/TestsMain.cpp
 )
