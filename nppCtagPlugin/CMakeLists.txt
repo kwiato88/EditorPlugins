@@ -158,6 +158,7 @@ add_executable(
     ../Utils/Source/Logger.cpp
     Tests/CTagsMT.cpp
     Tests/GoToTagMT.cpp
+    Tests/GoToChildTagMT.cpp
     Tests/DescribeTags.cpp
     Tests/TestsMain.cpp
 )
