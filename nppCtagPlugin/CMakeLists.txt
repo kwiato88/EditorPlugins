@@ -162,6 +162,7 @@ add_executable(
     Tests/GoToTagInHierarchyMT.cpp
     Tests/GoToCppTagMT.cpp
     Tests/ManageLocationMT.cpp
+    Tests/TagFileReaderMT.cpp
     Tests/DescribeTags.cpp
     Tests/TestsMain.cpp
 )
