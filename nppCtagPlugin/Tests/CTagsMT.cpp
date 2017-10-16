@@ -8,6 +8,9 @@
 #include <algorithm>
 #include "TestsGlobals.hpp"
 #include "CTagsMT.hpp"
+#include "MatcherHasMoreThanOneElem.hpp"
+#include "MatcherEndsWith.hpp"
+#include "MatcherTags.hpp"
 
 #include "CppTag.hpp"
 #include "CppIsTagWithAtt.hpp"
@@ -67,109 +70,6 @@ void CTagsMT::setPathToFileWithInvalidTags()
 	tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
 }
 
-bool assertCppTag(const CppTag& p_expeced, const Tag& p_actual)
-{
-	try
-	{
-		const CppTag& l_actualTag = dynamic_cast<const CppTag&>(p_actual);
-		// check will distinguish between different tags. It is not madatory check all fields;
-		// checking if all fields are correct is done in tags builder UTs
-		return p_expeced.name == l_actualTag.name
-			&&p_expeced.access == l_actualTag.access
-			&& p_expeced.kind == l_actualTag.kind
-			&& p_expeced.type == l_actualTag.type;
-	}
-	catch (const std::exception&)
-	{
-		return false;
-	}
-}
-
-void describe(const Tag& p_expeced, MatchResultListener* p_listener)
-{
-	try
-	{
-		*p_listener << p_expeced.toString() << ". NOTE: not all fields are being matched\n";
-	}
-	catch (const std::exception& e)
-	{
-		*p_listener << "Unexpected exception: " << e.what() << "\n";
-	}
-}
-void describe(const Tag& p_expeced, const Tag& p_actual, MatchResultListener* p_listener)
-{
-	try
-	{
-		*p_listener << "  Expected:\n";
-		describe(p_expeced, p_listener);
-		*p_listener << "  Actual:\n";
-		describe(p_actual, p_listener);
-	}
-	catch (const std::exception& e)
-	{
-		*p_listener << "Unexpected exception: " << e.what() << "\n";
-	}
-}
-
-MATCHER_P(EndsWith, expectedEnding, "")
-{
-	if (arg.find(expectedEnding) == std::string::npos)
-	{
-		*result_listener << "\nPath does not contain expected sequence\n"
-			<< "  Expected ending: " << expectedEnding << "\n"
-			<< "  Actual: " << arg << "\n";
-		return false;
-	}
-	return true;
-}
-MATCHER_P(CppTagsAre, expectedTags, "")
-{
-	if (expectedTags.size() != arg.size())
-	{
-		*result_listener << "\nWrong number of tags. Expected: " << expectedTags.size() << "; Actual: " << arg.size() << "\n";
-		return false;
-	}
-	for (unsigned int i = 0; i < arg.size(); ++i)
-	{
-		if (!assertCppTag(expectedTags[i], arg[i]))
-		{
-			*result_listener << "\nTag " << i << " not matching expected\n";
-			describe(expectedTags[i], arg[i], result_listener);
-			return false;
-		}
-	}
-	return true;
-}
-MATCHER_P(CppTagsAreExact, expectedTags, "")
-{
-	if (expectedTags.size() != arg.size())
-	{
-		*result_listener << "\nWrong number of tags. Expected: " << expectedTags.size() << "; Actual: " << arg.size() << "\n";
-		*result_listener << "  Actual tags are:\n";
-		for (const auto& tag : arg)
-			describe(tag, result_listener);
-		return false;
-	}
-	for (unsigned int i = 0; i < arg.size(); ++i)
-	{
-		if (!expectedTags[i]->equals(arg[i]))
-		{
-			*result_listener << "\nTag " << i << " not matching expected\n";
-			describe(expectedTags[i], arg[i], result_listener);
-			return false;
-		}
-	}
-	return true;
-}
-MATCHER(HasMoreThanOneElem, "")
-{
-	if (arg.size() < 2)
-	{
-		*result_listener << "\nContainer should be with size at least 2. Actual size: " << arg.size() << "\n";
-		return false;
-	}
-	return true;
-}
 bool matchTagsNames(const std::vector<std::string>& p_expected, const std::vector<TagHolder>& p_actual, MatchResultListener* p_listener)
 {
 	if (p_expected.size() != p_actual.size())
@@ -204,102 +104,6 @@ MATCHER_P(DerivedTagsNamesAre, expectedTags, "")
 	*result_listener << " my super matcher\n";
 	std::vector<TagHolder> derivedTags = arg.downHierarchy.getRelatedTags();
 	return matchTagsNames(expectedTags, derivedTags, result_listener);
-}
-
-struct GoToTagMT : public CTagsMT
-{
-	GoToTagMT(){ expectGetAnyLocation(); }
-	
-	std::vector<CppTag> buildExpectedCppTags_IsTagWithName()
-	{
-		CppTag cppClass = {}, cppCtor = {}, globaStruct = {} , globalCtor = {};
-		cppClass.name = "CTagsPlugin::Cpp::IsTagWithName";
-		cppClass.access = CppTag::Access::None;
-		cppClass.kind = CppTag::Kind::Class;
-
-		cppCtor.name = "CTagsPlugin::Cpp::IsTagWithName::IsTagWithName";
-		cppCtor.access = CppTag::Access::None;
-		cppCtor.kind = CppTag::Kind::Function;
-
-		globaStruct.name = "CTagsPlugin::IsTagWithName";
-		globaStruct.access = CppTag::Access::None;
-		globaStruct.kind = CppTag::Kind::Struct;
-
-		globalCtor.name = "CTagsPlugin::IsTagWithName::IsTagWithName";
-		globalCtor.access = CppTag::Access::None;
-		globalCtor.kind = CppTag::Kind::Function;
-
-		return std::vector<CppTag>({ cppClass , cppCtor, globaStruct, globalCtor });
-	}
-
-};
-
-TEST_F(GoToTagMT, shouldThrowWhenNoTagFound)
-{
-	ASSERT_THROW(tagsNavigator.goTo("ASDvfgh"), TagNotFoundException);
-}
-
-TEST_F(GoToTagMT, shouldThrowWhenCantOpenFileWithTagDefinition)
-{
-	setPathToFileWithInvalidTags();
-	ASSERT_THROW(tagsNavigator.goTo("alwaysTrue"), Plugin::OpenFileException);
-}
-
-TEST_F(GoToTagMT, shouldGoToUniqueTag)
-{
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\TagFileReader.cpp")));
-	EXPECT_CALL(*locationSetter, setLine(88));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("getName");
-}
-
-TEST_F(GoToTagMT, shouldGoToUniqueTagWithSpacesAnAddrBegining)
-{
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\CTagsController.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(31));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("m_call");
-}
-
-TEST_F(GoToTagMT, shouldGoToUniqueTagWithLineNumberAsAddr)
-{
-	setPathToFileWithInvalidTags();
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\CppTagMatchers.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(1));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("CPPTAGMATCHERS_HPP");
-}
-
-TEST_F(GoToTagMT, shouldGoToFileBeginingWhenCantFindTagInFile)
-{
-	setPathToFileWithInvalidTags();
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\TagsSelector.cpp")));
-	EXPECT_CALL(*locationSetter, setLine(0));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("appendAddr");
-}
-
-TEST_F(GoToTagMT, shouldThrowWhenMultipleTagsFoundButNoSelected)
-{
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
-	ASSERT_THROW(tagsNavigator.goTo("CompositeMatcher"), TagNotFoundException);
-}
-
-TEST_F(GoToTagMT, shouldSelectWhichTagToGoWhenMultipleTagsFound)
-{
-	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedCppTags_IsTagWithName()))).WillOnce(Return(1));
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\CppTagMatchers.cpp")));
-	EXPECT_CALL(*locationSetter, setLine(32));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("IsTagWithName");
-}
-
-TEST_F(GoToTagMT, shouldGoToTagWithSpaceInTagName)
-{
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\TagFile.cpp")));
-	EXPECT_CALL(*locationSetter, setLine(127));
-	EXPECT_CALL(*locationSetter, setColumn(0));
-	tagsNavigator.goTo("operator +");
 }
 
 struct GoToChildTagMT : public CTagsMT

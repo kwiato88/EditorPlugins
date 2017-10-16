@@ -9,6 +9,7 @@
 #include "Navigator.hpp"
 #include "TagFileReader.hpp"
 
+#include "TestsGlobals.hpp"
 #include "LocationGetterMock.hpp"
 #include "LocationSetterMock.hpp"
 #include "TagsSelectorMock.hpp"
