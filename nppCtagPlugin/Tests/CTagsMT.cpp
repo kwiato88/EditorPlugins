@@ -7,6 +7,7 @@
 #include <memory>
 #include <algorithm>
 #include "TestsGlobals.hpp"
+#include "CTagsMT.hpp"
 
 #include "CppTag.hpp"
 #include "CppIsTagWithAtt.hpp"
@@ -30,18 +31,13 @@ namespace CTagsPlugin
 {
 using namespace ::testing;
 
-class TagHierarchySelectorProxy : public ITagHierarchySelector
+TagHierarchySelectorProxy::TagHierarchySelectorProxy(ITagHierarchySelector& p_selector)
+    : m_selector(p_selector)
+{}
+boost::optional<TagHolder> TagHierarchySelectorProxy::select(const TagHierarchy& p_hier)
 {
-public:
-	TagHierarchySelectorProxy(ITagHierarchySelector& p_selector)
-		: m_selector(p_selector)
-	{}
-	boost::optional<TagHolder> select(const TagHierarchy& p_hier)
-	{
-		return m_selector.select(p_hier);
-	}
-	ITagHierarchySelector& m_selector;
-};
+	return m_selector.select(p_hier);
+}
 
 std::ostream& operator<<(std::ostream& p_out, const TagHierarchyItem& p_hier)
 {
@@ -60,37 +56,16 @@ std::ostream& operator<<(std::ostream& p_out, const TagHierarchy& p_hier)
 	return p_out;
 }
 
-struct CTagsMT : public Test
+void CTagsMT::expectGetAnyLocation()
 {
-	void expectGetAnyLocation()
-	{
-		EXPECT_CALL(*locationGetter, getFile()).WillRepeatedly(Return(""));
-		EXPECT_CALL(*locationGetter, getLine()).WillRepeatedly(Return(0));
-		EXPECT_CALL(*locationGetter, getColumn()).WillRepeatedly(Return(0));
-	}
-	void setPathToFileWithInvalidTags()
-	{
-		tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
-	}
-
-	std::shared_ptr<NiceMock<Plugin::LocationGetterMock>> locationGetter = std::make_shared<NiceMock<Plugin::LocationGetterMock>>();
-	std::shared_ptr<StrictMock<Plugin::LocationSetterMock>> locationSetter = std::make_shared<StrictMock<Plugin::LocationSetterMock>>();
-	std::shared_ptr<StrictMock<TagsSelectorMock>> selector = std::make_shared<StrictMock<TagsSelectorMock>>();
-	StrictMock<TagHierarchySelectorMock> hierSelector;
-	
-	Navigator navigator{ locationSetter, locationGetter };
-	std::shared_ptr<ITagsReader> tagsReader = std::make_shared<TagFileReader>([&]() {return tagsFilePath; });
-
-	CTagsNavigator tagsNavigator
-	{
-		locationGetter,
-		navigator,
-		[&]() { return selector; },
-		std::make_unique<TagHierarchySelectorProxy>(hierSelector),
-		tagsReader
-	};
-	std::string tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile.txt";
-};
+	EXPECT_CALL(*locationGetter, getFile()).WillRepeatedly(Return(""));
+	EXPECT_CALL(*locationGetter, getLine()).WillRepeatedly(Return(0));
+	EXPECT_CALL(*locationGetter, getColumn()).WillRepeatedly(Return(0));
+}
+void CTagsMT::setPathToFileWithInvalidTags()
+{
+	tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
+}
 
 bool assertCppTag(const CppTag& p_expeced, const Tag& p_actual)
 {
