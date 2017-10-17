@@ -44,7 +44,7 @@ struct TagHierarchySelectorStub : public ITagHierarchySelector
 	boost::optional<TagHolder> select(const TagHierarchy&) { return boost::none; }
 };
 
-constexpr int c_nuberOfIterations = 100;
+constexpr int c_numberOfIterations = 100;
 
 struct CtagsPerformanceTests : public Test
 {
@@ -65,11 +65,6 @@ struct CtagsPerformanceTests : public Test
 
 	std::vector<double> results;
 
-	void storeResult(double p_executionTime, int p_numberOfTags)
-	{
-		results.push_back(p_executionTime);
-		std::cerr << "found " << p_numberOfTags << p_numberOfTags << " in " << p_executionTime << std::endl;
-	}
 	void storeResult(double p_executionTime)
 	{
 		results.push_back(p_executionTime);
@@ -105,43 +100,43 @@ TEST_F(CtagsPerformanceTests, findAllTagsInTagFile)
 {
 	auto alwaysTrue = [](const Tag&) -> bool {return true; };
 
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
 		auto tags = tagsReader->findTag(alwaysTrue);
-		storeResult(tm.elapsed(), tags.size());
+		storeResult(tm.elapsed());
 	}
 	printResult();
 }
 
 TEST_F(CtagsPerformanceTests, findTagByName)
 {
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
-		auto tags = tagsReader->findTag("TagName");
-		storeResult(tm.elapsed(), tags.size());
+		auto tags = tagsReader->findTag("apply");
+		storeResult(tm.elapsed());
 	}
 	printResult();
 }
 
 TEST_F(CtagsPerformanceTests, findAllComplexTagsInFile)
 {
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
 		auto tags = tagsReader->findTag([](const Tag& t) { return t.isComplex(); });
-		storeResult(tm.elapsed(), tags.size());
+		storeResult(tm.elapsed());
 	}
 	printResult();
 }
 
 TEST_F(CtagsPerformanceTests, goToChildTag)
 {
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
-		tagsNavigator.goToChildTag("TagName");
+		tagsNavigator.goToChildTag("basic_ptree");
 		storeResult(tm.elapsed());
 	}
 	printResult();
@@ -167,23 +162,23 @@ TEST_F(CachedCtagsPerformanceTests, findAllTagsInTagFile)
 	auto alwaysTrue = [](const Tag&) -> bool {return true; };
 	tagsReaderWithCache->findTag(alwaysTrue);
 
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
 		auto tags = tagsReaderWithCache->findTag(alwaysTrue);
-		storeResult(tm.elapsed(), tags.size());
+		storeResult(tm.elapsed());
 	}
 	printResult();
 }
 
 TEST_F(CachedCtagsPerformanceTests, findTagByName)
 {
-	tagsReaderWithCache->findTag("TagName");
-	for (int i = 0; i < c_nuberOfIterations; ++i)
+	tagsReaderWithCache->findTag("apply");
+	for (int i = 0; i < c_numberOfIterations; ++i)
 	{
 		boost::timer tm;
-		auto tags = tagsReaderWithCache->findTag("TagName");
-		storeResult(tm.elapsed(), tags.size());
+		auto tags = tagsReaderWithCache->findTag("apply");
+		storeResult(tm.elapsed());
 	}
 	printResult();
 }
