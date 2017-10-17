@@ -60,13 +60,9 @@ void fun_findTag()
 {
     g_plugin.findTag();
 }
-void fun_tagInfoBackgroundTh()
+void fun_tagInfo()
 {
-    g_plugin.tagInfo_backgroundThread();
-}
-void fun_tagInfoMainTh()
-{
-	g_plugin.tagInfo_mainThread();
+    g_plugin.tagInfo();
 }
 void fun_cppSearch()
 {
@@ -287,7 +283,7 @@ void TagsPlugin::initFunctionsTable()
 	setCommand(TEXT("Clear tags queue"),   fun_clearTags,        &clearTagsSk);
 	setSeparator();
 	setCommand(TEXT("Find tag"),           fun_findTag,          &findTagSk);
-	setCommand(TEXT("Tag info"),           fun_tagInfoMainTh,    &tagInfoSk);
+	setCommand(TEXT("Tag info"),           fun_tagInfo,    &tagInfoSk);
 	setCommand(TEXT("Tag hierarchy"),      fun_tagHier,          NULL);
 	setCommand(TEXT("Cpp search"),         fun_cppSearch,        &cppSearchSk);
     setSeparator();
@@ -296,7 +292,6 @@ void TagsPlugin::initFunctionsTable()
     setSeparator();
     setCommand(TEXT("About"),              fun_info,             NULL);
 	//setSeparator();
-	//setCommand(TEXT("Tag info background"), fun_tagInfoBackgroundTh, NULL);
     //setCommand(TEXT("test 1"), myTest1, NULL);
 	//setCommand(TEXT("test 2"), myTest2, NULL);
 }
@@ -386,14 +381,9 @@ void TagsPlugin::findTag()
 {
     m_tagsController->find();
 }
-
-void TagsPlugin::tagInfo_backgroundThread()
+void TagsPlugin::tagInfo()
 {
 	m_tagsController->tagInfo();
-}
-void TagsPlugin::tagInfo_mainThread()
-{
-	m_tagsController->tagInfo_mainThread();
 }
 void TagsPlugin::cppSearch()
 {

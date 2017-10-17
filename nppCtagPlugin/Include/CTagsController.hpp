@@ -4,7 +4,6 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include <mutex>
 
 #include "Navigator.hpp"
 #include "ILocationSetter.hpp"
@@ -20,19 +19,6 @@
 
 namespace CTagsPlugin
 {
-
-class AsyncCall
-{
-public:
-    bool start(const std::function<void(void)>& p_call);
-
-private:
-    std::mutex m_lock;
-    std::function<void(void)> m_call;
-	bool m_isStarted = false;
-	bool m_isLocked = false;
-};
-
 
 typedef std::function<TagMatcher()> GetTagSearchMatcher;
 
@@ -57,7 +43,6 @@ public:
     void previous();
     void find();
     void tagInfo();
-	void tagInfo_mainThread();
 	void clear();
 	void setTagFiles();
 	void generateTags();
@@ -76,8 +61,6 @@ private:
 	std::shared_ptr<Plugin::IPathsSelector> m_dirsSelector;
 	std::shared_ptr<Plugin::IPathsSelector> m_filesSelector;
 	GetTagSearchMatcher m_tagSearchMatcherFactory;
-    AsyncCall m_genTags;
-    AsyncCall m_tagInfo;
 
     void showTagInfo(const std::string& p_tagName);
 	void handleReadTagsError();

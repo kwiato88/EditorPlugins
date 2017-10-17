@@ -43,8 +43,7 @@ public:
 	void nextTag();
 	void previousTag();
 	void findTag();
-    void tagInfo_backgroundThread();
-	void tagInfo_mainThread();
+    void tagInfo();
 	void cppSearch();
 	void tagHierarchy();
 	void clearTags();

@@ -1,4 +1,3 @@
-#include <future>
 #include <functional>
 #include "CTagsController.hpp"
 #include "CTagsGenerator.hpp"
@@ -19,17 +18,6 @@ std::string getFileDir(std::string p_filePath)
     return p_filePath.substr(0, p_filePath.find_last_of("\\"));
 }
 }  // namespace
-
-bool AsyncCall::start(const std::function<void(void)>& p_call)
-{
-    if(m_lock.try_lock())
-    {
-		m_call = p_call;
-        std::async([&](){m_call(); m_lock.unlock();});
-        return true;
-    }
-    return false;
-}
 
 CTagsController::CTagsController(
     std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
@@ -120,22 +108,6 @@ void CTagsController::tagInfo()
 {
 	try
 	{
-		auto currentWord = getCurrentWord();
-		auto tagInfoCall = [=]() {showTagInfo(currentWord); };
-		if (!m_tagInfo.start(tagInfoCall))
-			m_messagePrinter->printInfoMessage("Tag Info", "Call skipped. Already executing");
-	}
-	catch (Plugin::UserInputError& e)
-	{
-		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag Info", e.what());
-	}
-}
-
-void CTagsController::tagInfo_mainThread()
-{
-	try
-	{
 		showTagInfo(getCurrentWord());
 	}
 	catch (Plugin::UserInputError& e)
@@ -222,14 +194,7 @@ void CTagsController::generateTags()
 {
 	try
 	{
-		const auto tagFile = getTargetFile();
-		const auto sourceDirs = getSourceDirs();
-		auto generateTagsJob = [=]() {gnerateTags(tagFile, sourceDirs); };
-		//TODO: FIXME: sending message from background thread hangs application (message sent from message printer)
-		// workaround??? Use WinApi thread???
-		//if(!m_genTags.start(generateTagsJob))
-			//m_messagePrinter->printInfoMessage("Gen Tags", "Call skipped. Already executing");
-		generateTagsJob();
+		gnerateTags(getTargetFile(), getSourceDirs());
 	}
 	catch (Plugin::UserInputError& e)
 	{
