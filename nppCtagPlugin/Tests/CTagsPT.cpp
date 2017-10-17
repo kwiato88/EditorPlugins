@@ -68,7 +68,6 @@ struct CtagsPerformanceTests : public Test
 	void storeResult(double p_executionTime)
 	{
 		results.push_back(p_executionTime);
-		std::cerr << "finished in " << p_executionTime << std::endl;
 	}
 	void exportResult(const char* p_name, double p_value)
 	{

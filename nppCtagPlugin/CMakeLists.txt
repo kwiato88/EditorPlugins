@@ -199,7 +199,7 @@ add_executable(
     ../Utils/Source/Log.cpp
     ../Utils/Source/Logger.cpp
     Tests/CTagsPT.cpp
-    Tests/TestsMain.cpp
+    Tests/PTMain.cpp
 )
 
 target_include_directories(
