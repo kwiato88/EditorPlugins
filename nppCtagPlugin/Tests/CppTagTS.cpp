@@ -41,9 +41,10 @@ CppTag buildTag(const std::string& p_name, CppTag::Kind p_kind, CppTag::Access p
 	return tag;
 }
 
-CppTag buildTag(const std::initializer_list<std::string>& p_baseClasses, CppTag::Kind p_kind = CppTag::Kind::Class)
+CppTag buildTag(const std::string& p_name, const std::initializer_list<std::string>& p_baseClasses, CppTag::Kind p_kind = CppTag::Kind::Class)
 {
 	CppTag tag = {};
+	tag.name = p_name;
 	tag.baseClasses = p_baseClasses;
 	tag.kind = p_kind;
 	return tag;
@@ -119,50 +120,50 @@ TEST(CppTagTS, shouldReturnFalseWhenTagNameMatches)
 
 TEST(CppTagTS, isDerivedShouldReturnFalseWhenNoBaseClasses)
 {
-	ASSERT_FALSE(buildTag({}).isDerived(buildTag("BaseClass")));
+	ASSERT_FALSE(buildTag("C1",{}).isDerived(buildTag("BaseClass")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnTrueWhenExactBaseClassNameFound)
 {
-	ASSERT_TRUE(buildTag({"BaseClass"}).isDerived(buildTag("BaseClass")));
-	ASSERT_TRUE(buildTag({ "Name::BaseClass" }).isDerived(buildTag("Name::BaseClass")));
+	ASSERT_TRUE(buildTag("C1", {"BaseClass"}).isDerived(buildTag("BaseClass")));
+	ASSERT_TRUE(buildTag("C1", { "Name::BaseClass" }).isDerived(buildTag("Name::BaseClass")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFalseWhenBaseClassNameNoMatched)
 {
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("OtherBaseClass")));
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("BaseClass2")));
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("Name:BaseClass")));
+	ASSERT_FALSE(buildTag("C1", { "BaseClass" }).isDerived(buildTag("OtherBaseClass")));
+	ASSERT_FALSE(buildTag("C1", { "BaseClass" }).isDerived(buildTag("BaseClass2")));
+	ASSERT_FALSE(buildTag("C1", { "BaseClass" }).isDerived(buildTag("Name:BaseClass")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnTrueWhenBaseClassHasTheSameNameWithinNamespace)
 {
-	ASSERT_TRUE(buildTag({ "BaseClass" }).isDerived(buildTag("Name::BaseClass")));
-	ASSERT_TRUE(buildTag({ "BaseClass" }).isDerived(buildTag("Name::SecondName::BaseClass")));
-	ASSERT_TRUE(buildTag({ "Name::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
-	ASSERT_TRUE(buildTag({ "BaseClass" }).isDerived(buildTag("::BaseClass")));
+	ASSERT_TRUE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::BaseClass")));
+	ASSERT_TRUE(buildTag("Name::SecondName::C1", { "BaseClass" }).isDerived(buildTag("Name::SecondName::BaseClass")));
+	ASSERT_TRUE(buildTag("SecondName::C1", { "Name::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
+	ASSERT_TRUE(buildTag("C1", { "::BaseClass" }).isDerived(buildTag("BaseClass")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameWithinNamespaceNotMatched)
 {
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("Name::OtherBaseClass")));
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("Name::BaseClass2")));
-	ASSERT_FALSE(buildTag({ "Name::BaseClass" }).isDerived(buildTag("SecondName::Name2::BaseClass")));
-	ASSERT_FALSE(buildTag({ "Name2::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
+	ASSERT_FALSE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::OtherBaseClass")));
+	ASSERT_FALSE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::BaseClass2")));
+	ASSERT_FALSE(buildTag("SecondName::C1", { "Name::BaseClass" }).isDerived(buildTag("SecondName::Name2::BaseClass")));
+	ASSERT_FALSE(buildTag("SecondName::C1", { "Name2::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameCaseNotMatched)
 {
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("Name::Baseclass")));
-	ASSERT_FALSE(buildTag({ "BaseClass" }).isDerived(buildTag("Baseclass")));
-	ASSERT_FALSE(buildTag({ "Baseclass" }).isDerived(buildTag("Name::BaseClass")));
-	ASSERT_FALSE(buildTag({ "Baseclass" }).isDerived(buildTag("BaseClass")));
+	ASSERT_FALSE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::Baseclass")));
+	ASSERT_FALSE(buildTag("C1", { "BaseClass" }).isDerived(buildTag("Baseclass")));
+	ASSERT_FALSE(buildTag("Name::C1", { "Baseclass" }).isDerived(buildTag("Name::BaseClass")));
+	ASSERT_FALSE(buildTag("C1", { "Baseclass" }).isDerived(buildTag("BaseClass")));
 }
 
-TEST(CppTagTS, shoudlReturnFalseWhenTagIsNotComplex)
+TEST(CppTagTS, isDerivedShoudlReturnFalseWhenTagIsNotComplex)
 {
-	ASSERT_FALSE(buildTag({ "Name::BaseClass" }, CppTag::Kind::Function).isDerived(buildTag("Name::BaseClass")));
-	ASSERT_FALSE(buildTag({ "Name::BaseClass" }).isDerived(buildTag("Name::BaseClass", CppTag::Kind::Function)));
+	ASSERT_FALSE(buildTag("C1", { "Name::BaseClass" }, CppTag::Kind::Function).isDerived(buildTag("Name::BaseClass")));
+	ASSERT_FALSE(buildTag("C1", { "Name::BaseClass" }).isDerived(buildTag("Name::BaseClass", CppTag::Kind::Function)));
 }
 
 static const auto allKinds = { CppTag::Kind::None, CppTag::Kind::Macro, CppTag::Kind::Enumeration,

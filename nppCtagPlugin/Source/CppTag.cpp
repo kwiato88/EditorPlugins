@@ -26,7 +26,8 @@ std::string getBaseName(const std::string& p_tagName)
 bool isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName)
 {
 	return p_baseClassName == p_otherClassName
-		|| std::regex_match(p_otherClassName, std::regex(".*::" + p_baseClassName));
+		|| std::regex_match(p_otherClassName, std::regex(".*::" + p_baseClassName))
+		|| std::regex_match(p_baseClassName, std::regex(".*::" + p_otherClassName));
 }
 std::string toStr(const CppTag::Kind& p_kind)
 {
