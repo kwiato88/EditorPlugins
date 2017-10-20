@@ -9,14 +9,6 @@ namespace CTagsPlugin
 {
 namespace
 {
-std::string getParentName(const std::string& p_tagName)
-{
-	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
-	if (l_lastSeparatorPosition != std::string::npos)
-		return p_tagName.substr(0, l_lastSeparatorPosition);
-	return "";
-}
-
 std::string getBaseName(const std::string& p_tagName)
 {
 	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
@@ -107,9 +99,13 @@ public:
 			|| separator + name == p_other.name
 			|| name == separator + p_other.name;
 	}
-	bool isChildOf(const Name& p_other) const
+	bool isSubNameOf(const Name& p_other) const
 	{
 		return std::regex_match(p_other.name, std::regex(".*" + separator + name));
+	}
+	bool isEmpty() const
+	{
+		return name.empty();
 	}
 private:
 	std::string name;
@@ -159,8 +155,8 @@ bool CppTag::isComplex() const
 
 bool CppTag::isChild(const Tag& p_parrent) const
 {
-	const auto& parrentNanme = getParentName(name);
-	return !parrentNanme.empty() && (parrentNanme == p_parrent.name);
+	Name parent = Name(name).parent();
+	return !parent.isEmpty() && parent == Name(p_parrent.name);
 }
 
 bool CppTag::isInheritable() const
@@ -186,7 +182,7 @@ bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) cons
 {
 	Name own(name);
 	return p_baseClass == p_otherClass
-		|| (p_baseClass.isChildOf(p_otherClass)
+		|| (p_baseClass.isSubNameOf(p_otherClass)
 		    && (p_otherClass.parent() == own.parent()
 				|| (own.parent() + p_baseClass.parent()) == p_otherClass.parent()
 				)

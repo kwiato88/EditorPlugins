@@ -102,7 +102,7 @@ TEST(CppTagTS, isChildShouldReturnFalseForNotMatchedParrent)
 	ASSERT_FALSE(buildTag("Parrentt:").isChild(buildTag("Parrent")));
 }
 
-TEST(CppTagTS, sgouldReturnTrueWhenTagNameMatches)
+TEST(CppTagTS, shouldReturnTrueWhenTagNameMatches)
 {
 	ASSERT_TRUE(buildTag("tagName").isTagWithName("tagName"));
 	ASSERT_TRUE(buildTag("::tagName").isTagWithName("tagName"));
