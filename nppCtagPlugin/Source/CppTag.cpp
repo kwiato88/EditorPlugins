@@ -16,18 +16,25 @@ std::string getParentName(const std::string& p_tagName)
 		return p_tagName.substr(0, l_lastSeparatorPosition);
 	return "";
 }
+std::string appendScopeNames(const std::string& p_lhs, const std::string& p_rhs)
+{
+	std::string out = p_lhs;
+	if (!out.empty())
+		out += "::";
+	return out + p_rhs;
+}
+bool isTheSameName(const std::string& p_lhs, const std::string& p_rhs)
+{
+	return p_lhs == p_rhs
+		|| "::" + p_lhs == p_rhs
+		|| p_lhs == "::" + p_rhs;
+}
 std::string getBaseName(const std::string& p_tagName)
 {
 	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
 	if (l_lastSeparatorPosition != std::string::npos)
 		return p_tagName.substr(l_lastSeparatorPosition + 2);
 	return p_tagName;
-}
-bool isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName)
-{
-	return p_baseClassName == p_otherClassName
-		|| std::regex_match(p_otherClassName, std::regex(".*::" + p_baseClassName))
-		|| std::regex_match(p_baseClassName, std::regex(".*::" + p_otherClassName));
 }
 std::string toStr(const CppTag::Kind& p_kind)
 {
@@ -151,6 +158,16 @@ bool CppTag::isDerived(const Tag& p_base) const
 		baseClasses.begin(),
 		baseClasses.end(),
 		[&](const auto& baseName) { return isBaseClass(baseName, p_base.name); });
+}
+
+bool CppTag::isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName) const
+{
+	return isTheSameName(p_baseClassName, p_otherClassName)
+		|| (std::regex_match(p_otherClassName, std::regex(".*::" + p_baseClassName))
+		    && (getParentName(p_otherClassName) == getParentName(name)
+				|| appendScopeNames(getParentName(name), getParentName(p_baseClassName)) == getParentName(p_otherClassName)
+				)
+			);
 }
 
 void CppTag::describe(std::ostream& p_out) const

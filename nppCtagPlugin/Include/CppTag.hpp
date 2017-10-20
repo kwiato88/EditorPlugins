@@ -55,9 +55,12 @@ struct CppTag: public Tag
     std::vector<std::string> baseClasses;
 
 protected:
-	bool isInheritable() const;
 	bool isEqual(const Tag& p_tag) const override;
 	TagAttributes getAttributes() const override;
+
+private:
+	bool isInheritable() const;
+	bool isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName) const;
 };
 
 std::ostream& operator<<(std::ostream& p_out, CppTag::Access);

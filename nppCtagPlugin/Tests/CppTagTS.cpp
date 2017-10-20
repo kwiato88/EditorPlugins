@@ -141,7 +141,16 @@ TEST(CppTagTS, isDerivedShouldReturnTrueWhenBaseClassHasTheSameNameWithinNamespa
 	ASSERT_TRUE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::BaseClass")));
 	ASSERT_TRUE(buildTag("Name::SecondName::C1", { "BaseClass" }).isDerived(buildTag("Name::SecondName::BaseClass")));
 	ASSERT_TRUE(buildTag("SecondName::C1", { "Name::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
+	ASSERT_TRUE(buildTag("N1::N2::C1", { "N3::N4::C2" }).isDerived(buildTag("N1::N2::N3::N4::C2")));
 	ASSERT_TRUE(buildTag("C1", { "::BaseClass" }).isDerived(buildTag("BaseClass")));
+}
+
+TEST(CppTagTS, isDerivedShouldReturnFalseWhenBaseClassCadidateIsFromDifferentNamespace)
+{
+	ASSERT_FALSE(buildTag("N1::C1", { "C2" }).isDerived(buildTag("N2::C2")));
+	ASSERT_FALSE(buildTag("N1::C1", { "N2::C2" }).isDerived(buildTag("N3::N2::C2")));
+	ASSERT_FALSE(buildTag("N1::C1", { "N2::C2" }).isDerived(buildTag("N1::N3::N2::C2")));
+	ASSERT_FALSE(buildTag("C1", { "::C2" }).isDerived(buildTag("N1::C2")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameWithinNamespaceNotMatched)
@@ -150,6 +159,13 @@ TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameWithinNamespaceNotMatch
 	ASSERT_FALSE(buildTag("Name::C1", { "BaseClass" }).isDerived(buildTag("Name::BaseClass2")));
 	ASSERT_FALSE(buildTag("SecondName::C1", { "Name::BaseClass" }).isDerived(buildTag("SecondName::Name2::BaseClass")));
 	ASSERT_FALSE(buildTag("SecondName::C1", { "Name2::BaseClass" }).isDerived(buildTag("SecondName::Name::BaseClass")));
+}
+
+TEST(CppTagTS, isDerivedShouldReturnTrueWhanBaseIsDefinedInParentNamespace)
+{
+	ASSERT_FALSE(buildTag("N1::N2::C1", { "C2" }).isDerived(buildTag("N1::C2")));
+	ASSERT_FALSE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::N2::C2")));
+	ASSERT_FALSE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::C2")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameCaseNotMatched)
