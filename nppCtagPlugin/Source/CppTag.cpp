@@ -16,19 +16,40 @@ std::string getParentName(const std::string& p_tagName)
 		return p_tagName.substr(0, l_lastSeparatorPosition);
 	return "";
 }
-std::string appendScopeNames(const std::string& p_lhs, const std::string& p_rhs)
+
+class Name
 {
-	std::string out = p_lhs;
-	if (!out.empty())
-		out += "::";
-	return out + p_rhs;
-}
-bool isTheSameName(const std::string& p_lhs, const std::string& p_rhs)
-{
-	return p_lhs == p_rhs
-		|| "::" + p_lhs == p_rhs
-		|| p_lhs == "::" + p_rhs;
-}
+public:
+	Name(const std::string& p_name) : name(p_name) {}
+	Name parent() const
+	{
+		std::size_t lastSeparatorPosition = name.rfind("::");
+		if (lastSeparatorPosition != std::string::npos)
+			return name.substr(0, lastSeparatorPosition);
+		return "";
+	}
+	Name operator+(const Name& p_other) const
+	{
+		Name extended(name);
+		if (!extended.name.empty())
+			extended.name += "::";
+		extended.name += p_other.name;
+		return extended;
+	}
+	bool operator==(const Name& p_other) const
+	{
+		return name == p_other.name
+			|| "::" + name == p_other.name
+			|| name == "::" + p_other.name;
+	}
+	bool isChildOf(const Name& p_other) const
+	{
+		return std::regex_match(p_other.name, std::regex(".*::" + name));
+	}
+private:
+	std::string name;
+};
+
 std::string getBaseName(const std::string& p_tagName)
 {
 	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
@@ -162,12 +183,14 @@ bool CppTag::isDerived(const Tag& p_base) const
 
 bool CppTag::isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName) const
 {
-	return isTheSameName(p_baseClassName, p_otherClassName)
-		|| (std::regex_match(p_otherClassName, std::regex(".*::" + p_baseClassName))
-		    && (getParentName(p_otherClassName) == getParentName(name)
-				|| appendScopeNames(getParentName(name), getParentName(p_baseClassName)) == getParentName(p_otherClassName)
+	Name own(name), baseClass(p_baseClassName), otherClass(p_otherClassName);
+	return baseClass == otherClass
+		|| (baseClass.isChildOf(otherClass)
+		    && (otherClass.parent() == own.parent()
+				|| (own.parent() + baseClass.parent()) == otherClass.parent()
 				)
 			);
+	
 }
 
 void CppTag::describe(std::ostream& p_out) const
