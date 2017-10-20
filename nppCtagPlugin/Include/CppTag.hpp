@@ -59,8 +59,9 @@ protected:
 	TagAttributes getAttributes() const override;
 
 private:
+	class Name;
 	bool isInheritable() const;
-	bool isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName) const;
+	bool isBaseClass(const Name& p_baseClass, const Name& p_otherClass) const;
 };
 
 std::ostream& operator<<(std::ostream& p_out, CppTag::Access);

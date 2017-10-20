@@ -17,39 +17,6 @@ std::string getParentName(const std::string& p_tagName)
 	return "";
 }
 
-class Name
-{
-public:
-	Name(const std::string& p_name) : name(p_name) {}
-	Name parent() const
-	{
-		std::size_t lastSeparatorPosition = name.rfind("::");
-		if (lastSeparatorPosition != std::string::npos)
-			return name.substr(0, lastSeparatorPosition);
-		return "";
-	}
-	Name operator+(const Name& p_other) const
-	{
-		Name extended(name);
-		if (!extended.name.empty())
-			extended.name += "::";
-		extended.name += p_other.name;
-		return extended;
-	}
-	bool operator==(const Name& p_other) const
-	{
-		return name == p_other.name
-			|| "::" + name == p_other.name
-			|| name == "::" + p_other.name;
-	}
-	bool isChildOf(const Name& p_other) const
-	{
-		return std::regex_match(p_other.name, std::regex(".*::" + name));
-	}
-private:
-	std::string name;
-};
-
 std::string getBaseName(const std::string& p_tagName)
 {
 	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
@@ -114,6 +81,40 @@ std::string toStrVerbose(const CppTag::Access& p_access)
 	return conversion.find(p_access)->second;
 }
 }
+
+class CppTag::Name
+{
+public:
+	Name(const std::string& p_name) : name(p_name) {}
+	Name parent() const
+	{
+		std::size_t lastSeparatorPosition = name.rfind(separator);
+		if (lastSeparatorPosition != std::string::npos)
+			return name.substr(0, lastSeparatorPosition);
+		return "";
+	}
+	Name operator+(const Name& p_other) const
+	{
+		Name extended(name);
+		if (!extended.name.empty())
+			extended.name += separator;
+		extended.name += p_other.name;
+		return extended;
+	}
+	bool operator==(const Name& p_other) const
+	{
+		return name == p_other.name
+			|| separator + name == p_other.name
+			|| name == separator + p_other.name;
+	}
+	bool isChildOf(const Name& p_other) const
+	{
+		return std::regex_match(p_other.name, std::regex(".*" + separator + name));
+	}
+private:
+	std::string name;
+	const std::string separator = "::";
+};
 
 Tag* CppTag::clone() const
 {
@@ -181,16 +182,15 @@ bool CppTag::isDerived(const Tag& p_base) const
 		[&](const auto& baseName) { return isBaseClass(baseName, p_base.name); });
 }
 
-bool CppTag::isBaseClass(const std::string& p_baseClassName, const std::string& p_otherClassName) const
+bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) const
 {
-	Name own(name), baseClass(p_baseClassName), otherClass(p_otherClassName);
-	return baseClass == otherClass
-		|| (baseClass.isChildOf(otherClass)
-		    && (otherClass.parent() == own.parent()
-				|| (own.parent() + baseClass.parent()) == otherClass.parent()
+	Name own(name);
+	return p_baseClass == p_otherClass
+		|| (p_baseClass.isChildOf(p_otherClass)
+		    && (p_otherClass.parent() == own.parent()
+				|| (own.parent() + p_baseClass.parent()) == p_otherClass.parent()
 				)
 			);
-	
 }
 
 void CppTag::describe(std::ostream& p_out) const
