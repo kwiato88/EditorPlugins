@@ -9,13 +9,6 @@ namespace CTagsPlugin
 {
 namespace
 {
-std::string getBaseName(const std::string& p_tagName)
-{
-	std::size_t l_lastSeparatorPosition = p_tagName.rfind("::");
-	if (l_lastSeparatorPosition != std::string::npos)
-		return p_tagName.substr(l_lastSeparatorPosition + 2);
-	return p_tagName;
-}
 std::string toStr(const CppTag::Kind& p_kind)
 {
 	static const std::map<CppTag::Kind, std::string> conversion = boost::assign::map_list_of
@@ -85,6 +78,13 @@ public:
 			return name.substr(0, lastSeparatorPosition);
 		return "";
 	}
+	Name base() const
+	{
+		std::size_t lastSeparatorPosition = name.rfind(separator);
+		if (lastSeparatorPosition != std::string::npos)
+			return name.substr(lastSeparatorPosition + 2);
+		return name;
+	}
 	Name operator+(const Name& p_other) const
 	{
 		Name extended(name);
@@ -141,7 +141,7 @@ bool CppTag::isEqual(const Tag& p_tag) const
 
 bool CppTag::isTagWithName(const std::string& p_name) const
 {
-	return getBaseName(name) == p_name;
+	return Name(name).base() == p_name;
 }
 
 bool CppTag::isComplex() const
