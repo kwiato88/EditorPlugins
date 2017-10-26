@@ -30,6 +30,7 @@ public:
 	void cleanup();
 	void commandMenuInit(NppData p_nppData);
 	void commandMenuCleanUp();
+	void handleMsgToPlugin(CommunicationInfo& p_message);
 
 	/**
 	 * plugin test functions

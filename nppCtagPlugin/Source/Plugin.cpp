@@ -323,6 +323,10 @@ void TagsPlugin::setSeparator()
     setCommand(TEXT("-----"), NULL, NULL);
 }
 
+void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
+{
+}
+
 void TagsPlugin::test1()
 {
 	std::string childACont = "A", childBCont = "B", childCCont = "C", childBACont = "BA", rootCont = "root", dummy = "dummy";
