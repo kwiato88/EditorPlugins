@@ -15,6 +15,8 @@ add_library(
     Source/IncludeBrowser.cpp
     Source/MutilpeFilesIncludeBrowser.cpp
     Source/IncludeBrowserController.cpp
+    Source/FileHierarchy.cpp
+    Source/TreeViewFileHierarchySelector.cpp
     # RESOURCES
     ../WinApi/Resource/ListBoxDialog.rc
     Resource/IncludeBrowserPluginDetail.rc

@@ -9,6 +9,7 @@
 #include "NppPathGetter.hpp"
 #include "NppListViewSelector.hpp"
 #include "NppMessagePrinter.hpp"
+#include "TreeViewFileHierarchySelector.hpp"
 
 extern NppPlugin::IncludeBrowserPlugin g_plugin;
 
@@ -80,7 +81,8 @@ void IncludeBrowserPlugin::create()
         std::make_shared<NppPlugin::NppLocationSetter>(m_npp),
         std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
         std::make_shared<NppPlugin::NppListViewSelector>(m_npp.npp, m_hModule),
-        std::make_shared<NppPlugin::NppMessagePrinter>(m_npp.npp, m_hModule)));
+        std::make_shared<NppPlugin::NppMessagePrinter>(m_npp.npp, m_hModule),
+		std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>()));
 }
 
 void IncludeBrowserPlugin::initFunctionsTable()

@@ -9,6 +9,7 @@
 #include "IPathGetter.hpp"
 #include "IItemsSelector.hpp"
 #include "IMessagePrinter.hpp"
+#include "IFileHierarchySelector.hpp"
 #include "IncludeBrowser.hpp"
 #include "MutilpeFilesIncludeBrowser.hpp"
 
@@ -22,7 +23,8 @@ public:
                std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
                std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
                std::shared_ptr<Plugin::IItemsSelector> p_selector,
-               std::shared_ptr<Plugin::IMessagePrinter> p_printer);
+               std::shared_ptr<Plugin::IMessagePrinter> p_printer,
+			   std::shared_ptr<IFileHierarchySelector> p_fileSelector);
 
     void parse();
     void showIncluders();
@@ -46,6 +48,7 @@ private:
     std::shared_ptr<Plugin::IPathGetter> m_pathGetter;
     std::shared_ptr<Plugin::IItemsSelector> m_selector;
     std::shared_ptr<Plugin::IMessagePrinter> m_printer;
+	std::shared_ptr<IFileHierarchySelector> m_fileSelector;
 };
 
 } // namespace IncludeBrowser

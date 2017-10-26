@@ -53,13 +53,15 @@ Controller::Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter
                        std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
                        std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
                        std::shared_ptr<Plugin::IItemsSelector> p_selector,
-                       std::shared_ptr<Plugin::IMessagePrinter> p_printer)
+                       std::shared_ptr<Plugin::IMessagePrinter> p_printer,
+	                   std::shared_ptr<IFileHierarchySelector> p_fileSelector)
  : m_browser(&Controller::buildBrowser),
    m_locationGetter(p_locationGetter),
    m_locationSetter(p_locationSetter),
    m_pathGetter(p_pathGetter),
    m_selector(p_selector),
-   m_printer(p_printer)
+   m_printer(p_printer),
+   m_fileSelector(p_fileSelector)
 {}
 
 Browser::ExtensionParserMap Controller::buildParsers()
@@ -80,7 +82,6 @@ std::shared_ptr<IBrowser> Controller::buildBrowser(const std::string& p_dirPath)
 
 void Controller::parse()
 {
-    //std::async(std::bind(&Controller::parseIncludes, this));
 	parseIncludes();
 }
 
@@ -112,6 +113,7 @@ void Controller::showIncluders()
     try
     {
 		// TODO: consider showing includer/included resursively
+		m_fileSelector->select(FileHierarchy::buildIncludersHierarchy(getCurrentFileName(), m_browser));
         goToFile(selectFileFromMultiple(findFiles(m_sourceDirs, selectFile(m_browser.getIncluders(getCurrentFileName())))));
     }
     catch(std::out_of_range&)
@@ -156,6 +158,7 @@ void Controller::showIncluded()
 {
     try
     {
+		// TODO: consider showing includer/included resursively
         goToFile(selectFileFromMultiple(findFiles(m_sourceDirs, selectFile(m_browser.getIncluded(getCurrentFileName())))));
     }
     catch(std::out_of_range&)
