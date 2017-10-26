@@ -19,6 +19,7 @@ add_library(
     Source/TreeViewFileHierarchySelector.cpp
     # RESOURCES
     ../WinApi/Resource/ListBoxDialog.rc
+    ../WinApi/Resource/TreeDialog.rc
     Resource/IncludeBrowserPluginDetail.rc
 )
 
