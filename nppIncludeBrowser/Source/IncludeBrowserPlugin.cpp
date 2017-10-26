@@ -82,7 +82,7 @@ void IncludeBrowserPlugin::create()
         std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
         std::make_shared<NppPlugin::NppListViewSelector>(m_npp.npp, m_hModule),
         std::make_shared<NppPlugin::NppMessagePrinter>(m_npp.npp, m_hModule),
-		std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>()));
+		std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>(m_hModule, m_npp.npp)));
 }
 
 void IncludeBrowserPlugin::initFunctionsTable()

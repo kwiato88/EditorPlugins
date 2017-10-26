@@ -31,22 +31,6 @@ std::string findFile(const std::string& p_dir, const std::string& p_fileName)
         throw std::runtime_error("File: " + p_fileName + " not found");
     return it->path().string();
 }
-
-std::vector<std::string> findFiles(const std::set<std::string>& p_dirs, const std::string& p_fileName)
-{
-    std::vector<std::string> files;
-    for(const auto& dir : p_dirs)
-    {
-        try
-        {
-            files.push_back(findFile(dir, p_fileName));
-        }
-        catch(const std::runtime_error&){}
-    }
-    if(files.empty())
-        throw std::runtime_error("File: " + p_fileName + " not found");
-    return files;
-}
 }  // namespace
 
 Controller::Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
@@ -112,9 +96,7 @@ void Controller::showIncluders()
 {
     try
     {
-		// TODO: consider showing includer/included resursively
-		m_fileSelector->select(FileHierarchy::buildIncludersHierarchy(getCurrentFileName(), m_browser));
-        goToFile(selectFileFromMultiple(findFiles(m_sourceDirs, selectFile(m_browser.getIncluders(getCurrentFileName())))));
+		goToFile(selectFileFromMultiple(findFiles(selectFile(FileHierarchy::buildIncludersHierarchy(getCurrentFileName(), m_browser)))));
     }
     catch(std::out_of_range&)
     {
@@ -143,10 +125,34 @@ std::string Controller::selectFile(const std::vector<std::string>& p_files) cons
     return p_files.at(m_selector->select(p_files));
 }
 
+std::string Controller::selectFile(const FileHierarchy& p_files) const
+{
+	auto file =  m_fileSelector->select(p_files);
+	if (file.empty())
+		throw std::runtime_error("No file to show");
+	return file;
+}
+
 std::string Controller::selectFileFromMultiple(const std::vector<std::string>& p_files) const
 {
     if(p_files.size() == 1) return p_files.at(0);
     else return selectFile(p_files);
+}
+
+std::vector<std::string> Controller::findFiles(const std::string& p_fileName) const
+{
+	std::vector<std::string> files;
+	for (const auto& dir : m_sourceDirs)
+	{
+		try
+		{
+			files.push_back(findFile(dir, p_fileName));
+		}
+		catch (const std::runtime_error&) {}
+	}
+	if (files.empty())
+		throw std::runtime_error("File: " + p_fileName + " not found");
+	return files;
 }
 
 void Controller::goToFile(const std::string& p_file)
@@ -158,8 +164,7 @@ void Controller::showIncluded()
 {
     try
     {
-		// TODO: consider showing includer/included resursively
-        goToFile(selectFileFromMultiple(findFiles(m_sourceDirs, selectFile(m_browser.getIncluded(getCurrentFileName())))));
+		goToFile(selectFileFromMultiple(findFiles(selectFile(FileHierarchy::buildIncludedHierarchy(getCurrentFileName(), m_browser)))));
     }
     catch(std::out_of_range&)
     {

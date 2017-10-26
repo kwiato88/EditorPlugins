@@ -38,7 +38,9 @@ private:
     std::string getSourceDir() const;
     std::string getCurrentFileName() const;
     std::string selectFile(const std::vector<std::string>& p_files) const;
+	std::string selectFile(const FileHierarchy& p_files) const;
     std::string selectFileFromMultiple(const std::vector<std::string>& p_files) const;
+	std::vector<std::string> findFiles(const std::string& p_fileName) const;
     void goToFile(const std::string& p_file);
 
     MultipleFilesBrowser m_browser;
