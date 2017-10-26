@@ -17,8 +17,7 @@ Functions:
 
  * parse includes hierarchy for specified directory
  * clear parsed hierarchy
- * list and jump to files/modules included in current file/module
- * list and jump to files/modules including current file/module
+ * view and jump to file/module in includes hierarchy for current file/module
 
 ## Header/Source switcher plugin
 
@@ -51,6 +50,18 @@ Allowed directories mapping:
  * search tag bases on its attributes (c, c++);
  * supports extension fields;
  * remembers tag files paths after application restart.
+
+### Instalation:
+ * copy plugin binary to Notepad++ plugins directory;
+ * open and close Noteoad++ (default plugin configuration file will be generated);
+ * open plugin configuration file ('nppCTagPlugin.ini' in plugins configuration directory).
+   Do not edit it while Noteoad++ is running;
+ * add 'ctagsPath' variable with path to 'ctags.exe' under 'Tags' section. Example:
+```
+[Tags]
+ctagsPath=D:\ctags\ctags.exe
+```
+ * optionaly change other parameters
 
 ### Configuration:
 Plugin has a configuration file (nppCTagPlugin.ini) in Notepad++ plugins
@@ -103,7 +114,7 @@ __Description:__
        See 'readTagsPath' configuration parameter
 
    * filterFileScoped : when jump to tag don't show tags with file scope
-     if currently in different file (default: false)
+     and defined in different file than current file(default: false)
  
    * useCache : load tags from defined files to memory. Use loaded
      tags instead of searching through files every time. Tags cache
@@ -118,7 +129,7 @@ __Description:__
 
  * [Logs] : plugin logs are stored in file 'nppCTagPlugin.logs'
    in plugins configuration dir
-   * enabled : enable plugin logging (default: false)
+   * enabled : enable plugin logging. Values: 'true' or 'false' (default: false)
 
    * severity: logging severity. Values: 'debug', 'info', 'warning', 'error' (default: 'info')
 

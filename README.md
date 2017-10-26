@@ -50,6 +50,18 @@ Allowed directories mapping:
  * supports extension fields;
  * remembers tag files paths after application restart.
 
+### Instalation:
+ * copy plugin binary to Notepad++ plugins directory;
+ * open and close Noteoad++ (default plugin configuration file will be generated);
+ * open plugin configuration file ('nppCTagPlugin.ini' in plugins configuration directory).
+   Do not edit it while Noteoad++ is running;
+ * add 'ctagsPath' variable with path to 'ctags.exe' under 'Tags' section. Example:
+```
+[Tags]
+ctagsPath=D:\ctags\ctags.exe
+```
+ * optionaly change other parameters
+
 ### Configuration:
 Plugin has a configuration file (nppCTagPlugin.ini) in Notepad++ plugins
 configuration directory. __Do not modify configuration file while Notepad++
