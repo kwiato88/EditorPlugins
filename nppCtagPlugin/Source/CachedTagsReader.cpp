@@ -31,7 +31,8 @@ std::vector<TagHolder> CachedTagsReader::findTag(const std::string& p_tagName) c
 std::vector<TagHolder> CachedTagsReader::findTag(TagMatcher p_matcher) const
 {
 	std::vector<TagHolder> matchingTags;
-	std::copy_if(m_tags->begin(), m_tags->end(),
+	const auto& tags = m_tags.get();
+	std::copy_if(tags.begin(), tags.end(),
 		std::back_inserter(matchingTags),
 		p_matcher);
 

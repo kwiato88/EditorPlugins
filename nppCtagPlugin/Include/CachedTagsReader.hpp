@@ -19,17 +19,25 @@ public:
 		: m_getDataLastModifyTime(p_getDataLastModifyTime), m_load(p_load)
 	{}
 
-	T* operator->()
+	void updateData()
 	{
 		auto lastModifyTime = m_getDataLastModifyTime();
-		LOG_DEBUG << "Cache: Last data modification time " << lastModifyTime << ". Last data load time " << m_loadtime;
 		if (m_getDataLastModifyTime() > m_loadtime)
 		{
 			LOG_INFO << "Load cached data. Last load time: " << m_loadtime;
 			m_loadtime = std::time(nullptr);
 			m_data = m_load();
 		}
+	}
+	T* operator->()
+	{
+		updateData();
 		return &m_data;
+	}
+	T& get()
+	{
+		updateData();
+		return m_data;
 	}
 
 private:
