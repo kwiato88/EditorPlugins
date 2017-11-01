@@ -28,7 +28,8 @@ FileHierarchy::FileHierarchy(const std::string& p_file, const RelatedFiles& p_re
 }
 
 void FileHierarchy::parse(const RelatedFiles& p_relatedFiles)
-{
+{//TODO: add protection from cycles in includes hierarchy.
+// For example change RelatedFiles not to provide files for the same argument twice
 	for (const auto& file : p_relatedFiles(file))
 		relatedFiles.push_back(FileHierarchy(file, p_relatedFiles));
 }
