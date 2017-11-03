@@ -18,6 +18,7 @@ add_library(
     Source/NppListViewSelector.cpp
     Source/NppPathGetter.cpp
     Source/NppPathsSelector.cpp
+    Source/MessageHandler.cpp
 )
 
 target_include_directories(

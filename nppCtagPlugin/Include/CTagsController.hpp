@@ -16,6 +16,10 @@
 #include "IConfiguration.hpp"
 #include "IPathsSelector.hpp"
 #include "CTagsNavigator.hpp"
+#include "Transaction.hpp"
+#include "MessageHandler.hpp"
+#include "ExternalInterface/Commands.hpp"
+#include "ExternalInterface/Results.hpp"
 
 namespace CTagsPlugin
 {
@@ -49,10 +53,13 @@ public:
 	void tagsSearch();
 	void tagHierarchy();
 
+	void handleTransaction(long p_id, Messaging::Transaction& p_trans);
+
 private:
     Navigator m_locationsNavigator;
 	CTagsNavigator m_tagsNavigator;
 	IConfiguration& m_config;
+	Messaging::Handlers m_handlers;
 
 	std::shared_ptr<Plugin::IMessagePrinter> m_messagePrinter;
 	std::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
@@ -65,6 +72,9 @@ private:
     void showTagInfo(const std::string& p_tagName);
 	void handleReadTagsError();
     void gnerateTags(std::string p_outFile,std::vector<std::string> p_sourceDirs);
+
+	Result::Basic handleGenerateTags(const Command::GenerateTags&);
+
     std::string getCurrentWord() const;
     std::vector<std::string> getSourceDirs() const;
     std::string getTargetFile() const;

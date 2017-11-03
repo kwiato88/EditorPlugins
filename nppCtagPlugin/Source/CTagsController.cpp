@@ -43,6 +43,8 @@ CTagsController::CTagsController(
    m_config(p_config),
    m_tagSearchMatcherFactory(p_tagSearchMatcherFactory)
 {
+	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
+		Command::GenerateTags::Id(), [&](const auto& p) { return handleGenerateTags(p); });
 }
 
 void CTagsController::next()
@@ -200,21 +202,32 @@ void CTagsController::generateTags()
 	{
 		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
 	}
+	catch (GenerateTagsException& e)
+	{
+		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
+		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
+	}
 }
 
 void CTagsController::gnerateTags(std::string p_outFile, std::vector<std::string> p_sourceDirs)
 {
-    try
-    {
-		LOG_INFO << "Generate tags to file: " << p_outFile;
-        CTagsGenerator(m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
-		m_messagePrinter->printInfoMessage("Gen Tags", "Tags saved to file: " + p_outFile);
-    }
-    catch (GenerateTagsException& e)
-    {
+	LOG_INFO << "Generate tags to file: " << p_outFile;
+    CTagsGenerator(m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
+	m_messagePrinter->printInfoMessage("Gen Tags", "Tags saved to file: " + p_outFile);
+}
+
+Result::Basic CTagsController::handleGenerateTags(const Command::GenerateTags& p_com)
+{
+	try
+	{
+		gnerateTags(p_com.tagFilePath, p_com.sourceDirsPaths);
+		return Result::Basic{ Result::Result::Success };
+	}
+	catch (std::exception& e)
+	{
 		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
-        m_messagePrinter->printInfoMessage("Gen Tags", e.what());
-    }
+		return Result::Basic{ Result::Result::Failure };
+	}
 }
 
 void CTagsController::tagsSearch()
@@ -281,6 +294,11 @@ void CTagsController::tagHierarchy()
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printErrorMessage("Tag hierarchy", e.what());
 	}
+}
+
+void CTagsController::handleTransaction(long p_id, Messaging::Transaction& p_trans)
+{
+	m_handlers.handle(p_id, p_trans);
 }
 
 } /* namespace CTagsPlugin */

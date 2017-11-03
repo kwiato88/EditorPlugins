@@ -35,6 +35,11 @@
 #include "TreeDialog.hpp"
 #include "TagHierarchyDialog.hpp"
 
+#include "ExternalInterface/Commands.hpp"
+#include "ExternalInterface/Results.hpp"
+#include "Codec.hpp"
+#include "MessageHandler.hpp"
+
 extern NppPlugin::TagsPlugin g_plugin;
 
 namespace NppPlugin
@@ -291,9 +296,9 @@ void TagsPlugin::initFunctionsTable()
     setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
     setSeparator();
     setCommand(TEXT("About"),              fun_info,             NULL);
-	//setSeparator();
-    //setCommand(TEXT("test 1"), myTest1, NULL);
-	//setCommand(TEXT("test 2"), myTest2, NULL);
+	setSeparator();
+    setCommand(TEXT("test 1"), myTest1, NULL);
+	setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 /**
@@ -325,50 +330,60 @@ void TagsPlugin::setSeparator()
 
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 {
+	LOG_INFO << "Received message with internal Id " << p_message.internalMsg << " from " << p_message.srcModuleName;
+	m_tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
 }
 
 void TagsPlugin::test1()
 {
-	std::string childACont = "A", childBCont = "B", childCCont = "C", childBACont = "BA", rootCont = "root", dummy = "dummy";
-	std::vector<WinApi::Node> firstlevelChildren
-	{
-		WinApi::Node("Child a", &childACont),
-		WinApi::Node("Child b 9012345", &childBCont),
-		WinApi::Node("Child c", &childCCont),
-		WinApi::Node("12345678901234567", &dummy)};
-	firstlevelChildren[1].m_children.push_back(WinApi::Node("child ba 01234567", &childBACont));
-	WinApi::Node root("root a", &rootCont);
-	root.m_children = firstlevelChildren;
+	CTagsPlugin::Command::Dummy req;
+	req.value = 5;
+	LOG_INFO << "req value: " << req.value;
+	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Dummy>(req);
+	std::string payload = "payload ";
+	for (const auto& b : reqBuff)
+		payload += boost::lexical_cast<std::string>((int)b) += " ";
+	LOG_INFO << payload;
+	auto decodedReq = Messaging::decode<CTagsPlugin::Command::Dummy>(reqBuff.data(), reqBuff.size());
+	LOG_INFO << "decoded req value: " << decodedReq.value;
 
-	WinApi::TagHierarchyDialog dialog(WinApi::InstanceHandle(m_hModule), m_npp.npp);
-	dialog.setBaseTags(root);
-	dialog.setDerivedTags(root);
-	dialog.show();
-	const std::string* selectedItemContext = (dialog.getSelectedContext<std::string>());
-	std::string selectedPrint = (selectedItemContext == nullptr) ? "none" : *selectedItemContext;
-	m_printer->printInfoMessage("her dialog test", selectedPrint);
 }
 
 void TagsPlugin::test2()
 {
-	std::string childACont = "A", childBCont = "B", childCCont = "C", childBACont = "BA", rootCont = "root", dummy = "dummy";
-	std::vector<WinApi::Node> firstlevelChildren
-	{
-		WinApi::Node("Child a 9012345", &childACont),
-		WinApi::Node("Child b", &childBCont),
-		WinApi::Node("Child c", &childCCont),
-		WinApi::Node("12345678901234567", &dummy) };
-	firstlevelChildren[1].m_children.push_back(WinApi::Node("child ba 012345", &childBACont));
-	WinApi::Node root("root a", &rootCont);
-	root.m_children = firstlevelChildren;
+	CTagsPlugin::Command::Dummy req;
+	req.value = 5;
+	LOG_INFO << "sender. secd request: " << req.value;
 
-	WinApi::TreeDialog tree(m_hModule, m_npp.npp);
-	tree.setTreeNodes({ root });
-	tree.show();
-	const std::string* selected = tree.getSelectedItemContext<std::string>();
-	std::string toPrint = (selected == nullptr) ? "NONE" : (*selected);
-	std::string toPrint2 = tree.getSelectedItemContextRef<std::string>();
-	m_printer->printInfoMessage("tree dialog test", "selected item index" + toPrint + toPrint2);
+	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Dummy>(req);
+	Messaging::BufferType respBuff(1024, 0);
+
+	Messaging::Transaction transaction;
+	transaction.command.size = reqBuff.size();
+	transaction.command.data = reqBuff.data();
+	transaction.result.size = respBuff.size();
+	transaction.result.data = respBuff.data();
+
+	CommunicationInfo communication;
+	communication.internalMsg = 45;
+	communication.info = static_cast<void*>(&transaction);
+	
+	//HANDLER START
+	CommunicationInfo& receivedComm = communication;
+	Messaging::Transaction& receivedTrans = *(static_cast<Messaging::Transaction*>(receivedComm.info));
+	auto receivedReq = Messaging::decode<CTagsPlugin::Command::Dummy>(receivedTrans.command.data, receivedTrans.command.size);
+	LOG_INFO << "receoved. received req: " << receivedReq.value;
+	CTagsPlugin::Result::Dummy receiverResp;
+	receiverResp.value = 45;
+	LOG_INFO << "received. send resp: " << receiverResp.value;
+	auto encodedResp = Messaging::encode <CTagsPlugin::Result::Dummy>(receiverResp);
+	receivedTrans.result.size = encodedResp.size();
+	std::copy_n(encodedResp.begin(), encodedResp.size(), receivedTrans.result.data);
+	//HANDLER END
+
+	auto resp = Messaging::decode<CTagsPlugin::Result::Dummy>(transaction.result.data, transaction.result.size);
+	LOG_INFO << "sender. received response: " << resp.value;
+
 }
 
 void TagsPlugin::nextTag()
