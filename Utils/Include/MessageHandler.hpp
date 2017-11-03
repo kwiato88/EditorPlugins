@@ -34,9 +34,13 @@ private:
     SpecificHandler handler;
 };
 
+void ignoreTransaction(const Transaction&);
+
 class Handlers
 {
 public:
+	Handlers(Hanlder p_default = &ignoreTransaction);
+
     void handle(long p_messageId, Transaction& p_message);
     template <typename Command, typename Result>
     void addHandler(long p_messageId, std::function<Result(const Command&)> p_handler)
@@ -47,6 +51,7 @@ private:
     void addGenericHandler(long p_messageId, Hanlder p_handler);
 
     std::map<long, Hanlder> handlers;
+	Hanlder deafultHandler;
 };
 
 }
