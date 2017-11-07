@@ -343,26 +343,26 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-	CTagsPlugin::Command::Dummy req;
+	CTagsPlugin::Command::Test req;
 	req.value = 5;
 	LOG_INFO << "req value: " << req.value;
-	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Dummy>(req);
+	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Test>(req);
 	std::string payload = "payload ";
 	for (const auto& b : reqBuff)
 		payload += boost::lexical_cast<std::string>((int)b) += " ";
 	LOG_INFO << payload;
-	auto decodedReq = Messaging::decode<CTagsPlugin::Command::Dummy>(reqBuff.data(), reqBuff.size());
+	auto decodedReq = Messaging::decode<CTagsPlugin::Command::Test>(reqBuff.data(), reqBuff.size());
 	LOG_INFO << "decoded req value: " << decodedReq.value;
 
 }
 
 void TagsPlugin::test2()
 {
-	CTagsPlugin::Command::Dummy req;
+	CTagsPlugin::Command::Test req;
 	req.value = 5;
 	LOG_INFO << "sender. secd request: " << req.value;
 
-	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Dummy>(req);
+	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Test>(req);
 	Messaging::BufferType respBuff(1024, 0);
 
 	Messaging::Transaction transaction;
@@ -378,17 +378,17 @@ void TagsPlugin::test2()
 	//HANDLER START
 	CommunicationInfo& receivedComm = communication;
 	Messaging::Transaction& receivedTrans = *(static_cast<Messaging::Transaction*>(receivedComm.info));
-	auto receivedReq = Messaging::decode<CTagsPlugin::Command::Dummy>(receivedTrans.command.data, receivedTrans.command.size);
+	auto receivedReq = Messaging::decode<CTagsPlugin::Command::Test>(receivedTrans.command.data, receivedTrans.command.size);
 	LOG_INFO << "receoved. received req: " << receivedReq.value;
-	CTagsPlugin::Result::Dummy receiverResp;
+	CTagsPlugin::Result::Test receiverResp;
 	receiverResp.value = 45;
 	LOG_INFO << "received. send resp: " << receiverResp.value;
-	auto encodedResp = Messaging::encode <CTagsPlugin::Result::Dummy>(receiverResp);
+	auto encodedResp = Messaging::encode <CTagsPlugin::Result::Test>(receiverResp);
 	receivedTrans.result.size = encodedResp.size();
 	std::copy_n(encodedResp.begin(), encodedResp.size(), receivedTrans.result.data);
 	//HANDLER END
 
-	auto resp = Messaging::decode<CTagsPlugin::Result::Dummy>(transaction.result.data, transaction.result.size);
+	auto resp = Messaging::decode<CTagsPlugin::Result::Test>(transaction.result.data, transaction.result.size);
 	LOG_INFO << "sender. received response: " << resp.value;
 
 }

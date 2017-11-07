@@ -49,6 +49,14 @@ CTagsController::CTagsController(
 		Command::SetTagFiles::Id(), [&](const auto& p) { return handleSetTagFiles(p); });
     m_handlers.addHandler<Command::GetTagFiles, Result::TagFiles>(
 		Command::GetTagFiles::Id(), [&](const auto& p) { return handleGetTagFiles(p); });
+	m_handlers.addHandler<Command::Test, Result::Test>(
+		Command::Test::Id(), [&](const auto& p) { return handleTestCommand(p); });
+}
+
+Result::Test CTagsController::handleTestCommand(const Command::Test& p_cmd)
+{
+	LOG_INFO << "Received test command with value " << p_cmd.value << ". Sending result with the same value.";
+	return Result::Test{ p_cmd.value };
 }
 
 void CTagsController::next()

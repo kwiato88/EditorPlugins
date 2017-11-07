@@ -50,7 +50,7 @@ struct GetTagFiles
     static long Id() { return 3; }
 };
 
-struct Dummy
+struct Test
 {
     friend class boost::serialization::access;
     template<class Archive>
@@ -58,7 +58,9 @@ struct Dummy
     {
       p_ar & value;
     }
-    
+
+	static long Id() { return 255; }
+
     int value;
 };
 

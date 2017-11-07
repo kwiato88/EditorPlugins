@@ -39,7 +39,7 @@ struct TagFiles
 	std::vector<std::string> filesPaths;
 };
 
-struct Dummy
+struct Test
 {
     friend class boost::serialization::access;
     template<class Archive>
