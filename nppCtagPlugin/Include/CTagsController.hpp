@@ -74,6 +74,8 @@ private:
     void gnerateTags(std::string p_outFile,std::vector<std::string> p_sourceDirs);
 
 	Result::Basic handleGenerateTags(const Command::GenerateTags&);
+    Result::Basic handleSetTagFiles(const Command::SetTagFiles&);
+    Result::TagFiles handleGetTagFiles(const Command::GetTagFiles&);
 
     std::string getCurrentWord() const;
     std::vector<std::string> getSourceDirs() const;

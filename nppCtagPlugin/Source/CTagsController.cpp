@@ -45,6 +45,10 @@ CTagsController::CTagsController(
 {
 	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
 		Command::GenerateTags::Id(), [&](const auto& p) { return handleGenerateTags(p); });
+    m_handlers.addHandler<Command::SetTagFiles, Result::Basic>(
+		Command::SetTagFiles::Id(), [&](const auto& p) { return handleSetTagFiles(p); });
+    m_handlers.addHandler<Command::GetTagFiles, Result::TagFiles>(
+		Command::GetTagFiles::Id(), [&](const auto& p) { return handleGetTagFiles(p); });
 }
 
 void CTagsController::next()
@@ -168,6 +172,25 @@ void CTagsController::setTagFiles()
         m_config.setTagsFilesPaths(l_tagFiles);
     else
         m_messagePrinter->printInfoMessage("Set Tags","Tag files set can't be empty");
+}
+
+Result::Basic CTagsController::handleSetTagFiles(const Command::SetTagFiles& p_cmd)
+{
+    if(!p_cmd.filesPaths.empty())
+    {
+        m_config.setTagsFilesPaths(p_cmd.filesPaths);
+        return Result::Basic{ Result::Result::Success };
+    }
+    else
+    {
+		LOG_WARN << "Tags files paths not set. Need to have at least one tag file.";
+        return Result::Basic{ Result::Result::Failure };
+    }
+}
+
+Result::TagFiles CTagsController::handleGetTagFiles(const Command::GetTagFiles&)
+{
+    return Result::TagFiles{ m_config.getTagsFilesPaths() };
 }
 
 void CTagsController::clear()

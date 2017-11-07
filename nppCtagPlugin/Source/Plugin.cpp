@@ -331,7 +331,14 @@ void TagsPlugin::setSeparator()
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 {
 	LOG_INFO << "Received message with internal Id " << p_message.internalMsg << " from " << p_message.srcModuleName;
-	m_tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
+	try
+	{
+		m_tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
+	}
+	catch (std::exception& e)
+	{
+		LOG_ERROR << "Exception occured during hadling plugin message: " << typeid(e).name() << ". Details: " << e.what();
+	}
 }
 
 void TagsPlugin::test1()
