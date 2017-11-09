@@ -70,6 +70,20 @@ target_include_directories(
 )
 
 add_library(
+    nppCTagsExternalIf
+    STATIC
+    Source/CTagsExternalCommand.cpp
+)
+
+target_include_directories(
+    nppCTagsExternalIf
+    PUBLIC
+    ../Utils/Include/ExternalInterface
+    Include/ExternalInterface
+    D:/boost_1_61_0
+)
+
+add_library(
     nppCTagPlugin
     SHARED
     Source/dllmain.cpp
