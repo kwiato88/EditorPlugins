@@ -47,7 +47,7 @@ public:
         try
         {
             auto command = Messaging::encode(p_command);
-            Messaging::BufferType resultBuff(1024, 0);
+            Messaging::BufferType resultBuff(2048, 0);
         
             Messaging::Transaction transaction = {};
             transaction.command.size = command.size();

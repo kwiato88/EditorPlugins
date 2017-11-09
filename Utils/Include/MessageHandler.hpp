@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <map>
+#include <boost/lexical_cast.hpp>
 #include "Transaction.hpp"
 #include "Codec.hpp"
 
@@ -25,7 +26,11 @@ public:
         Result result = handler(command);
         BufferType encodedResult = encode<Result>(result);
         if(encodedResult.size() > p_message.result.size)
-            throw std::runtime_error("result buffer is too small");
+            throw std::runtime_error(
+				std::string("Result buffer is too small. Buffer size: ")
+				+ boost::lexical_cast<std::string>(p_message.result.size)
+				+ ". Encoded result size: "
+			    + boost::lexical_cast<std::string>(encodedResult.size()));
         p_message.result.size = encodedResult.size();
         std::copy_n(encodedResult.begin(), encodedResult.size(), p_message.result.data);
     }
