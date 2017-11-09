@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "Plugin.hpp"
+#include "Log.hpp"
 
 NppPlugin::TagsPlugin g_plugin;
 

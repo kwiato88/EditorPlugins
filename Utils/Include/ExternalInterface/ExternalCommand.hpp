@@ -24,7 +24,7 @@ public:
 {}
 
     template<typename Command>
-    void invoke(const Command& p_cmd) const
+    void invoke(const Command& p_command) const
     {
         try
         {
@@ -37,7 +37,7 @@ public:
         }
         catch(boost::archive::archive_exception& e)
         {
-            throw ExternalCommandFailure("Ecode command failed. " + e.what());
+            throw ExternalCommandFailure(std::string("Ecode command failed. ") + e.what());
         }
     }
 
@@ -76,7 +76,7 @@ private:
 		TCHAR targetName[256];
 		mbstowcs(targetName, targetModule.c_str(), 256 - 1);
         if(!SendMessage(npp, NPPM_MSGTOPLUGIN, (WPARAM) (targetName), (LPARAM)(&com)))
-            throw ExternalCommandFailure("Failed to deliver message from " + sourceModule + " to " + targetModule);
+            throw ExternalCommandFailure(std::string("Failed to deliver message from ") + sourceModule + " to " + targetModule);
     }
 
     const std::string targetModule;
