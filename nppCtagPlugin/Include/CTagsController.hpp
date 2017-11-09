@@ -18,8 +18,8 @@
 #include "CTagsNavigator.hpp"
 #include "Transaction.hpp"
 #include "MessageHandler.hpp"
-#include "ExternalInterface/Commands.hpp"
-#include "ExternalInterface/Results.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 
 namespace CTagsPlugin
 {

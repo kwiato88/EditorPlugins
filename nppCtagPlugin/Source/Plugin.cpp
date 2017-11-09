@@ -35,8 +35,8 @@
 #include "TreeDialog.hpp"
 #include "TagHierarchyDialog.hpp"
 
-#include "ExternalInterface/Commands.hpp"
-#include "ExternalInterface/Results.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 #include "Codec.hpp"
 #include "MessageHandler.hpp"
 
@@ -338,7 +338,7 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 	catch (std::exception& e)
 	{
         Messaging::Transaction* transaction = static_cast<Messaging::Transaction*>(p_message.info);
-        transaction.result.size = 0;
+        transaction->result.size = 0;
 		LOG_ERROR << "Exception occured during hadling plugin message: " << typeid(e).name() << ". Details: " << e.what();
 	}
 }

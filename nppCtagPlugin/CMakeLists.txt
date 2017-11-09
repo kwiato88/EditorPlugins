@@ -26,7 +26,9 @@ target_include_directories(
     PUBLIC
     ../Utils/Interfaces
     ../Utils/Include
+    ../Utils/Include/ExternalInterface
     Include
+    Include/ExternalInterface
     D:/boost_1_61_0
 )
 
@@ -95,6 +97,7 @@ target_include_directories(
     ../Utils/Include
     ../WinApi/Include
     Include
+    Include/ExternalInterface
     D:/boost_1_61_0
 )
 
