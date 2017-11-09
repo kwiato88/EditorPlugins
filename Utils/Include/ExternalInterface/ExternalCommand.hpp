@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 #include <Windows.h>
+#include <cstdio>
+#include "Notepad_plus_msgs.h"
 #include "Codec.hpp"
 #include "Transaction.hpp"
 
@@ -58,19 +60,23 @@ public:
         }
         catch(boost::archive::archive_exception& e)
         {
-            throw ExternalCommandFailure("Ecode/Decode failed. " + e.what());
+            throw ExternalCommandFailure(std::string("Ecode/Decode failed. ") + e.what());
         }
     }
 
 private:
-    inline void sendTransaction(Messaging::Transaction* p_tanscation, long p_id)
+    inline void sendTransaction(Messaging::Transaction* p_tanscation, long p_id) const
     {
         CommunicationInfo com;
         com.internalMsg = p_id;
-        //com.srcModuleName = sourceModule.c_str();
+		TCHAR sourceName[256];
+		mbstowcs(sourceName, sourceModule.c_str(), 256 - 1);
+		com.srcModuleName = sourceName;
         com.info = static_cast<void*>(p_tanscation);
-        //if(!SendMessage(npp, NPPM_MSGTOPLUGIN, (WPARAM) (tgtPluginName.c_str()), (LPARAM)(&com)))
-            //throw ExternalCommandFailure("Failed to deliver message from " + sourceModule + " to " + targetModule);
+		TCHAR targetName[256];
+		mbstowcs(targetName, targetModule.c_str(), 256 - 1);
+        if(!SendMessage(npp, NPPM_MSGTOPLUGIN, (WPARAM) (targetName), (LPARAM)(&com)))
+            throw ExternalCommandFailure("Failed to deliver message from " + sourceModule + " to " + targetModule);
     }
 
     const std::string targetModule;

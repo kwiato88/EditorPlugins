@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ExternalInterface/Command.hpp"
-#include "ExternalInterface/Result.hpp"
-#include "ExternalInterface/ExternalCommand.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
+#include "ExternalCommand.hpp"
 
 namespace CTagsPlugin
 {
