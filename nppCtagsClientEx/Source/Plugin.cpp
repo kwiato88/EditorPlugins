@@ -54,11 +54,6 @@ void testMessage()
 		std::wstring message(TEXT("Received "));
 		message += boost::lexical_cast<std::wstring>(result.value);
 		::MessageBox(NULL, message.c_str(), TEXT("Ctags client: OK"), MB_OK);
-/*
-		NppPlugin::ExternalCommand test(nppData._nppHandle, "nppCTagPlugin.dll", "nppCTagsClientEx.dll");
-		test.invoke<CTagsPlugin::Command::Test>(CTagsPlugin::Command::Test{});
-		::MessageBox(NULL, TEXT("OK"), TEXT("Ctags client: OK"), MB_OK);
-		*/
 	}
 	catch (NppPlugin::ExternalCommandFailure& e)
 	{
