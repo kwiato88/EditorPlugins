@@ -16,9 +16,9 @@ using namespace ::testing;
 
 std::ostream& operator<<(std::ostream& p_out, const TagHierarchyItem& p_hier)
 {
-	p_out << "  tag: " << p_hier.tag << "\n";
+	p_out << "  tag: " << p_hier.value << "\n";
 	p_out << "  relatedTags: ";
-	for (const auto& tag : p_hier.getRelatedTags())
+	for (const auto& tag : p_hier.childrenValues())
 		p_out << tag->toString() << "; ";
 	return p_out;
 }
@@ -58,14 +58,14 @@ bool matchTagsNames(const std::vector<std::string>& p_expected, const std::vecto
 MATCHER_P(BaseTagsNamesAre, expectedTags, "")
 {
 	*result_listener << " my super matcher\n";
-	std::vector<TagHolder> baseTags = arg.upHierarchy.getRelatedTags();
+	std::vector<TagHolder> baseTags = arg.upHierarchy.childrenValues();
 	return matchTagsNames(expectedTags, baseTags, result_listener);
 }
 
 MATCHER_P(DerivedTagsNamesAre, expectedTags, "")
 {
 	*result_listener << " my super matcher\n";
-	std::vector<TagHolder> derivedTags = arg.downHierarchy.getRelatedTags();
+	std::vector<TagHolder> derivedTags = arg.downHierarchy.childrenValues();
 	return matchTagsNames(expectedTags, derivedTags, result_listener);
 }
 

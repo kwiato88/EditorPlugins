@@ -92,7 +92,7 @@ struct TagHierarchyTS : public Test
 	}
 	TagHierarchyItem findTagHier(const TagHolder& p_tagToFind, const std::vector<TagHierarchyItem>& p_hier)
 	{
-		auto found = std::find_if(p_hier.begin(), p_hier.end(), [&](const auto& h) { return h.tag == p_tagToFind; });
+		auto found = std::find_if(p_hier.begin(), p_hier.end(), [&](const auto& h) { return h.value == p_tagToFind; });
 		EXPECT_TRUE(found != p_hier.end());
 		return *found;
 	}
@@ -104,8 +104,8 @@ TEST_F(TagHierarchyTS, shoudlInitializeWithGivenTag)
 
 	auto hier = parseHier(tag, {});
 
-	ASSERT_EQ(TagHolder(tag), hier.downHierarchy.tag);
-	ASSERT_EQ(TagHolder(tag), hier.upHierarchy.tag);
+	ASSERT_EQ(TagHolder(tag), hier.downHierarchy.value);
+	ASSERT_EQ(TagHolder(tag), hier.upHierarchy.value);
 }
 
 TEST_F(TagHierarchyTS, shouldFindNoTagsWhenNoTagsGiven)
@@ -117,8 +117,8 @@ TEST_F(TagHierarchyTS, shouldFindNoTagsWhenNoTagsGiven)
 
 	auto hier = parseHier(derivedTag, {});
 
-	ASSERT_TRUE(hier.downHierarchy.relatedTags.empty());
-	ASSERT_TRUE(hier.upHierarchy.relatedTags.empty());
+	ASSERT_TRUE(hier.downHierarchy.children.empty());
+	ASSERT_TRUE(hier.upHierarchy.children.empty());
 }
 
 TEST_F(TagHierarchyTS, shouldFindNoTagsWhenNoBaseTags)
@@ -127,8 +127,8 @@ TEST_F(TagHierarchyTS, shouldFindNoTagsWhenNoBaseTags)
 
 	auto hier = parseHier(tagA, { tagA, tagB });
 
-	ASSERT_TRUE(hier.downHierarchy.relatedTags.empty());
-	ASSERT_TRUE(hier.upHierarchy.relatedTags.empty());
+	ASSERT_TRUE(hier.downHierarchy.children.empty());
+	ASSERT_TRUE(hier.upHierarchy.children.empty());
 }
 
 struct TagsUpHierarchyTS : public TagHierarchyTS
@@ -142,9 +142,9 @@ TEST_F(TagsUpHierarchyTS, shouldFindBaseTag)
 	auto hier = parseHier(derivedTag, { otherTag, baseTag });
 
 	ASSERT_THAT(
-		hier.upHierarchy.getRelatedTags(),
+		hier.upHierarchy.childrenValues(),
 		ElementsAre(TagHolder(baseTag)));
-	ASSERT_TRUE(findTagHier(baseTag, hier.upHierarchy.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(baseTag, hier.upHierarchy.children).children.empty());
 }
 
 TEST_F(TagsUpHierarchyTS, shouldNotFindBaseTagNotIncludedInTagReader)
@@ -154,7 +154,7 @@ TEST_F(TagsUpHierarchyTS, shouldNotFindBaseTagNotIncludedInTagReader)
 
 	auto hier = parseHier(derivedTag, { otherTag });
 
-	ASSERT_TRUE(hier.upHierarchy.relatedTags.empty());
+	ASSERT_TRUE(hier.upHierarchy.children.empty());
 }
 
 TEST_F(TagsUpHierarchyTS, shouldFindManyBaseTags)
@@ -166,11 +166,11 @@ TEST_F(TagsUpHierarchyTS, shouldFindManyBaseTags)
 	auto hier = parseHier(derivedTag, { baseTag, otherTag, otherBaseTag });
 
 	ASSERT_THAT(
-		hier.upHierarchy.getRelatedTags(),
+		hier.upHierarchy.childrenValues(),
 		ElementsAre(TagHolder(baseTag), TagHolder(otherBaseTag)));
 
-	ASSERT_TRUE(findTagHier(baseTag, hier.upHierarchy.relatedTags).relatedTags.empty());
-	ASSERT_TRUE(findTagHier(otherBaseTag, hier.upHierarchy.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(baseTag, hier.upHierarchy.children).children.empty());
+	ASSERT_TRUE(findTagHier(otherBaseTag, hier.upHierarchy.children).children.empty());
 }
 
 TEST_F(TagsUpHierarchyTS, shouldFindSecondLevelBaseTag)
@@ -182,10 +182,10 @@ TEST_F(TagsUpHierarchyTS, shouldFindSecondLevelBaseTag)
 	auto hier = parseHier(tag, { tag, grandParentTag, parrentTag });
 
 	ASSERT_THAT(
-		hier.upHierarchy.getRelatedTags(),
+		hier.upHierarchy.childrenValues(),
 		ElementsAre(parrentTag));
 	ASSERT_THAT(
-		findTagHier(parrentTag, hier.upHierarchy.relatedTags).getRelatedTags(),
+		findTagHier(parrentTag, hier.upHierarchy.children).childrenValues(),
 		ElementsAre(grandParentTag));
 }
 
@@ -201,18 +201,18 @@ TEST_F(TagsUpHierarchyTS, shouldParseTwoLevelsOfInheritance)
 	auto hier = parseHier(tag, { grandparrentFromSecondParrent, firstParrent, tag, secondParrent });
 
 	ASSERT_THAT(
-		hier.upHierarchy.getRelatedTags(),
+		hier.upHierarchy.childrenValues(),
 		ElementsAre(firstParrent, secondParrent));
 	
-	ASSERT_TRUE(findTagHier(firstParrent, hier.upHierarchy.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(firstParrent, hier.upHierarchy.children).children.empty());
 	
-	auto secondParrentUpHier = findTagHier(secondParrent, hier.upHierarchy.relatedTags);
+	auto secondParrentUpHier = findTagHier(secondParrent, hier.upHierarchy.children);
 	ASSERT_THAT(
-		secondParrentUpHier.getRelatedTags(),
+		secondParrentUpHier.childrenValues(),
 		ElementsAre(grandparrentFromSecondParrent));
 	
-	auto grandParrentUpHier = findTagHier(grandparrentFromSecondParrent, secondParrentUpHier.relatedTags);
-	ASSERT_TRUE(grandParrentUpHier.relatedTags.empty());
+	auto grandParrentUpHier = findTagHier(grandparrentFromSecondParrent, secondParrentUpHier.children);
+	ASSERT_TRUE(grandParrentUpHier.children.empty());
 }
 
 struct TagsDownHierarchyTS : public TagHierarchyTS
@@ -226,9 +226,9 @@ TEST_F(TagsDownHierarchyTS, shoudFindDerivedTag)
 	auto hier = parseHier(tag, { otherTag, derivedTag, tag });
 
 	ASSERT_THAT(
-		hier.downHierarchy.getRelatedTags(),
+		hier.downHierarchy.childrenValues(),
 		ElementsAre(derivedTag));
-	ASSERT_TRUE(findTagHier(derivedTag, hier.downHierarchy.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(derivedTag, hier.downHierarchy.children).children.empty());
 }
 
 TEST_F(TagsDownHierarchyTS, shouldNotFindDerivedTagNotIncludedInTagReader)
@@ -238,7 +238,7 @@ TEST_F(TagsDownHierarchyTS, shouldNotFindDerivedTagNotIncludedInTagReader)
 	
 	auto hier = parseHier(tag, { tag, otherTag });
 
-	ASSERT_TRUE(hier.downHierarchy.relatedTags.empty());
+	ASSERT_TRUE(hier.downHierarchy.children.empty());
 }
 
 TEST_F(TagsDownHierarchyTS, shouldFindManyDerivedTags)
@@ -250,11 +250,11 @@ TEST_F(TagsDownHierarchyTS, shouldFindManyDerivedTags)
 	auto hier = parseHier(tag, { tag, firstDerived, other, secondDerived });
 
 	ASSERT_THAT(
-		hier.downHierarchy.getRelatedTags(),
+		hier.downHierarchy.childrenValues(),
 		ElementsAre(firstDerived, secondDerived));
 	
-	ASSERT_TRUE(findTagHier(firstDerived, hier.downHierarchy.relatedTags).relatedTags.empty());
-	ASSERT_TRUE(findTagHier(secondDerived, hier.downHierarchy.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(firstDerived, hier.downHierarchy.children).children.empty());
+	ASSERT_TRUE(findTagHier(secondDerived, hier.downHierarchy.children).children.empty());
 }
 
 TEST_F(TagsDownHierarchyTS, shouldFindSecondLevelDerivedTag)
@@ -266,15 +266,15 @@ TEST_F(TagsDownHierarchyTS, shouldFindSecondLevelDerivedTag)
 	auto hier = parseHier(tag, { child, grandchild });
 
 	ASSERT_THAT(
-		hier.downHierarchy.getRelatedTags(),
+		hier.downHierarchy.childrenValues(),
 		ElementsAre(child));
 	
-	auto childDownHier = findTagHier(child, hier.downHierarchy.relatedTags);
+	auto childDownHier = findTagHier(child, hier.downHierarchy.children);
 	ASSERT_THAT(
-		childDownHier.getRelatedTags(),
+		childDownHier.childrenValues(),
 		ElementsAre(grandchild));
 	
-	ASSERT_TRUE(findTagHier(grandchild, childDownHier.relatedTags).relatedTags.empty());
+	ASSERT_TRUE(findTagHier(grandchild, childDownHier.children).children.empty());
 }
 
 TEST_F(TagsDownHierarchyTS, shouldParseTwoLevelsOfInheritance)
@@ -288,18 +288,18 @@ TEST_F(TagsDownHierarchyTS, shouldParseTwoLevelsOfInheritance)
 	auto hier = parseHier(tag, { tag, grandChildfromFirstChild, firstChild, other, secondChild });
 
 	ASSERT_THAT(
-		hier.downHierarchy.getRelatedTags(),
+		hier.downHierarchy.childrenValues(),
 		ElementsAre(firstChild, secondChild));
 	
-	auto firstChildDowHier = findTagHier(firstChild, hier.downHierarchy.relatedTags);
+	auto firstChildDowHier = findTagHier(firstChild, hier.downHierarchy.children);
 	ASSERT_THAT(
-		firstChildDowHier.getRelatedTags(),
+		firstChildDowHier.childrenValues(),
 		ElementsAre(grandChildfromFirstChild));
-	auto grandChildHier = findTagHier(grandChildfromFirstChild, firstChildDowHier.relatedTags);
-	ASSERT_TRUE(grandChildHier.relatedTags.empty());
+	auto grandChildHier = findTagHier(grandChildfromFirstChild, firstChildDowHier.children);
+	ASSERT_TRUE(grandChildHier.children.empty());
 
-	auto secondChildHier = findTagHier(secondChild, hier.downHierarchy.relatedTags);
-	ASSERT_TRUE(secondChildHier.relatedTags.empty());
+	auto secondChildHier = findTagHier(secondChild, hier.downHierarchy.children);
+	ASSERT_TRUE(secondChildHier.children.empty());
 }
 
 }

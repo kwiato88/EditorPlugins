@@ -10,22 +10,7 @@
 namespace CTagsPlugin
 {
 
-class TagHierarchyItem
-{
-public:
-	TagHolder tag;
-	std::vector<TagHierarchyItem> relatedTags;
-
-	TagHierarchyItem(const Tag& p_tag,
-		const std::function<std::vector<TagHolder>(const ITagsReader&, const Tag&)>& p_relaredTagsParser);
-	TagHierarchyItem(const TagHierarchyItem& p_other);
-
-	void parse(const ITagsReader& p_tags);
-	std::vector<TagHolder> getRelatedTags() const;
-
-private:
-	std::function<std::vector<TagHolder>(const ITagsReader&, const Tag&)> relatedTagsParser;
-};
+using TagHierarchyItem = Plugin::Tree<TagHolder>;
 
 class TagHierarchy
 {
@@ -39,6 +24,7 @@ public:
 	void parse();
 
 private:
+	TagHolder tag;
 	const ITagsReader& tags;
 };
 

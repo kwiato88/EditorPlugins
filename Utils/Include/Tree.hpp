@@ -2,6 +2,8 @@
 
 #include <functional>
 #include <vector>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 namespace Plugin
 {
@@ -17,6 +19,14 @@ public:
 	Tree(const T& p_value, const Children& p_children) : value(p_value), children()
 	{
 		parse(p_children);
+	}
+	std::vector<T> childrenValues() const
+	{
+		std::vector<T> values;
+		boost::range::copy(
+			children | boost::adaptors::transformed([&](const auto& p) { return p.value; }),
+			std::back_inserter(values));
+		return values;
 	}
 
 	T value;
