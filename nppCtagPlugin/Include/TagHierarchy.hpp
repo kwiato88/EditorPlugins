@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 
+#include "Tree.hpp"
 #include "TagHolder.hpp"
 #include "ITagsReader.hpp"
 
