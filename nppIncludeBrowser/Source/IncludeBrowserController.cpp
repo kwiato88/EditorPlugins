@@ -96,7 +96,7 @@ void Controller::showIncluders()
 {
     try
     {
-		goToFile(selectFileFromMultiple(findFiles(selectFile(FileHierarchy::buildIncludersHierarchy(getCurrentFileName(), m_browser)))));
+		goToFile(selectFileFromMultiple(findFiles(selectFile(buildIncludersHierarchy(getCurrentFileName(), m_browser)))));
     }
     catch(std::out_of_range&)
     {
@@ -164,7 +164,7 @@ void Controller::showIncluded()
 {
     try
     {
-		goToFile(selectFileFromMultiple(findFiles(selectFile(FileHierarchy::buildIncludedHierarchy(getCurrentFileName(), m_browser)))));
+		goToFile(selectFileFromMultiple(findFiles(selectFile(buildIncludedHierarchy(getCurrentFileName(), m_browser)))));
     }
     catch(std::out_of_range&)
     {

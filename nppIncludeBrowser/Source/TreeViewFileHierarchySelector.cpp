@@ -7,8 +7,8 @@ namespace
 {
 WinApi::Node buildNode(const FileHierarchy& p_files)
 {
-	WinApi::Node node(p_files.file, static_cast<const void*>(&p_files.file));
-	for (const auto& file : p_files.relatedFiles)
+	WinApi::Node node(p_files.value, static_cast<const void*>(&p_files.value));
+	for (const auto& file : p_files.children)
 		node.m_children.push_back(buildNode(file));
 	return node;
 }
