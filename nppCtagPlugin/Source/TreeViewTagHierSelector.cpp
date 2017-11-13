@@ -9,9 +9,9 @@ namespace
 
 WinApi::Node buildNode(const TagHierarchyItem& p_hier, TagNamePrinter& p_printer)
 {
-	p_hier.tag->print(p_printer);
-	WinApi::Node node(p_printer.get(), static_cast<const void*>(&p_hier.tag));
-	for (const auto& relatedTag : p_hier.relatedTags)
+	p_hier.value->print(p_printer);
+	WinApi::Node node(p_printer.get(), static_cast<const void*>(&p_hier.value));
+	for (const auto& relatedTag : p_hier.children)
 		node.m_children.push_back(buildNode(relatedTag, p_printer));
 	return node;
 }
@@ -24,9 +24,9 @@ TreeViewTagHierSelector::TreeViewTagHierSelector(WinApi::InstanceHandle& p_insta
 
 void logHier(const TagHierarchyItem& p_hier, const std::string& p_prefix)
 {
-	LOG_DEBUG << p_prefix << "tag name: " << p_hier.tag->name;
-	LOG_DEBUG << p_prefix << "related tags. Size: " << p_hier.relatedTags.size();
-	for (const auto& tag : p_hier.relatedTags)
+	LOG_DEBUG << p_prefix << "tag name: " << p_hier.value->name;
+	LOG_DEBUG << p_prefix << "related tags. Size: " << p_hier.children.size();
+	for (const auto& tag : p_hier.children)
 		logHier(tag, p_prefix + "  ");
 }
 
