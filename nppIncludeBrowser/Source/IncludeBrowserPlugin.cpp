@@ -10,6 +10,7 @@
 #include "NppListViewSelector.hpp"
 #include "NppMessagePrinter.hpp"
 #include "TreeViewFileHierarchySelector.hpp"
+#include "Transaction.hpp"
 
 extern NppPlugin::IncludeBrowserPlugin g_plugin;
 
@@ -115,6 +116,19 @@ bool IncludeBrowserPlugin::setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINC
     m_funcItems[index]._pShKey = sk;
 
     return true;
+}
+
+void IncludeBrowserPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
+{
+	try
+	{
+		m_includeBrowser->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
+	}
+	catch (std::exception&)
+	{
+		Messaging::Transaction* transaction = static_cast<Messaging::Transaction*>(p_message.info);
+		transaction->result.size = 0;
+	}
 }
 
 void IncludeBrowserPlugin::parse()

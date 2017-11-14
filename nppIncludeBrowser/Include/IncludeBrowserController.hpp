@@ -12,6 +12,10 @@
 #include "IFileHierarchySelector.hpp"
 #include "IncludeBrowser.hpp"
 #include "MutilpeFilesIncludeBrowser.hpp"
+#include "Transaction.hpp"
+#include "MessageHandler.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 
 namespace IncludeBrowser
 {
@@ -30,11 +34,12 @@ public:
     void showIncluders();
     void showIncluded();
     void clear();
+	void handleTransaction(long p_id, Messaging::Transaction& p_trans);
 
 private:
     static Browser::ExtensionParserMap buildParsers();
     static std::shared_ptr<IBrowser> buildBrowser(const std::string& p_dirPath);
-    void parseIncludes();
+    void parseIncludes(const std::string& p_sourceDir);
     std::string getSourceDir() const;
     std::string getCurrentFileName() const;
     std::string selectFile(const std::vector<std::string>& p_files) const;
@@ -42,6 +47,14 @@ private:
     std::string selectFileFromMultiple(const std::vector<std::string>& p_files) const;
 	std::vector<std::string> findFiles(const std::string& p_fileName) const;
     void goToFile(const std::string& p_file);
+
+	Result::Basic handleClear(const Command::Clear&);
+	Result::Basic handleParse(const Command::Parse&);
+	template<typename Command, typename Result, typename Handler>
+	void addHanlder(Handler p_handler)
+	{
+		m_handlers.addHandler<Command, Result>(Command::Id(), std::bind(p_handler, *this, std::placeholders::_1));
+	}
 
     MultipleFilesBrowser m_browser;
     std::set<std::string> m_sourceDirs;
@@ -51,6 +64,7 @@ private:
     std::shared_ptr<Plugin::IItemsSelector> m_selector;
     std::shared_ptr<Plugin::IMessagePrinter> m_printer;
 	std::shared_ptr<IFileHierarchySelector> m_fileSelector;
+	Messaging::Handlers m_handlers;
 };
 
 } // namespace IncludeBrowser

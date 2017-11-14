@@ -46,7 +46,10 @@ Controller::Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter
    m_selector(p_selector),
    m_printer(p_printer),
    m_fileSelector(p_fileSelector)
-{}
+{
+	addHanlder<Command::Clear, Result::Basic>(&Controller::handleClear);
+	addHanlder<Command::Parse, Result::Basic>(&Controller::handleParse);
+}
 
 Browser::ExtensionParserMap Controller::buildParsers()
 {
@@ -66,22 +69,35 @@ std::shared_ptr<IBrowser> Controller::buildBrowser(const std::string& p_dirPath)
 
 void Controller::parse()
 {
-	parseIncludes();
+	try
+	{
+		std::string sourceDir = getSourceDir();
+		parseIncludes(sourceDir);
+		m_printer->printInfoMessage("Parse", "Parsing directory " + sourceDir + " finished");
+	}
+	catch (std::runtime_error& e)
+	{
+		m_printer->printInfoMessage("Parse", e.what());
+	}
 }
 
-void Controller::parseIncludes()
+void Controller::parseIncludes(const std::string& p_sourceDir)
 {
-    try
-    {
-        std::string sourceDir = getSourceDir();
-        m_browser.parse(sourceDir);
-        m_sourceDirs.insert(sourceDir);
-        m_printer->printInfoMessage("Parse", "Parsing directory " + sourceDir + " finished");
-    }
-    catch(std::runtime_error& e)
-    {
-        m_printer->printInfoMessage("Parse", e.what());
-    }
+	m_browser.parse(p_sourceDir);
+	m_sourceDirs.insert(p_sourceDir);
+}
+
+Result::Basic Controller::handleParse(const Command::Parse& p_cmd)
+{
+	try
+	{
+		parseIncludes(p_cmd.dirPath);
+		return Result::Basic{ Result::Result::Success };
+	}
+	catch (std::exception&)
+	{
+		return Result::Basic{ Result::Result::Failure };
+	}
 }
 
 std::string Controller::getSourceDir() const
@@ -183,6 +199,17 @@ void Controller::showIncluded()
 void Controller::clear()
 {
     m_browser = MultipleFilesBrowser(&Controller::buildBrowser);
+}
+
+Result::Basic Controller::handleClear(const Command::Clear&)
+{
+	clear();
+	return Result::Basic{ Result::Result::Success };
+}
+
+void Controller::handleTransaction(long p_id, Messaging::Transaction& p_trans)
+{
+	m_handlers.handle(p_id, p_trans);
 }
 
 } // namespace IncludeBrowser

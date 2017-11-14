@@ -29,8 +29,10 @@ target_include_directories(
     ../PluginInterface
     ../Utils/Interfaces
     ../Utils/Include
+    ../Utils/Include/ExternalInterface
     ../WinApi/Include
     Include
+    Include/ExternalInterface
     D:/boost_1_61_0
 )
 
