@@ -70,7 +70,6 @@ private:
 	GetTagSearchMatcher m_tagSearchMatcherFactory;
 
     void showTagInfo(const std::string& p_tagName);
-	void handleReadTagsError();
     void gnerateTags(std::string p_outFile,std::vector<std::string> p_sourceDirs);
 
 	Result::Basic handleGenerateTags(const Command::GenerateTags&);

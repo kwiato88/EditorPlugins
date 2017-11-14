@@ -47,8 +47,8 @@ Controller::Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter
    m_printer(p_printer),
    m_fileSelector(p_fileSelector)
 {
-	addHanlder<Command::Clear, Result::Basic>(&Controller::handleClear);
-	addHanlder<Command::Parse, Result::Basic>(&Controller::handleParse);
+	addHandler<Command::Clear, Result::Basic>(&Controller::handleClear);
+	addHandler<Command::Parse, Result::Basic>(&Controller::handleParse);
 }
 
 Browser::ExtensionParserMap Controller::buildParsers()

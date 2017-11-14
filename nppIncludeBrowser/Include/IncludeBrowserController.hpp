@@ -51,7 +51,7 @@ private:
 	Result::Basic handleClear(const Command::Clear&);
 	Result::Basic handleParse(const Command::Parse&);
 	template<typename Command, typename Result, typename Handler>
-	void addHanlder(Handler p_handler)
+	void addHandler(Handler p_handler)
 	{
 		m_handlers.addHandler<Command, Result>(Command::Id(), std::bind(p_handler, *this, std::placeholders::_1));
 	}
