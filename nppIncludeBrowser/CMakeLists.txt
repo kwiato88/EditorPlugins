@@ -5,6 +5,21 @@ project(nppIncludeBrowser)
 add_definitions(-DUNICODE -D_UNICODE)
 
 add_library(
+    nppIncludeBrowserExternalIf
+    STATIC
+    Source/IncludeBrowserExternalCommand.cpp
+)
+
+target_include_directories(
+    nppIncludeBrowserExternalIf
+    PUBLIC
+    ../PluginInterface
+    ../Utils/Include/ExternalInterface
+    Include/ExternalInterface
+    D:/boost_1_61_0
+)
+
+add_library(
     nppIncludeBrowser
     SHARED
     Source/dllmain.cpp
