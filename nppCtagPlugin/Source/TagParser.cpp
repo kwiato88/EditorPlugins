@@ -18,6 +18,7 @@
 #include "TagParser.hpp"
 #include "TagsReaderException.hpp"
 #include "TagBuilders.hpp"
+#include "GenericKindTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -140,7 +141,7 @@ Tag parseTagWithBaseFields(const std::string& p_TagFileLine, const ExtensionFiel
 	return l_ret;
 }
 
-TagHolder defaultBuilder(const Tag& p_baseTag, const ExtensionFields&)
+TagHolder returnBaseTag(const Tag& p_baseTag, const ExtensionFields&)
 {
     return p_baseTag;
 }
@@ -161,7 +162,8 @@ TagBuilder getLanguageBuilder(const boost::optional<std::string>& p_language)
         if(builder != builders.end())
             return builder->second;
     }
-    return &defaultBuilder;
+    //return &returnBaseTag;
+	return &buildGenericKindTag;
 }
 
 TagHolder parseTag(const std::string& p_TagFileLine)
