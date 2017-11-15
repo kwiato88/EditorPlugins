@@ -53,7 +53,7 @@ private:
 	template<typename Command, typename Result, typename Handler>
 	void addHandler(Handler p_handler)
 	{
-		m_handlers.addHandler<Command, Result>(Command::Id(), std::bind(p_handler, *this, std::placeholders::_1));
+		m_handlers.addHandler<Command, Result>(Command::Id(), std::bind(p_handler, this, std::placeholders::_1));
 	}
 
     MultipleFilesBrowser m_browser;

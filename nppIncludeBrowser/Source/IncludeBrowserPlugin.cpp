@@ -124,10 +124,12 @@ void IncludeBrowserPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 	{
 		m_includeBrowser->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
 	}
-	catch (std::exception&)
+	catch (std::exception& e)
 	{
 		Messaging::Transaction* transaction = static_cast<Messaging::Transaction*>(p_message.info);
 		transaction->result.size = 0;
+		NppPlugin::NppMessagePrinter printer(m_npp.npp, m_hModule);
+		printer.printErrorMessage("Include Brower", std::string("Error during message to plugin handling:") + e.what());
 	}
 }
 
