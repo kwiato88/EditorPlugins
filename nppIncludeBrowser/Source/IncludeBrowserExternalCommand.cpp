@@ -1,4 +1,6 @@
 #include "IncludeBrowserExternalCommand.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 
 namespace IncludeBrowser
 {
@@ -9,14 +11,20 @@ ExternalCommand::ExternalCommand(
     : cmd(p_npp, p_target, p_source)
 {}
 
-Result::Basic ExternalCommand::invoke(const Command::Parse& p_com)
+void ExternalCommand::parse(const std::string& p_dirPath)
 {
-    return cmd.invokeWithResult<Command::Parse, Result::Basic>(p_com);
+	Command::Parse command;
+	command.dirPath = p_dirPath;
+	auto result = cmd.invokeWithResult<Command::Parse, Result::Basic>(command);
+	if (result.res == Result::Result::Failure)
+		throw NppPlugin::ExternalCommandFailure("Failed to parse includes. Received failure from plugin");
 }
 
-Result::Basic ExternalCommand::invoke(const Command::Clear& p_com)
+void ExternalCommand::clear()
 {
-    return cmd.invokeWithResult<Command::Clear, Result::Basic>(p_com);
+	auto result = cmd.invokeWithResult<Command::Clear, Result::Basic>(Command::Clear{});
+	if (result.res == Result::Result::Failure)
+		throw NppPlugin::ExternalCommandFailure("Failed to clear parsed includes. Received failure from plugin");
 }
 
 }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Commands.hpp"
-#include "Results.hpp"
+#include <string>
 #include "ExternalCommand.hpp"
 
 namespace IncludeBrowser
@@ -12,8 +11,14 @@ class ExternalCommand
 public:
     ExternalCommand(HWND p_npp, const std::string& p_source, const std::string& p_target = "nppIncludeBrowser.dll");
 
-    Result::Basic invoke(const Command::Parse& p_com);
-    Result::Basic invoke(const Command::Clear& p_com);
+	/**
+	* @throws NppPlugin::ExternalCommandFailure
+	*/
+	void parse(const std::string& p_dirPath);
+	/**
+	* @throws NppPlugin::ExternalCommandFailure
+	*/
+	void clear();
 
 private:
     NppPlugin::ExternalCommand cmd;
