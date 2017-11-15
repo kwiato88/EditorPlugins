@@ -50,16 +50,15 @@ void testMessage()
 	{
 		CTagsPlugin::ExternalCommand cmd(nppData._nppHandle, "nppCTagsClientEx.dll", "nppCTagPlugin.dll");
 		CTagsPlugin::Command::Test command{ 5 };
-		auto result = cmd.invoke(command);
+		auto result = cmd.testCommand(command);
 		std::wstring message(TEXT("Received "));
 		message += boost::lexical_cast<std::wstring>(result.value);
 		::MessageBox(NULL, message.c_str(), TEXT("Ctags client: OK"), MB_OK);
 	}
 	catch (NppPlugin::ExternalCommandFailure& e)
 	{
-		TCHAR errorMsg[1024];
-		mbstowcs(errorMsg, e.what(), 1024 - 1);
-		::MessageBox(NULL, errorMsg, TEXT("Ctags client: FAILED"), MB_OK);
+		std::wstring errorMsg = boost::lexical_cast<std::wstring>(e.what());
+		::MessageBox(NULL, errorMsg.c_str(), TEXT("Ctags client: FAILED"), MB_OK);
 	}
 }
 
@@ -70,16 +69,14 @@ void getTagsFiles()
 	try
 	{
 		CTagsPlugin::ExternalCommand cmd(nppData._nppHandle, "nppCTagsClientEx.dll", "nppCTagPlugin.dll");
-		CTagsPlugin::Command::GetTagFiles command;
-		auto result = cmd.invoke(command);
+		auto files = cmd.getTagFiles();
 		std::wstring message(TEXT("Number of tag files: "));
-		message += boost::lexical_cast<std::wstring>(result.filesPaths.size());
+		message += boost::lexical_cast<std::wstring>(files.size());
 		::MessageBox(NULL, message.c_str(), TEXT("Ctags clien: OK"), MB_OK);
 	}
 	catch (NppPlugin::ExternalCommandFailure& e)
 	{
-		TCHAR errorMsg[1024];
-		mbstowcs(errorMsg, e.what(), 1024 - 1);
-		::MessageBox(NULL, errorMsg, TEXT("Ctags client: FAILED"), MB_OK);
+		std::wstring errorMsg = boost::lexical_cast<std::wstring>(e.what());
+		::MessageBox(NULL, errorMsg.c_str(), TEXT("Ctags client: FAILED"), MB_OK);
 	}
 }

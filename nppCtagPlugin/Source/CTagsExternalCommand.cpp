@@ -1,4 +1,6 @@
 #include "CTagsExternalCommand.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 
 namespace CTagsPlugin
 {
@@ -9,22 +11,31 @@ ExternalCommand::ExternalCommand(
     : cmd(p_npp, p_target, p_source)
 {}
 
-Result::Basic ExternalCommand::invoke(const Command::GenerateTags& p_com)
+void ExternalCommand::generateTags(const std::string& p_tagFilePath, const std::vector<std::string>& p_sourceDirsPaths)
 {
-    return cmd.invokeWithResult<Command::GenerateTags, Result::Basic>(p_com);
+	Command::GenerateTags gen;
+	gen.tagFilePath = p_tagFilePath;
+	gen.sourceDirsPaths = p_sourceDirsPaths;
+	auto result = cmd.invokeWithResult<Command::GenerateTags, Result::Basic>(gen);
+	if (result.res == Result::Result::Failure)
+		throw NppPlugin::ExternalCommandFailure("Failed to generate tag file. Received failure from plugin");
 }
 
-Result::Basic ExternalCommand::invoke(const Command::SetTagFiles& p_com)
+void ExternalCommand::setTagFiles(const std::vector<std::string>& p_filesPaths)
 {
-    return cmd.invokeWithResult<Command::SetTagFiles, Result::Basic>(p_com);
+	Command::SetTagFiles command;
+	command.filesPaths = p_filesPaths;
+	auto result = cmd.invokeWithResult<Command::SetTagFiles, Result::Basic>(command);
+	if(result.res == Result::Result::Failure)
+		throw NppPlugin::ExternalCommandFailure("Failed to set tag fils. Received failure from plugin");
 }
 
-Result::TagFiles ExternalCommand::invoke(const Command::GetTagFiles& p_com)
+std::vector<std::string> ExternalCommand::getTagFiles()
 {
-    return cmd.invokeWithResult<Command::GetTagFiles, Result::TagFiles>(p_com);
+	return cmd.invokeWithResult<Command::GetTagFiles, Result::TagFiles>(Command::GetTagFiles{}).filesPaths;
 }
 
-Result::Test ExternalCommand::invoke(const Command::Test& p_com)
+Result::Test ExternalCommand::testCommand(const Command::Test& p_com)
 {
     return cmd.invokeWithResult<Command::Test, Result::Test>(p_com);
 }
