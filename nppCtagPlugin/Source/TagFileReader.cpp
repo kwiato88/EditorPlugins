@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <iterator>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 
 #include "TagFileReader.hpp"
@@ -15,12 +14,6 @@ namespace CTagsPlugin
 {
 namespace
 {
-
-void fixAddrField(Tag& p_tag)
-{
-	boost::algorithm::replace_all(p_tag.addr, "\\/", "/");
-	boost::algorithm::replace_all(p_tag.addr, "\\\\", "\\");
-}
 
 void skipComment(TagFile& p_tagFile)
 {
@@ -77,7 +70,6 @@ std::vector<TagHolder> parseLines(TagFile& p_tagFile, const TagMatcher& p_matche
     std::vector<TagHolder> found;
     while(!p_tagFile.eof())
         addTagIfMatched(p_tagFile.getLine(), found, p_matcher);
-    boost::range::for_each(found, &fixAddrField);
 
     return found;
 }
@@ -98,7 +90,6 @@ std::vector<TagHolder> parseUnsortedFileLines(TagFile& p_tagFile, const std::str
         if(p_tagName == getName(line))
             found.push_back(parseTag(line));
     }
-    boost::range::for_each(found, &fixAddrField);
     return found;
 }
 
@@ -160,8 +151,6 @@ std::vector<TagHolder> searchInSortedFile(TagFile& p_file, const std::string& p_
 		findLastMatchingTagLine(tag, p_tagName, p_file.end()) + 1,
         std::back_inserter(tags),
         &parseTag);	
-
-	boost::range::for_each(tags, &fixAddrField);
 
     return tags;
 }

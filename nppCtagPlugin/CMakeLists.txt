@@ -144,6 +144,7 @@ add_executable(
     Tests/NavigatorTS.cpp
     Tests/TagHierarchyTS.cpp
     Tests/TestsCppTagBuilder.cpp
+    Tests/TestsTagBuilder.cpp
 )
 
 target_include_directories(

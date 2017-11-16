@@ -8,6 +8,7 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/range/algorithm/transform.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/algorithm/count.hpp>
@@ -22,6 +23,12 @@
 
 namespace CTagsPlugin
 {
+
+void fixAddr(std::string& p_addr)
+{
+    boost::algorithm::replace_all(p_addr, "\\/", "/");
+    boost::algorithm::replace_all(p_addr, "\\\\", "\\");
+}
 
 bool isShortenedKindField(const std::string& p_field)
 {
@@ -131,6 +138,7 @@ void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const Extensio
 	p_outTag.name = l_tag[0];
 	p_outTag.path = l_tag[1];
 	p_outTag.addr = parseAddrField(p_TagFileLine);
+	fixAddr(p_outTag.addr);
 	p_outTag.isFileScoped = p_fields.hasField("file");
 }
 Tag parseTagWithBaseFields(const std::string& p_TagFileLine, const ExtensionFields& p_extensions)

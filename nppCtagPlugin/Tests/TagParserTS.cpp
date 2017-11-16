@@ -4,6 +4,7 @@
 
 #include "TagParser.hpp"
 #include "TagsReaderException.hpp"
+#include "TestsTagBuilder.hpp"
 
 std::ostream& operator <<( std::ostream& p_stream, const CTagsPlugin::Field& p_filed )
 {
@@ -28,42 +29,6 @@ const std::string tagaddr = "bool class::tagName(const type& p_path, const std::
 const std::string tagaddrWithSpaces = "  bool class::tagName(const type& p_path, const std::type& p_extensions)   ";
 const std::string tagaddrWithTab = "bool class::tagName(const type& p_path,\tconst std::type& p_extensions)";
 const std::string tagaddrWithLineNumberOnly = "54";
-
-class TestTagBuilder
-{
-public:
-	TestTagBuilder& withName(const std::string& p_val)
-	{
-		tag.name = p_val;
-		return *this;
-	}
-	TestTagBuilder& withAddr(const std::string& p_val)
-	{
-		tag.addr = p_val;
-		return *this;
-	}
-	TestTagBuilder& withPath(const std::string& p_val)
-	{
-		tag.path = p_val;
-		return *this;
-	}
-	TestTagBuilder& withFileScoped(bool p_val)
-	{
-		tag.isFileScoped = p_val;
-		return *this;
-	}
-	TestTagBuilder& as(const Tag& p_val)
-	{
-		tag.assign(p_val);
-		return *this;
-	}
-	Tag get()
-	{
-		return tag;
-	}
-private:
-	Tag tag = {};
-};
 
 struct TagParserTS : public Test
 {
@@ -147,6 +112,22 @@ TEST_F(TagParserTS, shouldParseBaseTagWithTabInAddr)
 {
 	std::string tag = buildTagString(tagName, filePath, tagaddrWithTab);
 	Tag expectedTag = buildTag(tagName, filePath, tagaddrWithTab);
+
+	assertEq(expectedTag, parseTag(tag));
+}
+
+TEST_F(TagParserTS, shouldFixInlineCommentInAddrField)
+{
+	std::string tag = buildTagString(tagName, filePath, "struct InLineComment \\/\\/ comment");
+	Tag expectedTag = buildTag(tagName, filePath, "struct InLineComment // comment");
+
+	assertEq(expectedTag, parseTag(tag));
+}
+
+TEST_F(TagParserTS, shouldFixInlineCommentWithBackSlashInAddrField)
+{
+	std::string tag = buildTagString(tagName, filePath, "struct InLineCommentWithBackShash \\/\\/  a \\\\ b");
+	Tag expectedTag = buildTag(tagName, filePath, "struct InLineCommentWithBackShash //  a \\ b");
 
 	assertEq(expectedTag, parseTag(tag));
 }

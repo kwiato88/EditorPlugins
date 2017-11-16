@@ -1,8 +1,5 @@
-#include <fstream>
 #include <iterator>
-#include <tuple>
 #include <algorithm>
-#include <cctype>
 #include <functional>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -12,58 +9,23 @@
 #include "CTagsNavigator.hpp"
 #include "CppIsTagWithAtt.hpp"
 #include "TagNotFoundException.hpp"
-#include "OpenFileException.hpp"
 #include "Log.hpp"
 
 namespace CTagsPlugin
 {
 namespace
 {
-std::tuple<int, int> findStringPositionInFile(std::ifstream& p_file, const std::string& p_stringToFind)
-{
-    int l_lineNo = 0;
-    std::string l_line;
-
-    while(!p_file.eof())
-    {
-        std::getline(p_file, l_line);
-        std::size_t l_stringPositionInLine = l_line.find(p_stringToFind);
-        if(l_stringPositionInLine !=  std::string::npos)
-            return std::make_tuple(l_lineNo, static_cast<int>(l_stringPositionInLine));
-        ++l_lineNo;
-    }
-    return std::make_tuple(0, 0);
-}
-
-bool isNumber(const std::string& p_string)
-{
-    return !p_string.empty()
-        && std::all_of(p_string.begin(),
-                       p_string.end(),
-                       [](char c) { return std::isdigit(c); });
-}
-
-std::tuple<int, int> findInFile(std::ifstream& p_file, const std::string& p_addr)
-{
-    if(isNumber(p_addr))
-        return std::make_tuple(boost::lexical_cast<int>(p_addr) - 1, 0);
-    return findStringPositionInFile(p_file, p_addr);
-}
-
 Location convertToLocation(const Tag& p_tag)
 {
-    std::ifstream l_fileWithTag(p_tag.path.c_str());
+	auto addr = p_tag.getAddr();
+	Location tagLocation = {};
+	tagLocation.filePath = addr.filePath();
+	tagLocation.columNumber = addr.cloNoInFile();
+	tagLocation.lineNumber = addr.lineNoInFile();
+	LOG_DEBUG << "Found tag in location. Pah: " << tagLocation.filePath << ", line: " << tagLocation.lineNumber
+		<< ", col: " << tagLocation.columNumber;
 
-    if(!l_fileWithTag.is_open())
-        throw Plugin::OpenFileException(std::string("Can't open file: ") + p_tag.path);
-
-    Location l_tagLocation;
-    l_tagLocation.filePath = p_tag.path;
-    std::tie(l_tagLocation.lineNumber, l_tagLocation.columNumber) = findInFile(l_fileWithTag, p_tag.addr);
-	LOG_DEBUG << "Found tag in location. Pah: " << l_tagLocation.filePath << ", line: " << l_tagLocation.lineNumber
-		<< ", col: " << l_tagLocation.columNumber;
-
-    return l_tagLocation;
+	return tagLocation;
 }
 
 std::string getFileName(const std::string& p_path)
@@ -78,7 +40,7 @@ bool compareTags(const Tag& p_lhs, const Tag& p_rhs)
 {
     if(p_lhs.name != p_rhs.name)
         return p_lhs.name < p_rhs.name;
-    return getFileName(p_lhs.path) < getFileName(p_rhs.path);
+    return getFileName(p_lhs.getAddr().filePath()) < getFileName(p_rhs.getAddr().filePath());
 };
 
 template <typename T>

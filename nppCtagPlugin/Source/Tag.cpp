@@ -1,8 +1,13 @@
 #include <sstream>
+#include <cctype>
+#include <fstream>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include "Tag.hpp"
 #include "TagPrinter.hpp"
+#include "OpenFileException.hpp"
 
 namespace CTagsPlugin
 {
@@ -21,6 +26,7 @@ std::string pathSeparatorsToBackSlash(std::string p_path)
 	return p_path;
 }
 }
+
 TagAttributes& TagAttributes::set(Attribute p_attribute, const std::string& p_value)
 {
 	m_attributes[p_attribute] = p_value;
@@ -42,8 +48,66 @@ TagAttributes& TagAttributes::operator+=(const TagAttributes& p_other)
 	return *this;
 }
 
+Tag::Addr::Addr(const std::string& p_path, const std::string& p_addr)
+	: path(p_path), addr(p_addr)
+{}
+std::string Tag::Addr::filePath() const
+{
+	return path;
+}
+int Tag::Addr::lineNoInFile() const
+{
+	if (isLineNumber())
+		return boost::lexical_cast<int>(addr) - 1;
+	updatePosition();
+	return positionInFile->first;
+}
+bool Tag::Addr::isLineNumber() const
+{
+	return !addr.empty()
+		&& std::all_of(addr.begin(),
+			addr.end(),
+			[](char c) { return std::isdigit(c); });
+}
+int Tag::Addr::cloNoInFile() const
+{
+	if (isLineNumber())
+		return 0;
+	updatePosition();
+	return positionInFile->second;
+}
+
+void Tag::Addr::updatePosition() const
+{
+	if (!static_cast<bool>(positionInFile))
+		positionInFile = findPosition();
+}
+std::pair<int, int> Tag::Addr::findPosition() const
+{
+	std::ifstream fileWithTag(path.c_str());
+	if (!fileWithTag.is_open())
+		throw Plugin::OpenFileException(std::string("Can't open file: ") + path);
+	
+	int lineNo = 0;
+	std::string line;
+	while (!fileWithTag.eof())
+	{
+		std::getline(fileWithTag, line);
+		std::size_t stringPositionInLine = line.find(addr);
+		if (stringPositionInLine != std::string::npos)
+			return std::make_pair(lineNo, static_cast<int>(stringPositionInLine));
+		++lineNo;
+	}
+	return std::make_pair(0, 0);
+}
+
 Tag::~Tag()
 {};
+
+Tag::Addr Tag::getAddr() const
+{
+	return Addr(path, addr);
+}
 
 bool Tag::isLocalIn(const std::string& p_filePath) const
 {

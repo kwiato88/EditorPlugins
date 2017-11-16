@@ -38,7 +38,8 @@ std::vector<TagHolder> FileScopedTagFilteringReader::filter(const std::vector<Ta
 	std::string file = m_locationGetter->getFile();
 	std::vector<TagHolder> filtered;
 	boost::range::copy(
-		p_tags | boost::adaptors::filtered([&](const Tag& p){ return ( p.isLocalIn(file) || (fixPath(p.path) == file)); }),
+		p_tags | boost::adaptors::filtered(
+					[&](const Tag& p){ return ( p.isLocalIn(file) || (fixPath(p.getAddr().filePath()) == file)); }),
 		std::back_inserter(filtered));
 	return filtered;
 }

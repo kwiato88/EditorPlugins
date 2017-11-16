@@ -3,6 +3,7 @@
 
 #include "GenericKindTag.hpp"
 #include "GenericKindTagBuilder.hpp"
+#include "TestsTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -13,31 +14,22 @@ namespace
 {
 Tag buildBaseTag()
 {
-    Tag tag;
-    tag.name = "name";
-    tag.addr = "addr";
-    tag.path = "path";
-    return tag;
+	TestTagBuilder b;
+	return b.withName("name").withAddr("addr").withPath("path").get();
 }
 
 GenericKindTag buildTag(const std::string& p_kind)
 {
+	TestTagBuilder b;
     GenericKindTag tag;
-    tag.name = "name";
-    tag.addr = "addr";
-    tag.path = "path";
+	tag.assign(b.withName("name").withAddr("addr").withPath("path").get());
     tag.kind = p_kind;
     return tag;
 }
 
 void assertEq(const Tag& p_lhs, const Tag& p_rhs)
 {
-    const GenericKindTag& lhs = dynamic_cast<const GenericKindTag&>(p_lhs);
-    const GenericKindTag& rhs = dynamic_cast<const GenericKindTag&>(p_rhs);
-    ASSERT_EQ(lhs.name, rhs.name);
-    ASSERT_EQ(lhs.addr, rhs.addr);
-    ASSERT_EQ(lhs.path, rhs.path);
-    ASSERT_EQ(lhs.kind, rhs.kind);
+	ASSERT_EQ(TagHolder(p_lhs), TagHolder(p_rhs));
 }
 
 } // namespace

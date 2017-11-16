@@ -5,7 +5,6 @@
 #include <iterator>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -20,14 +19,6 @@
 
 namespace CTagsPlugin
 {
-namespace
-{
-void fixAddrField(Tag& p_tag)
-{
-    boost::algorithm::replace_all(p_tag.addr, "\\/", "/");
-    boost::algorithm::replace_all(p_tag.addr, "\\\\", "\\");
-}
-}
 
 ReadTagsProxy::ReadTagsProxy(
     IConfiguration& p_config,
@@ -85,7 +76,6 @@ std::vector<TagHolder> ReadTagsProxy::parseReadTagsOutput(const std::string& p_o
         l_lines.end()-1,
         std::back_inserter(l_tags),
         &parseTag);
-    boost::range::for_each(l_tags, &fixAddrField);
 
 	return l_tags;
 }
@@ -107,7 +97,6 @@ std::vector<TagHolder> ReadTagsProxy::parseListTagsOutput(const std::string& p_o
             | adaptors::transformed(&parseTag)
             | adaptors::filtered(p_matcher),
         std::back_inserter(l_found));
-    boost::range::for_each(l_found, &fixAddrField);
     return l_found;
 }
 

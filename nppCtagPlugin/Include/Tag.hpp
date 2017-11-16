@@ -4,6 +4,7 @@
 #include <string>
 #include <ostream>
 #include <vector>
+#include <boost/optional/optional.hpp>
 #include "Fields.hpp"
 #include "FillBaseTag.hpp"
 
@@ -47,11 +48,28 @@ public:
 	friend void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const ExtensionFields& p_fields);
 	friend class TestTagBuilder;
 
+	class Addr
+	{
+	public:
+		Addr(const std::string& p_path, const std::string& p_addr);
+		std::string filePath() const;
+		int lineNoInFile() const;
+		int cloNoInFile() const;
+	private:
+		bool isLineNumber() const;
+		void updatePosition() const;
+		std::pair<int, int> findPosition() const;
+
+		std::string path;
+		std::string addr;
+		mutable boost::optional<std::pair<int, int>> positionInFile;
+	};
+
+	Addr getAddr() const;
     std::string name;
-	std::string addr;
-	std::string path;
 
 	virtual ~Tag();
+
 
 	bool isLocalIn(const std::string& p_filePath) const;
 
@@ -69,6 +87,8 @@ public:
 	void print(ITagPrinter& p_printer) const;
 
 protected:
+	std::string addr;
+	std::string path;
 	bool isFileScoped;
 
 	virtual bool isEqual(const Tag& p_tag) const;

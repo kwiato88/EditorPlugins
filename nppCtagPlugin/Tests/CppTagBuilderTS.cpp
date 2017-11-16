@@ -9,6 +9,7 @@
 #include "CppTag.hpp"
 #include "CppTagBuilder.hpp"
 #include "TestsCppTagBuilder.hpp"
+#include "TestsTagBuilder.hpp"
 
 #include <iostream>
 namespace CTagsPlugin
@@ -22,11 +23,8 @@ struct CppTagBuilderTS: public Test
 {
     Tag baseTag()
     {
-		Tag tag = {};
-        tag.addr = "addr";
-        tag.name = tagName;
-        tag.path = "path";
-        return tag;
+		TestTagBuilder b;
+		return b.withName(tagName).withAddr("addr").withPath("path").get();
     }
 
     CppTag buildTag(const std::string& p_name,

@@ -171,16 +171,6 @@ TEST_P(TagFileReader_SortedFileMT, shouldThrowWhenCantOpenTagFile)
 	ASSERT_THROW(reader->findTag("TagHolder"), TagsReaderException);
 	ASSERT_THROW(reader->findTag([](const Tag&) {return true; }), TagsReaderException);
 }
-TEST_P(TagFileReader_SortedFileMT, shouldFixInlineCommentInAddrField)
-{
-	auto tagWithInLineCommentInAddr = tagsReader->findTag("InLineComment");
-	ASSERT_EQ(1, tagWithInLineCommentInAddr.size());
-	ASSERT_EQ("struct InLineComment // comment", tagWithInLineCommentInAddr.at(0)->addr);
-
-	auto tagWithBackSlashInAddr = tagsReader->findTag("InLineCommentWithBackShash");
-	ASSERT_EQ(1, tagWithBackSlashInAddr.size());
-	ASSERT_EQ("struct InLineCommentWithBackShash //  a \\ b", tagWithBackSlashInAddr.at(0)->addr);
-}
 
 INSTANTIATE_TEST_CASE_P(
 	TagsReader,
