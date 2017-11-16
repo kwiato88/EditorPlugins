@@ -123,21 +123,24 @@ bool validateTag(const std::string& p_TagFileLine)
     return (boost::range::count(p_TagFileLine, '\t')>= 2);
 }
 
-Tag parseTagWithBaseFields(const std::string& p_TagFileLine, const ExtensionFields& p_extensions)
+void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const ExtensionFields& p_fields)
 {
-	if(p_TagFileLine.empty())
-		return Tag();
-    if(!validateTag(p_TagFileLine))
-        throw TagsReaderException("can't read tag file");
-	
 	std::vector<std::string> l_tag;
 	boost::split(l_tag, p_TagFileLine, boost::is_any_of("\t")); // TODO: Performance: consder removing spit and serach for first and second tab instead
+
+	p_outTag.name = l_tag[0];
+	p_outTag.path = l_tag[1];
+	p_outTag.addr = parseAddrField(p_TagFileLine);
+	p_outTag.isFileScoped = p_fields.hasField("file");
+}
+Tag parseTagWithBaseFields(const std::string& p_TagFileLine, const ExtensionFields& p_extensions)
+{
+	if (p_TagFileLine.empty())
+		return Tag();
+	if (!validateTag(p_TagFileLine))
+		throw TagsReaderException("can't read tag file");
 	Tag l_ret;
-	l_ret.name = l_tag[0];
-	l_ret.path = l_tag[1];
-	l_ret.addr = parseAddrField(p_TagFileLine);
-	l_ret.isFileScoped = p_extensions.hasField("file");
-    
+	fillBaseTag(l_ret, p_TagFileLine, p_extensions);
 	return l_ret;
 }
 

@@ -5,6 +5,7 @@
 #include <ostream>
 #include <vector>
 #include "Fields.hpp"
+#include "FillBaseTag.hpp"
 
 #include <map>
 namespace CTagsPlugin
@@ -37,14 +38,22 @@ struct ITagPrinter
 	virtual void print(const TagAttributes& p_attr) = 0;
 };
 
-struct Tag
+class ExtensionFields;
+class TestTagBuilder;
+
+class Tag
 {
+public:
+	friend void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const ExtensionFields& p_fields);
+	friend class TestTagBuilder;
+
     std::string name;
-    std::string path;
-    std::string addr;
-	bool isFileScoped;
+	std::string addr;
+	std::string path;
 
 	virtual ~Tag();
+
+	bool isLocalIn(const std::string& p_filePath) const;
 
 	bool equals(const Tag& p_tag) const;
 	virtual void assign(const Tag& p_tag);
@@ -60,6 +69,8 @@ struct Tag
 	void print(ITagPrinter& p_printer) const;
 
 protected:
+	bool isFileScoped;
+
 	virtual bool isEqual(const Tag& p_tag) const;
 	void describeMembers(std::ostream& p_out) const;
 	virtual TagAttributes getAttributes() const;

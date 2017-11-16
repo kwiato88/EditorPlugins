@@ -14,8 +14,9 @@ namespace Cpp
 class ExtensionFields;
 class TestCppTagBuilder;
 
-struct CppTag: public Tag
+class CppTag: public Tag
 {
+public:
 	friend class Cpp::IsTagWithAtt;
 	friend void ::CTagsPlugin::Cpp::fill(CppTag& p_outTag, const ExtensionFields& p_fields);
 	friend class TestCppTagBuilder;

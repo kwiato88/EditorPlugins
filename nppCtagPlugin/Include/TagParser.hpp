@@ -5,6 +5,7 @@
 #include <vector>
 #include "TagHolder.hpp"
 #include "BuildTag.hpp"
+#include "FillBaseTag.hpp"
 
 namespace CTagsPlugin
 {

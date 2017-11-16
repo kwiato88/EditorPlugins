@@ -1,5 +1,6 @@
 #include <sstream>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include "Tag.hpp"
 #include "TagPrinter.hpp"
 
@@ -11,6 +12,13 @@ std::string trim(std::string p_toTrim)
 {
 	boost::trim(p_toTrim);
 	return p_toTrim;
+}
+std::string pathSeparatorsToBackSlash(std::string p_path)
+{
+	boost::algorithm::replace_all(p_path, "\\/", "/");
+	boost::algorithm::replace_all(p_path, "\\\\", "\\");
+	boost::algorithm::replace_all(p_path, "/", "\\");
+	return p_path;
 }
 }
 TagAttributes& TagAttributes::set(Attribute p_attribute, const std::string& p_value)
@@ -36,6 +44,11 @@ TagAttributes& TagAttributes::operator+=(const TagAttributes& p_other)
 
 Tag::~Tag()
 {};
+
+bool Tag::isLocalIn(const std::string& p_filePath) const
+{
+	return isFileScoped && (pathSeparatorsToBackSlash(path) == pathSeparatorsToBackSlash(p_filePath));
+}
 
 Tag* Tag::clone() const
 {

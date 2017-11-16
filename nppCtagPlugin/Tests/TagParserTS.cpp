@@ -16,14 +16,6 @@ namespace CTagsPlugin
 using namespace ::testing;
 using boost::assign::list_of;
 
-bool operator==(const Tag& p_lhs, const Tag& p_rhs)
-{
-	return p_lhs.name == p_rhs.name
-		&& p_lhs.path == p_rhs.path
-		&& p_lhs.addr == p_rhs.addr
-		&& p_lhs.isFileScoped == p_rhs.isFileScoped;
-};
-
 bool operator==(const Field& p_lhs, const Field& p_rhs)
 {
 	return p_lhs.name == p_rhs.name
@@ -37,6 +29,42 @@ const std::string tagaddrWithSpaces = "  bool class::tagName(const type& p_path,
 const std::string tagaddrWithTab = "bool class::tagName(const type& p_path,\tconst std::type& p_extensions)";
 const std::string tagaddrWithLineNumberOnly = "54";
 
+class TestTagBuilder
+{
+public:
+	TestTagBuilder& withName(const std::string& p_val)
+	{
+		tag.name = p_val;
+		return *this;
+	}
+	TestTagBuilder& withAddr(const std::string& p_val)
+	{
+		tag.addr = p_val;
+		return *this;
+	}
+	TestTagBuilder& withPath(const std::string& p_val)
+	{
+		tag.path = p_val;
+		return *this;
+	}
+	TestTagBuilder& withFileScoped(bool p_val)
+	{
+		tag.isFileScoped = p_val;
+		return *this;
+	}
+	TestTagBuilder& as(const Tag& p_val)
+	{
+		tag.assign(p_val);
+		return *this;
+	}
+	Tag get()
+	{
+		return tag;
+	}
+private:
+	Tag tag = {};
+};
+
 struct TagParserTS : public Test
 {
 	std::string buildTagString(const std::string& p_name, const std::string& p_path, const std::string& p_addr)
@@ -48,21 +76,16 @@ struct TagParserTS : public Test
 		return buildTagString(p_name, p_path, p_addr) + ";\"" + p_comment;
 	}
 
-	Tag buildTag(const std::string& p_name, const std::string& p_path, const std::string& p_addr)
+	Tag buildTag(const std::string& p_name, const std::string& p_path, const std::string& p_addr, bool p_fileScoped = false)
 	{
-		Tag expectedTag = {};
-		expectedTag.name = p_name;
-		expectedTag.path = p_path;
-		expectedTag.addr = p_addr;
-		return expectedTag;
+		TestTagBuilder b;
+		return b.withName(p_name).withPath(p_path).withAddr(p_addr).withFileScoped(p_fileScoped).get();
 	}
 
 	void assertEq(const Tag& p_expected, const Tag& p_actual)
 	{
-		EXPECT_EQ(p_expected.name, p_actual.name);
-		EXPECT_EQ(p_expected.path, p_actual.path);
-		EXPECT_EQ(p_expected.addr, p_actual.addr);
-		EXPECT_EQ(p_expected.isFileScoped, p_actual.isFileScoped);
+		TestTagBuilder expected, actual;
+		EXPECT_EQ(TagHolder(expected.as(p_expected).get()), TagHolder(actual.as(p_actual).get()));
 	}
 
 	std::string buildExtensionsString(const std::vector<std::string>& p_extensions)
@@ -147,8 +170,7 @@ TEST_F(TagParserTS, shouldNotParseInvalidNumberInAddr)
 TEST_F(TagParserTS, shouldParseFileScopedTag)
 {
 	std::string tag = buildTagString(tagName, filePath, tagaddr, std::string(1, '\t') + "f" + '\t' + "file:");
-	Tag expectedTag = buildTag(tagName, filePath, tagaddr);
-	expectedTag.isFileScoped = true;
+	Tag expectedTag = buildTag(tagName, filePath, tagaddr, true);
 
 	assertEq(expectedTag, parseTag(tag));
 }
