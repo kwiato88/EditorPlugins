@@ -24,7 +24,7 @@ TreeViewTagHierSelector::TreeViewTagHierSelector(WinApi::InstanceHandle& p_insta
 
 void logHier(const TagHierarchyItem& p_hier, const std::string& p_prefix)
 {
-	LOG_DEBUG << p_prefix << "tag name: " << p_hier.value->name;
+	LOG_DEBUG << p_prefix << "tag name: " << p_hier.value->getName();
 	LOG_DEBUG << p_prefix << "related tags. Size: " << p_hier.children.size();
 	for (const auto& tag : p_hier.children)
 		logHier(tag, p_prefix + "  ");

@@ -22,11 +22,11 @@ public:
 	}
 	void addBase(const Tag& p_tag)
 	{
-		baseTagsNames.push_back(p_tag.name);
+		baseTagsNames.push_back(p_tag.getName());
 	}
 	bool isDerived(const Tag& p_base) const override
 	{
-		return std::find(baseTagsNames.begin(), baseTagsNames.end(), p_base.name) != baseTagsNames.end();
+		return std::find(baseTagsNames.begin(), baseTagsNames.end(), p_base.getName()) != baseTagsNames.end();
 	}
 
 	Tag* clone() const override

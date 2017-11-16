@@ -66,7 +66,7 @@ public:
 	};
 
 	Addr getAddr() const;
-    std::string name;
+	std::string getName() const;
 
 	virtual ~Tag();
 
@@ -87,6 +87,7 @@ public:
 	void print(ITagPrinter& p_printer) const;
 
 protected:
+	std::string name;
 	std::string addr;
 	std::string path;
 	bool isFileScoped;

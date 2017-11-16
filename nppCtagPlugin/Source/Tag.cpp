@@ -104,6 +104,10 @@ std::pair<int, int> Tag::Addr::findPosition() const
 Tag::~Tag()
 {};
 
+std::string Tag::getName() const
+{
+	return name;
+}
 Tag::Addr Tag::getAddr() const
 {
 	return Addr(path, addr);

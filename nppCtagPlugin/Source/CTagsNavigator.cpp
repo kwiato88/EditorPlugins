@@ -38,8 +38,8 @@ std::string getFileName(const std::string& p_path)
 
 bool compareTags(const Tag& p_lhs, const Tag& p_rhs)
 {
-    if(p_lhs.name != p_rhs.name)
-        return p_lhs.name < p_rhs.name;
+    if(p_lhs.getName() != p_rhs.getName())
+        return p_lhs.getName() < p_rhs.getName();
     return getFileName(p_lhs.getAddr().filePath()) < getFileName(p_rhs.getAddr().filePath());
 };
 

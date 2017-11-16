@@ -156,7 +156,7 @@ bool CppTag::isComplex() const
 bool CppTag::isChild(const Tag& p_parrent) const
 {
 	Name parent = Name(name).parent();
-	return !parent.isEmpty() && parent == Name(p_parrent.name);
+	return !parent.isEmpty() && parent == Name(p_parrent.getName());
 }
 
 bool CppTag::isInheritable() const
@@ -175,7 +175,7 @@ bool CppTag::isDerived(const Tag& p_base) const
 	return std::any_of(
 		baseClasses.begin(),
 		baseClasses.end(),
-		[&](const auto& baseName) { return isBaseClass(baseName, p_base.name); });
+		[&](const auto& baseName) { return isBaseClass(baseName, p_base.getName()); });
 }
 
 bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) const

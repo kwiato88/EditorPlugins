@@ -43,7 +43,7 @@ bool matchTagsNames(const std::vector<std::string>& p_expected, const std::vecto
 	}
 	for (unsigned int i = 0; i < p_actual.size(); ++i)
 	{
-		if (!(p_expected[i] == p_actual[i]->name))
+		if (!(p_expected[i] == p_actual[i]->getName()))
 		{
 			*p_listener << "\nTag " << i << " not matching expected\n";
 			*p_listener << "  Expected name: " << p_expected[i] << "\n";
