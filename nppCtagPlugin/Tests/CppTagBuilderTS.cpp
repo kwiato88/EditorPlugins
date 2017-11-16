@@ -8,6 +8,8 @@
 
 #include "CppTag.hpp"
 #include "CppTagBuilder.hpp"
+#include "TestsCppTagBuilder.hpp"
+
 #include <iostream>
 namespace CTagsPlugin
 {
@@ -20,7 +22,7 @@ struct CppTagBuilderTS: public Test
 {
     Tag baseTag()
     {
-        Tag tag;
+		Tag tag = {};
         tag.addr = "addr";
         tag.name = tagName;
         tag.path = "path";
@@ -34,16 +36,10 @@ struct CppTagBuilderTS: public Test
         const std::string& p_type = "",
 		const std::vector<std::string>& p_baseClasses = {})
     {
-        CppTag tag;
-        tag.name = p_name;
-        tag.addr = "addr";
-        tag.path = "path";
-        tag.kind = p_kind;
-        tag.access = p_access;
-        tag.signature = p_signature;
-        tag.type = p_type;
-        tag.baseClasses = p_baseClasses;
-        return tag;
+		TestCppTagBuilder b;
+		return b.withName(p_name).withAddr("addr").withPath("path")
+			.withKind(p_kind).withAccess(p_access).withSignature(p_signature)
+			.withType(p_type).withBaseClasses(p_baseClasses).get();
     }
 
     TagHolder invokeBuilder(const std::vector<Field>& p_fields)
@@ -53,16 +49,7 @@ struct CppTagBuilderTS: public Test
 
     void asserEq(const Tag& p_expected, const Tag& p_actual)
     {
-        const CppTag& expected = dynamic_cast<const CppTag&>(p_expected);
-        const CppTag& actual = dynamic_cast<const CppTag&>(p_actual);
-        ASSERT_EQ(expected.name, actual.name);
-        ASSERT_EQ(expected.addr, actual.addr);
-        ASSERT_EQ(expected.path, actual.path);
-        ASSERT_EQ(expected.kind, actual.kind);
-        ASSERT_EQ(expected.access, actual.access);
-        ASSERT_EQ(expected.signature, actual.signature);
-        ASSERT_EQ(expected.type, actual.type);
-        ASSERT_EQ(expected.baseClasses, actual.baseClasses);
+		ASSERT_EQ(TagHolder(p_expected), TagHolder(p_actual));
     }
 };
 

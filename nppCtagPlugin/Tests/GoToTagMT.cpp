@@ -10,6 +10,7 @@
 #include "MatcherHasMoreThanOneElem.hpp"
 #include "MatcherEndsWith.hpp"
 #include "MatcherTags.hpp"
+#include "TestsCppTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -21,24 +22,24 @@ struct GoToTagMT : public CTagsMT
 
 	std::vector<CppTag> buildExpectedCppTags_IsTagWithName()
 	{
-		CppTag cppClass = {}, cppCtor = {}, globaStruct = {}, globalCtor = {};
-		cppClass.name = "CTagsPlugin::Cpp::IsTagWithName";
-		cppClass.access = CppTag::Access::None;
-		cppClass.kind = CppTag::Kind::Class;
+		TestCppTagBuilder cppClass = {}, cppCtor = {}, globaStruct = {}, globalCtor = {};
+		cppClass.withName("CTagsPlugin::Cpp::IsTagWithName");
+		cppClass.withAccess(CppTag::Access::None);
+		cppClass.withKind(CppTag::Kind::Class);
 
-		cppCtor.name = "CTagsPlugin::Cpp::IsTagWithName::IsTagWithName";
-		cppCtor.access = CppTag::Access::None;
-		cppCtor.kind = CppTag::Kind::Function;
+		cppCtor.withName("CTagsPlugin::Cpp::IsTagWithName::IsTagWithName");
+		cppCtor.withAccess(CppTag::Access::None);
+		cppCtor.withKind(CppTag::Kind::Function);
 
-		globaStruct.name = "CTagsPlugin::IsTagWithName";
-		globaStruct.access = CppTag::Access::None;
-		globaStruct.kind = CppTag::Kind::Struct;
+		globaStruct.withName("CTagsPlugin::IsTagWithName");
+		globaStruct.withAccess(CppTag::Access::None);
+		globaStruct.withKind(CppTag::Kind::Struct);
 
-		globalCtor.name = "CTagsPlugin::IsTagWithName::IsTagWithName";
-		globalCtor.access = CppTag::Access::None;
-		globalCtor.kind = CppTag::Kind::Function;
+		globalCtor.withName("CTagsPlugin::IsTagWithName::IsTagWithName");
+		globalCtor.withAccess(CppTag::Access::None);
+		globalCtor.withKind(CppTag::Kind::Function);
 
-		return std::vector<CppTag>({ cppClass , cppCtor, globaStruct, globalCtor });
+		return std::vector<CppTag>({ cppClass.get() , cppCtor.get(), globaStruct.get(), globalCtor.get()});
 	}
 
 };

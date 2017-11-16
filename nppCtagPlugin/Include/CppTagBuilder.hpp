@@ -6,9 +6,11 @@
 
 namespace CTagsPlugin
 {
+class CppTag;
 namespace Cpp
 {
 
+void fill(CppTag& p_outTag, const ExtensionFields& p_fields);
 TagHolder buildTag(const Tag& p_baseTag, const ExtensionFields& p_extFields);
 
 } // namespace Cpp

@@ -2,6 +2,7 @@
 
 #include "CppTag.hpp"
 #include "CppIsTagWithAtt.hpp"
+#include "TestsCppTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -12,42 +13,33 @@ namespace
 {
 CppTag buildTag(CppTag::Kind p_kind)
 {
-	CppTag tag = {};
-	tag.kind = p_kind;
-	return tag;
+	TestCppTagBuilder b;
+	return b.withKind(p_kind).get();
 }
 
 CppTag buildTag(CppTag::Access p_access)
 {
-	CppTag tag = {};
-	tag.access = p_access;
-	return tag;
+	TestCppTagBuilder b;
+	return b.withAccess(p_access).get();
+
 }
 
 CppTag buildTag(const std::string& p_name, CppTag::Kind p_kind = CppTag::Kind::Class)
 {
-	CppTag tag = {};
-	tag.name = p_name;
-	tag.kind = p_kind;
-	return tag;
+	TestCppTagBuilder b;
+	return b.withName(p_name).withKind(p_kind).get();
 }
 
 CppTag buildTag(const std::string& p_name, CppTag::Kind p_kind, CppTag::Access p_access)
 {
-	CppTag tag = {};
-	tag.name = p_name;
-	tag.access = p_access;
-	tag.kind = p_kind;
-	return tag;
+	TestCppTagBuilder b;
+	return b.withName(p_name).withAccess(p_access).withKind(p_kind).get();
 }
 
 CppTag buildTag(const std::string& p_name, const std::initializer_list<std::string>& p_baseClasses, CppTag::Kind p_kind = CppTag::Kind::Class)
 {
-	CppTag tag = {};
-	tag.name = p_name;
-	tag.baseClasses = p_baseClasses;
-	tag.kind = p_kind;
-	return tag;
+	TestCppTagBuilder b;
+	return b.withName(p_name).withBaseClasses(p_baseClasses).withKind(p_kind).get();
 }
 }
 

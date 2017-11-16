@@ -5,6 +5,7 @@
 #include "CppTag.hpp"
 #include "TagParser.hpp"
 #include "TagsReaderException.hpp"
+#include "CppIsTagWithAtt.hpp"
 
 #include "CTagsMT.hpp"
 #include "MatcherTags.hpp"
@@ -33,35 +34,21 @@ struct TagFileReaderMT : public CTagsMT
 
 	TagMatcher tagMatcher_TagHolderClass()
 	{
-		auto isTagHolderClass = [](const Tag& p_tag) -> bool
+		Cpp::IsTagWithAtt matcher
 		{
-			try
-			{
-				const CppTag& tag = dynamic_cast<const CppTag&>(p_tag);
-				return tag.name.find("TagHolder") != std::string::npos && tag.kind == CppTag::Kind::Class;
-			}
-			catch (const std::bad_cast&)
-			{
-				return false;
-			}
+			".*TagHolder.*",{ CppTag::Kind::Class },
+			{ CppTag::Access::None, CppTag::Access::Private, CppTag::Access::Protected, CppTag::Access::Public }
 		};
-		return isTagHolderClass;
+		return matcher;
 	}
 	TagMatcher tagMatcher_IsEnumeration()
 	{
-		auto isEnumeration = [](const Tag& p_tag) -> bool
+		Cpp::IsTagWithAtt matcher
 		{
-			try
-			{
-				const CppTag& tag = dynamic_cast<const CppTag&>(p_tag);
-				return tag.kind == CppTag::Kind::Enumeration;
-			}
-			catch (const std::bad_cast&)
-			{
-				return false;
-			}
+			".*",{ CppTag::Kind::Enumeration },
+			{ CppTag::Access::None, CppTag::Access::Private, CppTag::Access::Protected, CppTag::Access::Public }
 		};
-		return isEnumeration;
+		return matcher;
 	}
 
 };

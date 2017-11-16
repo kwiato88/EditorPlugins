@@ -8,6 +8,7 @@
 #include "MatcherHasMoreThanOneElem.hpp"
 #include "MatcherEndsWith.hpp"
 #include "MatcherTags.hpp"
+#include "TestsCppTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -17,63 +18,63 @@ struct GoToChildTagMT : public CTagsMT
 {
 	std::vector<CppTag> buildExpectedChildTagsForPartent_Field()
 	{
-		CppTag ctorDef = {}, ctorWithParams = {}, memberName = {}, memberValue = {};
-		ctorDef.name = "CTagsPlugin::Field::Field";
-		ctorDef.access = CppTag::Access::Public;
-		ctorDef.kind = CppTag::Kind::Function;
+		TestCppTagBuilder ctorDef = {}, ctorWithParams = {}, memberName = {}, memberValue = {};
+		ctorDef.withName("CTagsPlugin::Field::Field");
+		ctorDef.withAccess(CppTag::Access::Public);
+		ctorDef.withKind(CppTag::Kind::Function);
 
-		ctorWithParams.name = "CTagsPlugin::Field::Field";
-		ctorWithParams.access = CppTag::Access::Public;
-		ctorWithParams.kind = CppTag::Kind::Function;
+		ctorWithParams.withName("CTagsPlugin::Field::Field");
+		ctorWithParams.withAccess(CppTag::Access::Public);
+		ctorWithParams.withKind(CppTag::Kind::Function);
 
-		memberName.name = "CTagsPlugin::Field::name";
-		memberName.access = CppTag::Access::Public;
-		memberName.kind = CppTag::Kind::Member;
-		memberName.type = "std::string";
+		memberName.withName("CTagsPlugin::Field::name");
+		memberName.withAccess(CppTag::Access::Public);
+		memberName.withKind(CppTag::Kind::Member);
+		memberName.withType("std::string");
 
-		memberValue.name = "CTagsPlugin::Field::value";
-		memberValue.access = CppTag::Access::Public;
-		memberValue.kind = CppTag::Kind::Member;
-		memberValue.type = "std::string";
+		memberValue.withName("CTagsPlugin::Field::value");
+		memberValue.withAccess(CppTag::Access::Public);
+		memberValue.withKind(CppTag::Kind::Member);
+		memberValue.withType("std::string");
 
-		return std::vector<CppTag>({ ctorDef , ctorWithParams, memberName, memberValue });
+		return std::vector<CppTag>({ ctorDef.get() , ctorWithParams.get(), memberName.get(), memberValue.get() });
 	}
 	std::vector<CppTag> buildExpectedParentTagsForParent_TagPrinter()
 	{
-		CppTag basicPrinter = {}, cppTagPrinter = {};
-		basicPrinter.name = "CTagsPlugin::TagPrinter";
-		basicPrinter.access = CppTag::Access::None;
-		basicPrinter.kind = CppTag::Kind::Class;
+		TestCppTagBuilder basicPrinter = {}, cppTagPrinter = {};
+		basicPrinter.withName("CTagsPlugin::TagPrinter");
+		basicPrinter.withAccess(CppTag::Access::None);
+		basicPrinter.withKind(CppTag::Kind::Class);
 
-		cppTagPrinter.name = "CTagsPlugin::Cpp::TagPrinter";
-		cppTagPrinter.access = CppTag::Access::None;
-		cppTagPrinter.kind = CppTag::Kind::Class;
+		cppTagPrinter.withName("CTagsPlugin::Cpp::TagPrinter");
+		cppTagPrinter.withAccess(CppTag::Access::None);
+		cppTagPrinter.withKind(CppTag::Kind::Class);
 
-		return std::vector<CppTag>({ cppTagPrinter , basicPrinter });
+		return std::vector<CppTag>({ cppTagPrinter.get() , basicPrinter.get() });
 	}
 	std::vector<CppTag> buildExpectedChildTagsForPartent_CppTagPrinter()
 	{
-		CppTag ctor = {}, functionKind = {}, functionAccess = {}, functionType = {};
-		ctor.name = "CTagsPlugin::Cpp::TagPrinter::TagPrinter";
-		ctor.access = CppTag::Access::None;
-		ctor.kind = CppTag::Kind::Function;
+		TestCppTagBuilder ctor = {}, functionKind = {}, functionAccess = {}, functionType = {};
+		ctor.withName("CTagsPlugin::Cpp::TagPrinter::TagPrinter");
+		ctor.withAccess(CppTag::Access::None);
+		ctor.withKind(CppTag::Kind::Function);
 
-		functionKind.name = "CTagsPlugin::Cpp::TagPrinter::kind";
-		functionKind.access = CppTag::Access::None;
-		functionKind.kind = CppTag::Kind::Function;
-		functionKind.type = "std::string";
+		functionKind.withName("CTagsPlugin::Cpp::TagPrinter::kind");
+		functionKind.withAccess(CppTag::Access::None);
+		functionKind.withKind(CppTag::Kind::Function);
+		functionKind.withType("std::string");
 
-		functionAccess.name = "CTagsPlugin::Cpp::TagPrinter::access";
-		functionAccess.access = CppTag::Access::None;
-		functionAccess.kind = CppTag::Kind::Function;
-		functionAccess.type = "std::string";
+		functionAccess.withName("CTagsPlugin::Cpp::TagPrinter::access");
+		functionAccess.withAccess(CppTag::Access::None);
+		functionAccess.withKind(CppTag::Kind::Function);
+		functionAccess.withType("std::string");
 
-		functionType.name = "CTagsPlugin::Cpp::TagPrinter::type";
-		functionType.access = CppTag::Access::None;
-		functionType.kind = CppTag::Kind::Function;
-		functionType.type = "std::string";
+		functionType.withName("CTagsPlugin::Cpp::TagPrinter::type");
+		functionType.withAccess(CppTag::Access::None);
+		functionType.withKind(CppTag::Kind::Function);
+		functionType.withType("std::string");
 
-		return std::vector<CppTag>({ ctor, functionAccess , functionKind, functionType });
+		return std::vector<CppTag>({ ctor.get(), functionAccess.get() , functionKind.get(), functionType.get() });
 	}
 
 };

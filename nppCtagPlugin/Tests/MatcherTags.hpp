@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include "DescribeTags.hpp"
 #include "CppTag.hpp"
+#include "TestsCppTagBuilder.hpp"
 
 namespace CTagsPlugin
 {
@@ -9,13 +10,13 @@ inline bool assertCppTag(const CppTag& p_expeced, const Tag& p_actual)
 {
 	try
 	{
-		const CppTag& l_actualTag = dynamic_cast<const CppTag&>(p_actual);
 		// check will distinguish between different tags. It is not madatory check all fields;
 		// checking if all fields are correct is done in tags builder UTs
-		return p_expeced.name == l_actualTag.name
-			&&p_expeced.access == l_actualTag.access
-			&& p_expeced.kind == l_actualTag.kind
-			&& p_expeced.type == l_actualTag.type;
+		const CppTag& l_actualTag = dynamic_cast<const CppTag&>(p_actual);
+		TestCppTagBuilder actual, expected;
+		actual.as(l_actualTag).withAddr("").withBaseClasses({}).withPath("").withSignature("");
+		expected.as(p_expeced).withAddr("").withBaseClasses({}).withPath("").withSignature("");
+		return expected.get().equals(actual.get());
 	}
 	catch (const std::exception&)
 	{

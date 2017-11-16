@@ -143,6 +143,7 @@ add_executable(
     Tests/GenericKindTagBuilderTS.cpp
     Tests/NavigatorTS.cpp
     Tests/TagHierarchyTS.cpp
+    Tests/TestsCppTagBuilder.cpp
 )
 
 target_include_directories(
@@ -183,6 +184,7 @@ add_executable(
     Tests/TagFileReaderMT.cpp
     Tests/DescribeTags.cpp
     Tests/TestsMain.cpp
+    Tests/TestsCppTagBuilder.cpp
 )
 
 target_include_directories(
