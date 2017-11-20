@@ -114,6 +114,7 @@ TEST(CppTagTS, shouldReturnTrueWhenGivenNameWithNamespaceMatches)
 TEST(CppTagTS, shouldReturnFalseWhenGivenNameWithNamespaceDoesNotMatch)
 {
 	ASSERT_FALSE(buildTag("namespace::tagName").isTagWithName("namespace1::tagName"));
+	ASSERT_FALSE(buildTag("namespace::tagName").isTagWithName("namespace::tagName1"));
 	ASSERT_FALSE(buildTag("name1::name2::tagName").isTagWithName("name1::tagName"));
 	ASSERT_FALSE(buildTag("name1::name2::name3::tagName").isTagWithName("name2::tagName"));
 	ASSERT_FALSE(buildTag("name2::name3::tagName").isTagWithName("name1::name2::name3::tagName"));
@@ -121,6 +122,7 @@ TEST(CppTagTS, shouldReturnFalseWhenGivenNameWithNamespaceDoesNotMatch)
 
 TEST(CppTagTS, shouldReturnFalseWhenTagNameDoesNoMatch)
 {
+	ASSERT_FALSE(buildTag("tagName").isTagWithName("tagName1"));
 	ASSERT_FALSE(buildTag("tagName").isTagWithName("otherTagName"));
 	ASSERT_FALSE(buildTag(":tagName").isTagWithName("tagName"));
 	ASSERT_FALSE(buildTag("namespace::OtherTagName").isTagWithName("tagName"));
