@@ -103,7 +103,7 @@ public:
 			|| name == separator + p_other.name;
 	}
 	bool isSubNameOf(const Name& p_other) const
-	{//TODO: change name
+	{//TODO: get rid of this regex. It is to slow (used in tag hier function)
 		return std::regex_match(p_other.name, std::regex(".*" + separator + name));
 	}
 	bool isEmpty() const
@@ -145,6 +145,7 @@ bool CppTag::isEqual(const Tag& p_tag) const
 bool CppTag::isTagWithName(const std::string& p_name) const
 {
 	Name own(name), other(p_name);
+	//return name == p_name || own.base() == p_name;
 	return own == other || other.isSubNameOf(own);
 }
 
@@ -200,7 +201,7 @@ std::vector<TagHolder> CppTag::baseTags(const ITagsReader& p_tags) const
 	std::vector<TagHolder> baseTags;
 	for (const auto& base : baseClasses)
 		copy(p_tags.findTag([&](const auto& t) { return t.isTagWithName(base); })
-			    | filtered([&](const auto& t) { return isDerived(t); }),
+				| filtered([&](const auto& t) { return isDerived(t); }),
 			std::back_inserter(baseTags));
 	return baseTags;
 }
