@@ -161,6 +161,11 @@ bool Tag::isDerived(const Tag& p_base) const
 	return false;
 }
 
+std::vector<TagHolder> Tag::baseTags(const ITagsReader&) const
+{
+	return {};
+}
+
 void Tag::describeMembers(std::ostream& p_out) const
 {
 	p_out << "name: " << name << "; path: " << path << "; addr: " << addr << "; "

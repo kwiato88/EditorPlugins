@@ -3,10 +3,11 @@
 
 #include <memory>
 #include <ostream>
-#include "Tag.hpp"
 
 namespace CTagsPlugin
 {
+
+class Tag;
 
 class TagHolder
 {

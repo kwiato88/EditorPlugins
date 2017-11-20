@@ -12,6 +12,7 @@ namespace Cpp
 	class IsTagWithAtt;
 }
 class ExtensionFields;
+class ITagsReader;
 class TestCppTagBuilder;
 
 class CppTag: public Tag
@@ -54,6 +55,7 @@ public:
 	bool isComplex() const override;
 	bool isChild(const Tag& p_parrent) const override;
 	bool isDerived(const Tag& p_base) const override;
+	std::vector<TagHolder> baseTags(const ITagsReader&) const override;
 	void describe(std::ostream& p_out) const override;
 
 protected:

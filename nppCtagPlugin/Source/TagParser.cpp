@@ -16,6 +16,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/optional.hpp>
 
+#include "Tag.hpp"
 #include "TagParser.hpp"
 #include "TagsReaderException.hpp"
 #include "TagBuilders.hpp"

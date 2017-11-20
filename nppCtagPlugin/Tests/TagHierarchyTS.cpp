@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "Tag.hpp"
 #include "TagHierarchy.hpp"
 #include "ITagsReader.hpp"
 
@@ -27,6 +28,14 @@ public:
 	bool isDerived(const Tag& p_base) const override
 	{
 		return std::find(baseTagsNames.begin(), baseTagsNames.end(), p_base.getName()) != baseTagsNames.end();
+	}
+	bool isComplex() const override
+	{
+		return true;
+	}
+	std::vector<TagHolder> baseTags(const ITagsReader& p_tags) const
+	{
+		return p_tags.findTag([&](const Tag& t) { return isDerived(t); });
 	}
 
 	Tag* clone() const override

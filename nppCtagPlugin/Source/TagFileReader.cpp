@@ -6,6 +6,7 @@
 #include "TagFileReader.hpp"
 #include "TagFile.hpp"
 #include "TagParser.hpp"
+#include "Tag.hpp"
 #include "TagsReaderException.hpp"
 #include "OpenFileException.hpp"
 

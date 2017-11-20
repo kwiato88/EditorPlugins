@@ -8,6 +8,7 @@
 #include "TagsReaderException.hpp"
 #include "Log.hpp"
 #include "PrintableRange.hpp"
+#include "Tag.hpp"
 
 namespace CTagsPlugin
 {

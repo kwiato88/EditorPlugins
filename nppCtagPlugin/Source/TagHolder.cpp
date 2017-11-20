@@ -1,4 +1,5 @@
 #include "TagHolder.hpp"
+#include "Tag.hpp"
 
 namespace CTagsPlugin
 {

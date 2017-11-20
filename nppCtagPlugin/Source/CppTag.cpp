@@ -2,7 +2,10 @@
 #include <algorithm>
 #include <regex>
 #include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptor/filtered.hpp>
 #include "CppTag.hpp"
+#include "ITagsReader.hpp"
 #include "PrintableRange.hpp"
 
 namespace CTagsPlugin
@@ -100,7 +103,7 @@ public:
 			|| name == separator + p_other.name;
 	}
 	bool isSubNameOf(const Name& p_other) const
-	{
+	{//TODO: change name
 		return std::regex_match(p_other.name, std::regex(".*" + separator + name));
 	}
 	bool isEmpty() const
@@ -141,7 +144,8 @@ bool CppTag::isEqual(const Tag& p_tag) const
 
 bool CppTag::isTagWithName(const std::string& p_name) const
 {
-	return Name(name).base() == p_name;
+	Name own(name), other(p_name);
+	return own == other || other.isSubNameOf(own);
 }
 
 bool CppTag::isComplex() const
@@ -187,6 +191,18 @@ bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) cons
 				|| (own.parent() + p_baseClass.parent()) == p_otherClass.parent()
 				)
 			);
+}
+
+std::vector<TagHolder> CppTag::baseTags(const ITagsReader& p_tags) const
+{
+	using boost::range::copy;
+	using boost::adaptors::filtered;
+	std::vector<TagHolder> baseTags;
+	for (const auto& base : baseClasses)
+		copy(p_tags.findTag([&](const auto& t) { return t.isTagWithName(base); })
+			    | filtered([&](const auto& t) { return isDerived(t); }),
+			std::back_inserter(baseTags));
+	return baseTags;
 }
 
 void CppTag::describe(std::ostream& p_out) const

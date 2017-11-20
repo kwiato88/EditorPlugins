@@ -102,7 +102,24 @@ TEST(CppTagTS, shouldReturnTrueWhenTagNameMatches)
 	ASSERT_TRUE(buildTag("namespace::class::tagName").isTagWithName("tagName"));
 }
 
-TEST(CppTagTS, shouldReturnFalseWhenTagNameMatches)
+TEST(CppTagTS, shouldReturnTrueWhenGivenNameWithNamespaceMatches)
+{
+	ASSERT_TRUE(buildTag("namespace::tagName").isTagWithName("namespace::tagName"));
+	ASSERT_TRUE(buildTag("name1::name2::tagName").isTagWithName("name2::tagName"));
+	ASSERT_TRUE(buildTag("name1::name2::name3::tagName").isTagWithName("name3::tagName"));
+	ASSERT_TRUE(buildTag("name1::name2::name3::tagName").isTagWithName("name2::name3::tagName"));
+	ASSERT_TRUE(buildTag("namespace::tagName").isTagWithName("::namespace::tagName"));
+}
+
+TEST(CppTagTS, shouldReturnFalseWhenGivenNameWithNamespaceDoesNotMatch)
+{
+	ASSERT_FALSE(buildTag("namespace::tagName").isTagWithName("namespace1::tagName"));
+	ASSERT_FALSE(buildTag("name1::name2::tagName").isTagWithName("name1::tagName"));
+	ASSERT_FALSE(buildTag("name1::name2::name3::tagName").isTagWithName("name2::tagName"));
+	ASSERT_FALSE(buildTag("name2::name3::tagName").isTagWithName("name1::name2::name3::tagName"));
+}
+
+TEST(CppTagTS, shouldReturnFalseWhenTagNameDoesNoMatch)
 {
 	ASSERT_FALSE(buildTag("tagName").isTagWithName("otherTagName"));
 	ASSERT_FALSE(buildTag(":tagName").isTagWithName("tagName"));

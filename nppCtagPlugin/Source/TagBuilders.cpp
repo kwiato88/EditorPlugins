@@ -1,5 +1,6 @@
 #include <boost/assign/list_of.hpp>
 
+#include "Tag.hpp"
 #include "TagBuilders.hpp"
 #include "CppTagBuilder.hpp"
 #include "GenericKindTagBuilder.hpp"

@@ -4,6 +4,7 @@
 
 #include "CachedTagsReader.hpp"
 #include "TagsReaderException.hpp"
+#include "Tag.hpp"
 
 namespace CTagsPlugin
 {

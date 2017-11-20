@@ -7,6 +7,7 @@
 #include <boost/optional/optional.hpp>
 #include "Fields.hpp"
 #include "FillBaseTag.hpp"
+#include "TagHolder.hpp"
 
 #include <map>
 namespace CTagsPlugin
@@ -40,6 +41,7 @@ struct ITagPrinter
 };
 
 class ExtensionFields;
+class ITagsReader;
 class TestTagBuilder;
 
 class Tag
@@ -81,6 +83,7 @@ public:
 	virtual bool isComplex() const;
 	virtual bool isChild(const Tag& p_parrent) const;
 	virtual bool isDerived(const Tag& p_base) const;
+	virtual std::vector<TagHolder> baseTags(const ITagsReader&) const;
 
 	virtual void describe(std::ostream& p_out) const;
 	std::string toString() const;

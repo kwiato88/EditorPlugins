@@ -4,6 +4,7 @@
 #include <iterator>
 
 #include "FileScopedTagFilteringReader.hpp"
+#include "Tag.hpp"
 
 namespace CTagsPlugin
 {
