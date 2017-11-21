@@ -20,16 +20,13 @@
 #include "ListViewTagsSelector.hpp"
 #include "GridViewTagsSelector.hpp"
 #include "TreeViewTagHierSelector.hpp"
+#include "GetCppTagSearchMatcher.hpp"
 
 #include <boost/assign/list_of.hpp>
 #include "GridDialog.hpp"
 #include "SelectPathsDialog.hpp"
 #include "Logger.hpp"
 #include "Log.hpp"
-
-#include "CppSearchDialog.hpp"
-#include "CppIsTagWithAtt.hpp"
-#include "UserInputError.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include "TreeDialog.hpp"
@@ -104,27 +101,6 @@ static ShortcutKey tagInfoSk     = {true,  true, false, 'T'};
 static ShortcutKey setTagFilesSk = {true,  true, false, 'O'};
 static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
-
-//TODO: extract to different file
-class CppSearchMatcherGetter
-{
-public:
-	CppSearchMatcherGetter(WinApi::Handle& p_parrent, WinApi::InstanceHandle& p_hModule)
-		: m_parrent(p_parrent), m_hModule(p_hModule)
-	{}
-
-	CTagsPlugin::TagMatcher operator()()
-	{
-		WinApi::CppSearchDialog dialog(m_hModule, m_parrent);
-		if (dialog.show() == WinApi::CppSearchDialog::BUTTON_OK)
-			return dialog.getTagMatcher();
-		throw Plugin::UserInputError("No cpp tag attributes selected");
-	}
-
-private:
-	WinApi::Handle& m_parrent;
-	WinApi::InstanceHandle& m_hModule;
-};
 
 TagsPlugin::TagsPlugin()
  : m_isInitialized(false)
@@ -207,7 +183,7 @@ void TagsPlugin::createTagsController()
 		std::make_shared<NppPlugin::PathsSelector<SelectorType::File>>(m_npp.npp, m_hModule),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
         m_config,
-		CppSearchMatcherGetter(m_npp.npp, m_hModule)));
+		WinApi::CppSearchMatcherGetter(m_npp.npp, m_hModule)));
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)

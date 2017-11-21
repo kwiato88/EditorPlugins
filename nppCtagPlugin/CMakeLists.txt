@@ -91,6 +91,7 @@ add_library(
     SHARED
     Source/dllmain.cpp
     Source/Plugin.cpp
+    Source/GetCppTagSearchMatcher.cpp
     Source/CppSearchDialog.cpp
     Source/TagHierarchyDialog.cpp
     Source/ListViewTagsSelector.cpp
