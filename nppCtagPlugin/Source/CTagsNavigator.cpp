@@ -9,6 +9,7 @@
 #include "CTagsNavigator.hpp"
 #include "CppIsTagWithAtt.hpp"
 #include "TagNotFoundException.hpp"
+#include "ContainerTagsReader.hpp"
 #include "Log.hpp"
 
 namespace CTagsPlugin
@@ -54,30 +55,6 @@ std::vector<TagHolder> findTag(std::shared_ptr<ITagsReader> p_tagsReader, const 
     return l_foundTags;
 }
 }
-//TODO: extract
-class ComplexTagsReader : public ITagsReader
-{
-public:
-	ComplexTagsReader(ITagsReader& p_tags)
-	{
-		complex = p_tags.findTag([&](const auto& t) { return t.isComplex(); });
-	}
-	std::vector<TagHolder> findTag(const std::string& p_tagName) const
-	{
-		std::vector<TagHolder> found;
-		std::copy_if(complex.begin(), complex.end(), std::back_inserter(found),
-			[&](const auto& t) { return t->isTagWithName(p_tagName); });
-		return found;
-	}
-	std::vector<TagHolder> findTag(TagMatcher p_matcher) const
-	{
-		std::vector<TagHolder> found;
-		std::copy_if(complex.begin(), complex.end(), std::back_inserter(found), p_matcher);
-		return found;
-	}
-private:
-	std::vector<TagHolder> complex;
-};
 
 CTagsNavigator::CTagsNavigator(
 	std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
@@ -171,8 +148,8 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 {
 	LOG_INFO << "go to tag in hierarchy. Hierarchy for tag with name: " << p_currentTagName;
 
-	ComplexTagsReader reader(*m_tagsReader);
-	TagHierarchy hier(reader, selectTag(getComplexTags(p_currentTagName)));
+	ContainerTagsReader complexTags(m_tagsReader->findTag([&](const auto& t) { return t.isComplex(); }));
+	TagHierarchy hier(complexTags, selectTag(getComplexTags(p_currentTagName)));
 	hier.parse();
 	goTo(selectTag(hier));
 }

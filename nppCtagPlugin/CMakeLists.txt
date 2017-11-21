@@ -14,6 +14,7 @@ add_library(
     Source/CTagsGenerator.cpp
     Source/MultipleTagFilesReader.cpp
     Source/FileScopedTagFilteringReader.cpp
+    Source/ContainerTagsReader.cpp
     Source/ConfigGetter.cpp
     Source/Navigator.cpp
     Source/TagHolder.cpp
