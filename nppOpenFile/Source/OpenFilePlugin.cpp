@@ -78,7 +78,6 @@ void OpenFilePlugin::create()
 
 void OpenFilePlugin::initFunctionsTable()
 {
-    // TODO: set shortKey
 	setCommand(0, TEXT("Open File"),      fun_open,   NULL);
     setCommand(1, TEXT("Set search dir"), fun_setDir, NULL);
 }

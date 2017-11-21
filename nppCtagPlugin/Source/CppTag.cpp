@@ -102,12 +102,12 @@ public:
 			|| separator + name == p_other.name
 			|| name == separator + p_other.name;
 	}
-	bool isSubNameOf(const Name& p_other) const
-	{//TODO: rename
-		std::string expectedEnding = separator + name;
-		return (expectedEnding.length() <= p_other.name.length()) &&
-			p_other.name.compare(
-				p_other.name.length() - expectedEnding.length(),
+	bool endsWith(const Name& p_other) const
+	{
+		std::string expectedEnding = separator + p_other.name;
+		return (expectedEnding.length() <= name.length()) &&
+			name.compare(
+				name.length() - expectedEnding.length(),
 				expectedEnding.length(),
 				expectedEnding) == 0;
 	}
@@ -150,7 +150,7 @@ bool CppTag::isEqual(const Tag& p_tag) const
 bool CppTag::isTagWithName(const std::string& p_name) const
 {
 	Name own(name), other(p_name);
-	return own == other || other.isSubNameOf(own);
+	return own == other || own.endsWith(other);
 }
 
 bool CppTag::isComplex() const
@@ -191,7 +191,7 @@ bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) cons
 {
 	Name own(name);
 	return p_baseClass == p_otherClass
-		|| (p_baseClass.isSubNameOf(p_otherClass)
+		|| (p_otherClass.endsWith(p_baseClass)
 		    && (p_otherClass.parent() == own.parent()
 				|| (own.parent() + p_baseClass.parent()) == p_otherClass.parent()
 				)
