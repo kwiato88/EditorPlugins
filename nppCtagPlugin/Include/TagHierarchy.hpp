@@ -18,7 +18,7 @@ struct TagNameHash
 {
 	std::size_t operator()(const TagHolder& p) const noexcept;
 };
-
+//TODO: extract to different file TagsHierarchy
 class TagsHierarchy
 {
 public:

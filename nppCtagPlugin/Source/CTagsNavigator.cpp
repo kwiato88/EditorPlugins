@@ -54,7 +54,7 @@ std::vector<TagHolder> findTag(std::shared_ptr<ITagsReader> p_tagsReader, const 
     return l_foundTags;
 }
 }
-
+//TODO: extract
 class ComplexTagsReader : public ITagsReader
 {
 public:

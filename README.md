@@ -1,6 +1,7 @@
 # Editor Plugins
 
-Package of Notepad++ plugins I use for SW development
+Package of Notepad++ plugins I use for SW development.  
+Page: https://kwiato88.github.io/EditorPlugins/
 
 ## Open file plugin
 
