@@ -2,6 +2,8 @@
 #define PLUGIN_HPP
 
 #include <memory>
+#include <string>
+#include <vector>
 #include <boost\shared_ptr.hpp>
 
 #include "PluginInterface.h"
@@ -31,7 +33,7 @@ public:
 	 */
 	void open();
     void openFile();
-    void setDir();
+    void setDirs();
 
 	static const int s_funcNum = 2;
 
@@ -44,11 +46,11 @@ private:
 	void create();
 	bool setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
 	void initFunctionsTable();
-	std::string getSerachDir();
+	std::vector<std::string> getSerachDirs();
 
 	// boost::shared_ptr<Plugin::ILocationSetter> m_locationSetter;
 	// boost::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
-    std::string m_searchDir;
+    std::vector<std::string> m_searchDirs;
 
 };
 

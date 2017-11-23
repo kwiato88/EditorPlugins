@@ -21,7 +21,7 @@ public:
 
     OpenFileDialog(WinApi::InstanceHandle p_hInstance, WinApi::Handle p_parentWindow);
 
-    void setSearchDir(const std::string& p_dir);
+    void setSearchDirs(const std::vector<std::string>& p_dirs);
     std::string getSelectedFile() const;
 
 private:
@@ -38,7 +38,7 @@ private:
 
     std::vector<std::string> m_gridLabels;
     std::vector<std::vector<std::string> > m_gridRows;
-    std::string m_searchDir;
+    std::vector<std::string> m_searchDirs;
     std::string m_selectedFile;
 
 	static std::string s_lastUsedNamePattern;

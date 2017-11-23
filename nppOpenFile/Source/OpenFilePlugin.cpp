@@ -4,7 +4,7 @@
 #include "menuCmdID.h"
 #include "OpenFilePlugin.hpp"
 #include "OpenFileDialog.hpp"
-#include "NppPathGetter.hpp"
+#include "NppPathsSelector.hpp"
 #include "NppLocationGetter.hpp"
 #include "NppLocationSetter.hpp"
 #include "NppMessagePrinter.hpp"
@@ -19,9 +19,9 @@ void fun_open()
     g_plugin.open();
 }
 
-void fun_setDir()
+void fun_setDirs()
 {
-    g_plugin.setDir();
+    g_plugin.setDirs();
 }
 
 //static ShortcutKey switchFileSk = {false, false, false, VK_F9};
@@ -79,7 +79,7 @@ void OpenFilePlugin::create()
 void OpenFilePlugin::initFunctionsTable()
 {
 	setCommand(0, TEXT("Open File"),      fun_open,   NULL);
-    setCommand(1, TEXT("Set search dir"), fun_setDir, NULL);
+    setCommand(1, TEXT("Set search dirs"), fun_setDirs, NULL);
 }
 
 /**
@@ -121,7 +121,7 @@ void OpenFilePlugin::open()
 void OpenFilePlugin::openFile()
 {
     WinApi::OpenFileDialog dialog(m_hModule, m_npp.npp);
-    dialog.setSearchDir(getSerachDir());
+    dialog.setSearchDirs(getSerachDirs());
     int result = dialog.show();
     if(result == WinApi::OpenFileDialog::BUTTON_OK)
     {
@@ -130,19 +130,21 @@ void OpenFilePlugin::openFile()
     }
 }
 
-std::string OpenFilePlugin::getSerachDir()
+std::vector<std::string> OpenFilePlugin::getSerachDirs()
 {
-	if (m_searchDir.empty())
-		setDir();
-	return m_searchDir;
+	if (m_searchDirs.empty())
+		setDirs();
+	if (m_searchDirs.empty())
+		throw std::runtime_error("No search dirs selected");
+	return m_searchDirs;
 }
 
-void OpenFilePlugin::setDir()
+void OpenFilePlugin::setDirs()
 {
-    NppPathGetter pathGetter(m_npp.npp, m_hModule);
+	PathsSelector<SelectorType::Directory> dirs(m_npp.npp, m_hModule);
     NppLocationGetter locationGetter(m_npp);
-    
-    m_searchDir = pathGetter.getDirPath("Select search dir", getFileDir(locationGetter.getFile()));
+
+	m_searchDirs = dirs.select(m_searchDirs, getFileDir(locationGetter.getFile()));;
 }
 
 } // namespace NppPlugin

@@ -2,6 +2,8 @@
 #include <Windowsx.h>
 #include <commctrl.h>
 #include <richedit.h>
+#include <iterator>
+#include <boost/range/algorithm/copy.hpp>
 
 #include "OpenFileDialog.hpp"
 #include "OpenFileDialogDef.h"
@@ -62,13 +64,17 @@ void OpenFileDialog::onGridDoubleClick()
 void OpenFileDialog::onSearchClick()
 {
 	s_lastUsedNamePattern = m_fileNamePattern.getContent();
-    m_gridRows = toSelectItems(findFiles(s_lastUsedNamePattern, m_searchDir, m_isCaseSensitiveSearch.isChecked()));
+	m_gridRows.clear();
+	for (const auto& dir : m_searchDirs)
+		boost::range::copy(
+			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked())),
+			std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
 }
 
-void OpenFileDialog::setSearchDir(const std::string& p_dir)
+void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_dirs)
 {
-    m_searchDir = p_dir;
+    m_searchDirs = p_dirs;
 }
 
 std::string OpenFileDialog::getSelectedFile() const
