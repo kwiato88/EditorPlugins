@@ -144,7 +144,7 @@ void OpenFilePlugin::setDirs()
 	PathsSelector<SelectorType::Directory> dirs(m_npp.npp, m_hModule);
     NppLocationGetter locationGetter(m_npp);
 
-	m_searchDirs = dirs.select(m_searchDirs, getFileDir(locationGetter.getFile()));;
+	m_searchDirs = dirs.select(m_searchDirs, getFileDir(locationGetter.getFile()));
 }
 
 } // namespace NppPlugin

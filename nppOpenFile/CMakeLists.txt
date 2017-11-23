@@ -14,6 +14,7 @@ add_library(
     # RESOURCES
     Resource/OpenFileDialog.rc
     Resource/OpenFilePluginDetail.rc
+    ../WinApi/Resource/SelectPathsDialog.rc
 )
 
 target_include_directories(
