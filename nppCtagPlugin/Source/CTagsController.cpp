@@ -101,20 +101,15 @@ void CTagsController::find()
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
         m_messagePrinter->printInfoMessage("Find Tag", e.what());
 	}
-	catch(Plugin::OpenFileException& e)
-	{
-		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Find Tag", e.what());
-	}
 	catch(TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
 	    m_messagePrinter->printInfoMessage("Find Tag", e.what());
 	}
-	catch(Plugin::LocationSetterException& e)
+	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-	    m_messagePrinter->printErrorMessage("Find Tag", e.what());
+		m_messagePrinter->printErrorMessage("Find Tag", e.what());
 	}
 }
 
@@ -142,25 +137,15 @@ void CTagsController::showTagInfo(const std::string& p_tagName)
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Tag Info", e.what());
 	}
-	catch(Plugin::OpenFileException& e)
-	{
-		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag Info", e.what());
-	}
 	catch(TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
 	    m_messagePrinter->printInfoMessage("Tag Info", e.what());
 	}
-	catch(Plugin::LocationSetterException& e)
-	{
-		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-	    m_messagePrinter->printErrorMessage("Tag Info", e.what());
-	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("ERROR", std::string("unknown exception") + e.what());
+		m_messagePrinter->printErrorMessage("Tag Info", e.what());
 	}
 }
 
@@ -231,12 +216,18 @@ void CTagsController::generateTags()
 	}
 	catch (Plugin::UserInputError& e)
 	{
+		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
 	}
 	catch (GenerateTagsException& e)
 	{
 		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
+	}
+	catch (std::exception& e)
+	{
+		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
+		m_messagePrinter->printErrorMessage("Gen Tags", e.what());
 	}
 }
 
@@ -277,17 +268,12 @@ void CTagsController::tagsSearch()
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Tag search", e.what());
 	}
-	catch (Plugin::OpenFileException& e)
-	{
-		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag search", e.what());
-	}
 	catch (TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Tag search", e.what());
 	}
-	catch (Plugin::LocationSetterException& e)
+	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printErrorMessage("Tag search", e.what());
@@ -310,17 +296,12 @@ void CTagsController::tagHierarchy()
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Tag hierarchy", e.what());
 	}
-	catch (Plugin::OpenFileException& e)
-	{
-		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag hierarchy", e.what());
-	}
 	catch (TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printInfoMessage("Tag hierarchy", e.what());
 	}
-	catch (Plugin::LocationSetterException& e)
+	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
 		m_messagePrinter->printErrorMessage("Tag hierarchy", e.what());
