@@ -140,4 +140,12 @@ TEST_F(CppTagBuilderTS, shouldParseTagWithTemplateBaseClass)
 	asserEq(expected, invokeBuilder(fileds));
 }
 
+TEST_F(CppTagBuilderTS, shouldParseTagWithMultipleTemplateBaseClass)
+{
+	std::vector<Field> fileds = list_of(Field("inherits", "TemplateBase<<arg1,a::arg2< a>, arg3 > >"));
+	CppTag expected = buildTag(tagName, CppTag::Kind::None, CppTag::Access::None, "", "", { "TemplateBase" });
+
+	asserEq(expected, invokeBuilder(fileds));
+}
+
 } // namespace CTagsPlugin
