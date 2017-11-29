@@ -43,24 +43,25 @@ CppTag::Access getAcces(const ExtensionFields& p_fields)
     return p_fields.getValue<CppTag::Access>("access", valueToAccess, CppTag::Access::None);
 }
 
-boost::optional<std::string> findParentName(const ExtensionFields& p_fields)
+std::string findParentName(const ExtensionFields& p_fields)
 {
 	using boost::assign::list_of;
 	static const std::set<std::string> parentTypes = list_of("class")("struct")("union")("namespace")("enum");
 	for (const auto& parentType : parentTypes)
 		if (p_fields.hasField(parentType))
 			return p_fields.getStringValue(parentType);
-	return boost::none;
+	return "";
 }
 
 std::string appendParentName(const std::string& p_tagName, const ExtensionFields& p_fields)
 {
     auto parentName = findParentName(p_fields);
-    return (parentName ? (parentName.get() + "::" + p_tagName) : p_tagName);
+    return ((!parentName.empty()) ? (parentName + "::" + p_tagName) : p_tagName);
 }
 
 std::string cutTemplateParameters(const std::string& p_classesNames)
 {
+	//TODO: check if geting rid of regex will speed up
 	return std::regex_replace(p_classesNames, std::regex("<.*>"), "");
 }
 

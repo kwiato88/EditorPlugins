@@ -158,19 +158,17 @@ TagHolder returnBaseTag(const Tag& p_baseTag, const ExtensionFields&)
     return p_baseTag;
 }
 
-boost::optional<std::string> getLanguage(const ExtensionFields& fields)
+std::string getLanguage(const ExtensionFields& fields)
 {
-	if (fields.hasField("language"))
-		return fields.getStringValue("language");
-	return boost::none;
+	return fields.getStringValue("language", "");
 }
 
-TagBuilder getLanguageBuilder(const boost::optional<std::string>& p_language)
+TagBuilder getLanguageBuilder(const std::string& p_language)
 {
     static const auto builders = buildTagBuilders();
-    if(static_cast<bool>(p_language))
+    if(!p_language.empty())
     {
-        auto builder = builders.find(p_language.get());
+        auto builder = builders.find(p_language);
         if(builder != builders.end())
             return builder->second;
     }
