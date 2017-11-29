@@ -133,11 +133,11 @@ bool validateTag(const std::string& p_TagFileLine)
 
 void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const ExtensionFields& p_fields)
 {
-	std::vector<std::string> l_tag;
-	boost::split(l_tag, p_TagFileLine, boost::is_any_of("\t")); // TODO: Performance: consder removing spit and serach for first and second tab instead
+	auto firstSeparator = p_TagFileLine.find('\t');
+	auto secondSeparator = p_TagFileLine.find('\t', firstSeparator + 1);
+	p_outTag.name = p_TagFileLine.substr(0, firstSeparator);
+	p_outTag.path = p_TagFileLine.substr(firstSeparator + 1, secondSeparator - firstSeparator - 1);
 
-	p_outTag.name = l_tag[0];
-	p_outTag.path = l_tag[1];
 	p_outTag.addr = parseAddrField(p_TagFileLine);
 	fixAddr(p_outTag.addr);
 	p_outTag.isFileScoped = p_fields.hasField("file");
