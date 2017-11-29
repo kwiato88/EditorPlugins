@@ -34,6 +34,7 @@ public:
 	void open();
     void openFile();
     void setDirs();
+	void setDirsSafe();
 
 	static const int s_funcNum = 2;
 

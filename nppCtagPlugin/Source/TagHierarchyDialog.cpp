@@ -20,6 +20,10 @@ void TagHierarchyDialog::onInit()
 	m_baseTags.init(getItem(ResourceId(ID_TREE_BASE_TAGS)));
 	m_derivedTags.addRoot(m_derivedTagsData);
 	m_baseTags.addRoot(m_baseTagsData);
+	//TODO: replace with redraw when WinApiUtil is updated
+	//redraw();
+	InvalidateRect(m_self, NULL, true);
+	UpdateWindow(m_self);
 }
 
 void TagHierarchyDialog::setDerivedTags(const Node& p_tagsTree)

@@ -21,7 +21,7 @@ void fun_open()
 
 void fun_setDirs()
 {
-    g_plugin.setDirs();
+    g_plugin.setDirsSafe();
 }
 
 //static ShortcutKey switchFileSk = {false, false, false, VK_F9};
@@ -78,7 +78,7 @@ void OpenFilePlugin::create()
 
 void OpenFilePlugin::initFunctionsTable()
 {
-	setCommand(0, TEXT("Open File"),      fun_open,   NULL);
+	setCommand(0, TEXT("Open File"),       fun_open,   NULL);
     setCommand(1, TEXT("Set search dirs"), fun_setDirs, NULL);
 }
 
@@ -145,6 +145,19 @@ void OpenFilePlugin::setDirs()
     NppLocationGetter locationGetter(m_npp);
 
 	m_searchDirs = dirs.select(m_searchDirs, getFileDir(locationGetter.getFile()));
+}
+
+void OpenFilePlugin::setDirsSafe()
+{
+	try
+	{
+		setDirs();
+	}
+	catch (const std::exception& e)
+	{
+		NppMessagePrinter printer(m_npp.npp, m_hModule);
+		printer.printErrorMessage("Set dir", e.what());
+	}
 }
 
 } // namespace NppPlugin
