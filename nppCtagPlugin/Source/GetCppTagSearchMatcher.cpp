@@ -12,7 +12,7 @@ CppSearchMatcherGetter::CppSearchMatcherGetter(Handle& p_parrent, InstanceHandle
 CTagsPlugin::TagMatcher CppSearchMatcherGetter::operator()()
 {
 	CppSearchDialog dialog(m_hModule, m_parrent);
-	if (dialog.show() == CppSearchDialog::BUTTON_OK)
+	if (dialog.show() == Dialog::RESULT_OK)
 		return dialog.getTagMatcher();
 	throw Plugin::UserInputError("No cpp tag attributes selected");
 }

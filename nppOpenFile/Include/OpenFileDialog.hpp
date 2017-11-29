@@ -16,9 +16,6 @@ namespace WinApi
 class OpenFileDialog : public Dialog
 {
 public:
-    static const int BUTTON_OK = 1;
-    static const int BUTTON_CANCEL = 0;
-
     OpenFileDialog(WinApi::InstanceHandle p_hInstance, WinApi::Handle p_parentWindow);
 
     void setSearchDirs(const std::vector<std::string>& p_dirs);

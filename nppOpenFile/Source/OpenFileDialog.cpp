@@ -48,12 +48,12 @@ void OpenFileDialog::onOkClick()
     {
         m_selectedFile = "";
     }
-    close(BUTTON_OK);
+    close(RESULT_OK);
 }
 
 void OpenFileDialog::onCancleClick()
 {
-    close(BUTTON_CANCEL);
+    close(RESULT_CANCEL);
 }
 
 void OpenFileDialog::onGridDoubleClick()

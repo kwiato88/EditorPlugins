@@ -22,7 +22,7 @@ std::string TreeViewFileHierarchySelector::select(const FileHierarchy& p_files) 
 {
 	WinApi::TreeDialog dialog(hInstance, parent);
 	dialog.setTreeNodes({ buildNode(p_files) });
-	if (dialog.show() == WinApi::TreeDialog::BUTTON_OK)
+	if (dialog.show() == WinApi::Dialog::RESULT_OK)
 	{
 		const auto* file = dialog.getSelectedItemContext<std::string>();
 		return file == nullptr ? std::string() : *file;

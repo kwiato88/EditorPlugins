@@ -7,9 +7,6 @@ namespace WinApi
 class TagHierarchyDialog : public Dialog
 {
 public:
-	static const int BUTTON_OK = 1;
-	static const int BUTTON_CANCEL = 0;
-
 	TagHierarchyDialog(InstanceHandle p_hInstance, Handle p_parent);
 
 	void setDerivedTags(const Node& p_tagsTree);

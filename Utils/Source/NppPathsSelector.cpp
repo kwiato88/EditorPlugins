@@ -34,7 +34,7 @@ std::vector<std::string> PathsSelector<selector>::select(const std::vector<std::
     WinApi::SelectPathsDialog<getSelectorType<selector>()> l_dialog(m_hModule, m_npp);
     l_dialog.setInitalPath(p_startingPath);
     l_dialog.setPaths(p_initialPaths);
-    if(l_dialog.show() == WinApi::SelectPathsDialog<getSelectorType<selector>()>::BUTTON_OK)
+    if(l_dialog.show() == WinApi::Dialog::RESULT_OK)
         return l_dialog.getPaths();
     else
         return p_initialPaths;

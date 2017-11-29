@@ -16,8 +16,6 @@ namespace WinApi
 class CppSearchDialog : public Dialog
 {
 public:
-	static const int BUTTON_OK = 1;
-	static const int BUTTON_CANCEL = 0;
 	CppSearchDialog(InstanceHandle p_hInstance, Handle p_parent);
 
 	CTagsPlugin::TagMatcher getTagMatcher();

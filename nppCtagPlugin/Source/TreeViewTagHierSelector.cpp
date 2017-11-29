@@ -36,7 +36,7 @@ boost::optional<TagHolder> TreeViewTagHierSelector::select(const TagHierarchy& p
 	TagNamePrinter printer;
 	dialog.setBaseTags(buildNode(p_hier.upHierarchy, printer));
 	dialog.setDerivedTags(buildNode(p_hier.downHierarchy, printer));
-	if (dialog.show() == WinApi::TagHierarchyDialog::BUTTON_OK)
+	if (dialog.show() == WinApi::Dialog::RESULT_OK)
 	{
 		const auto* selectedTag = dialog.getSelectedContext<TagHolder>();
 		return selectedTag == nullptr ? boost::optional<TagHolder>() : TagHolder(*selectedTag);

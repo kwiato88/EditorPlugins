@@ -107,13 +107,13 @@ void CppSearchDialog::onOkClick()
 	updateSelectedAccesses();
 	m_selectedNamePattern = m_namePattern.getContent();
 	s_lastUsedNamePattern = m_selectedNamePattern;
-	close(BUTTON_OK);
+	close(RESULT_OK);
 }
 
 void CppSearchDialog::onCancelClck()
 {
 	m_selectedNamePattern = m_namePattern.getContent();
-	close(BUTTON_CANCEL);
+	close(RESULT_CANCEL);
 }
 
 std::string CppSearchDialog::logSelectedAtt()

@@ -123,7 +123,7 @@ void OpenFilePlugin::openFile()
     WinApi::OpenFileDialog dialog(m_hModule, m_npp.npp);
     dialog.setSearchDirs(getSerachDirs());
     int result = dialog.show();
-    if(result == WinApi::OpenFileDialog::BUTTON_OK)
+    if(result == WinApi::Dialog::RESULT_OK)
     {
         NppLocationSetter setter(m_npp);
         setter.setFile(dialog.getSelectedFile());

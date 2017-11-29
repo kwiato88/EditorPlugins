@@ -20,10 +20,7 @@ void TagHierarchyDialog::onInit()
 	m_baseTags.init(getItem(ResourceId(ID_TREE_BASE_TAGS)));
 	m_derivedTags.addRoot(m_derivedTagsData);
 	m_baseTags.addRoot(m_baseTagsData);
-	//TODO: replace with redraw when WinApiUtil is updated
-	//redraw();
-	InvalidateRect(m_self, NULL, true);
-	UpdateWindow(m_self);
+	redraw();
 }
 
 void TagHierarchyDialog::setDerivedTags(const Node& p_tagsTree)
@@ -39,12 +36,12 @@ void TagHierarchyDialog::onOkClick()
 {
 	if (m_currentTags != nullptr)
 		m_selectedNodeContext = m_currentTags->getSelectedItemContext();
-	close(BUTTON_OK);
+	close(RESULT_OK);
 }
 void TagHierarchyDialog::onCancelClick()
 {
 	m_selectedNodeContext = nullptr;
-	close(BUTTON_CANCEL);
+	close(RESULT_CANCEL);
 }
 
 void TagHierarchyDialog::setBaseTagsAsCurrent()
