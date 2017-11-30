@@ -182,4 +182,30 @@ TEST_F(CachedCtagsPerformanceTests, findTagByName)
 	printResult();
 }
 
+TEST_F(CachedCtagsPerformanceTests, findAllComplexTagsInFile)
+{
+	auto alwaysTrue = [](const Tag&) -> bool {return true; };
+	tagsReaderWithCache->findTag(alwaysTrue);
+	for (int i = 0; i < c_numberOfIterations; ++i)
+	{
+		boost::timer tm;
+		auto tags = tagsReaderWithCache->findTag([](const Tag& t) { return t.isComplex(); });
+		storeResult(tm.elapsed());
+	}
+	printResult();
+}
+
+TEST_F(CachedCtagsPerformanceTests, goToChildTag)
+{
+	auto alwaysTrue = [](const Tag&) -> bool {return true; };
+	tagsReaderWithCache->findTag(alwaysTrue);
+	for (int i = 0; i < c_numberOfIterations; ++i)
+	{
+		boost::timer tm;
+		tagsNavigatorCache.goToChildTag("basic_ptree");
+		storeResult(tm.elapsed());
+	}
+	printResult();
+}
+
 }
