@@ -140,9 +140,25 @@ TEST_F(CppTagBuilderTS, shouldParseTagWithTemplateBaseClass)
 	asserEq(expected, invokeBuilder(fileds));
 }
 
-TEST_F(CppTagBuilderTS, shouldParseTagWithMultipleTemplateBaseClass)
+TEST_F(CppTagBuilderTS, shouldParseTagWithTwoTemplateBaseClasses)
+{
+	std::vector<Field> fileds = list_of(Field("inherits", "TemplateBase1< arg1, arg3>,TemplateBase2<arg3 >"));
+	CppTag expected = buildTag(tagName, CppTag::Kind::None, CppTag::Access::None, "", "", { "TemplateBase1", "TemplateBase2" });
+
+	asserEq(expected, invokeBuilder(fileds));
+}
+
+TEST_F(CppTagBuilderTS, shouldParseTagWithResursiveTemplateParamsInBaseClass)
 {
 	std::vector<Field> fileds = list_of(Field("inherits", "TemplateBase<<arg1,a::arg2< a>, arg3 > >"));
+	CppTag expected = buildTag(tagName, CppTag::Kind::None, CppTag::Access::None, "", "", { "TemplateBase" });
+
+	asserEq(expected, invokeBuilder(fileds));
+}
+
+TEST_F(CppTagBuilderTS, shouldParseTagWithMissingEndMarkerOfTemplateParamsInBaseClass)
+{
+	std::vector<Field> fileds = list_of(Field("inherits", "TemplateBase<<arg1,a::arg2< a>, arg3 >"));
 	CppTag expected = buildTag(tagName, CppTag::Kind::None, CppTag::Access::None, "", "", { "TemplateBase" });
 
 	asserEq(expected, invokeBuilder(fileds));

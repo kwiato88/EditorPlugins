@@ -58,15 +58,29 @@ std::string appendParentName(const std::string& p_tagName, const ExtensionFields
     return ((!parentName.empty()) ? (parentName + "::" + p_tagName) : p_tagName);
 }
 
+bool removeTemplateParamsFromClass(std::string& p_classesNames)
+{
+	auto templateParamsBegin = p_classesNames.find('<');
+	if (templateParamsBegin == std::string::npos)
+		return false;
+	size_t templateParamsTokensCount = 1;
+	auto templateParamsEnd = templateParamsBegin + 1;
+	for (; templateParamsEnd < p_classesNames.size(); ++templateParamsEnd)
+	{
+		if (p_classesNames[templateParamsEnd] == '<')
+			++templateParamsTokensCount;
+		if (p_classesNames[templateParamsEnd] == '>')
+			if (--templateParamsTokensCount == 0)
+				break;
+	}
+	p_classesNames.erase(templateParamsBegin, templateParamsEnd - templateParamsBegin + 1);
+	return true;
+}
+
 std::string cutTemplateParameters(std::string p_classesNames)
 {
-	//TODO: add UT for 2 template base classes
-	//return std::regex_replace(p_classesNames, std::regex("<.*>"), "");
-	auto templateParamsBegin = p_classesNames.find('<');
-	auto templateParamsEnd = p_classesNames.rfind('>');
-	if (templateParamsBegin == std::string::npos || templateParamsEnd == std::string::npos)
-		return p_classesNames;
-	return p_classesNames.erase(templateParamsBegin, templateParamsEnd - templateParamsBegin + 1);
+	while(removeTemplateParamsFromClass(p_classesNames));
+	return p_classesNames;
 }
 
 std::vector<std::string> getBaseClasses(const ExtensionFields& p_fields)
