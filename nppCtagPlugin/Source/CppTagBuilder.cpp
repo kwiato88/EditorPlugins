@@ -1,7 +1,6 @@
 #include <map>
 #include <set>
 #include <list>
-#include <regex>
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -59,10 +58,15 @@ std::string appendParentName(const std::string& p_tagName, const ExtensionFields
     return ((!parentName.empty()) ? (parentName + "::" + p_tagName) : p_tagName);
 }
 
-std::string cutTemplateParameters(const std::string& p_classesNames)
+std::string cutTemplateParameters(std::string p_classesNames)
 {
-	//TODO: check if geting rid of regex will speed up
-	return std::regex_replace(p_classesNames, std::regex("<.*>"), "");
+	//TODO: add UT for 2 template base classes
+	//return std::regex_replace(p_classesNames, std::regex("<.*>"), "");
+	auto templateParamsBegin = p_classesNames.find('<');
+	auto templateParamsEnd = p_classesNames.rfind('>');
+	if (templateParamsBegin == std::string::npos || templateParamsEnd == std::string::npos)
+		return p_classesNames;
+	return p_classesNames.erase(templateParamsBegin, templateParamsEnd - templateParamsBegin + 1);
 }
 
 std::vector<std::string> getBaseClasses(const ExtensionFields& p_fields)

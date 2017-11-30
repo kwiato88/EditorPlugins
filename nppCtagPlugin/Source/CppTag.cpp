@@ -1,6 +1,5 @@
 #include <iterator>
 #include <algorithm>
-#include <regex>
 #include <boost/assign/list_of.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/adaptor/filtered.hpp>
