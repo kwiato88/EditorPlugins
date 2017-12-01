@@ -7,8 +7,8 @@
 //
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 1 VERSIONINFO
-    FILEVERSION     1,6,1,0
-    PRODUCTVERSION  1,6,1,0
+    FILEVERSION     1,7,0,0
+    PRODUCTVERSION  1,7,0,0
     FILEOS          VOS_UNKNOWN
     FILETYPE        VFT_DLL
     FILESUBTYPE     VFT2_UNKNOWN
@@ -22,14 +22,14 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
             VALUE "Comments", ""
             VALUE "CompanyName", ""
             VALUE "FileDescription", "CTags plugin for Notepad++"
-            VALUE "FileVersion", "1.6.1.0"
+            VALUE "FileVersion", "1.7.0.0"
             VALUE "InternalName", ""
             VALUE "LegalCopyright", ""
             VALUE "LegalTrademarks", ""
             VALUE "OriginalFilename", "nppCTagPlugin.dll"
             VALUE "PrivateBuild", ""
             VALUE "ProductName", "nppCTagPlugin"
-            VALUE "ProductVersion", "1.6.1.0"
+            VALUE "ProductVersion", "1.7.0.0"
             VALUE "SpecialBuild", ""
         }
     }
