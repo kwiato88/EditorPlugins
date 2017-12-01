@@ -3,11 +3,13 @@
 Package of Notepad++ plugins I use for SW development.  
 Plugins binaries can be donwloaded [here]({{ "/assets/nppPluginsBin.zip" | absolute_url }}).
 
+
 ## Open file plugin
 
-Recursively search for file by regex in specified directory.  
+Recursively search for file by regex in specified directories.  
 Functions:
- * list and jump to file with name matching given regex
+ * list and jump to file with name matching given regex.
+
 
 ## Include browser plugin
 
@@ -15,9 +17,19 @@ Parses files/modules includes hierarchy in specified directories.
 Supported languages: C/C++, ttcn3.  
 Functions:
 
- * parse includes hierarchy for specified directory
- * clear parsed hierarchy
- * view and jump to file/module in includes hierarchy for current file/module
+ * parse includes hierarchy for specified directory;
+ * clear parsed hierarchy;
+ * view and jump to file/module in includes hierarchy for current file/module;
+ * provides interface for other plugins.
+
+
+## Include browser plugin client
+
+Includes static library that should be used to send commands 
+to include browser plugin from other plugin. Library uses boost libraries 
+in version 1.61.0. Includes also example plugin using provided library. 
+Client plugin needs to link required boost libraries.
+
 
 ## Header/Source switcher plugin
 
@@ -47,9 +59,11 @@ Allowed directories mapping:
    (recursive generation for directories);
  * show children tags for selected tag (c, c++);
  * show tag hierarchy for selected tag (c, c++);
- * search tag bases on its attributes (c, c++);
+ * search tag based on its attributes (c, c++);
  * supports extension fields;
- * remembers tag files paths after application restart.
+ * remembers tag files paths after application restart;
+ * provides interface for other plugins;
+ * tag files should include absolute paths.
 
 ### Instalation:
  * copy plugin binary to Notepad++ plugins directory;
@@ -103,13 +117,13 @@ __Description:__
      configuration file plugin will assume 'readtags.exe' is in
      directory specified in environment variable 'PATH'.
 
-   * selectTagsView : Select tags view type. Values: 'gridView' or
+   * selectTagsView : Select tags dialog type. Values: 'gridView' or
      'listView' (default: 'gridView')
 
    * tagsReader : tag file reader type. Values: 'internal'
      or 'readTagsExe' (default: 'interal').
      * 'internal' - use plugin
-       internal implementation to search in tag file
+       internal implementation to search in tag file (faster then other option)
      * 'readTagsExe' - use external tool to read tag file.
        See 'readTagsPath' configuration parameter
 
@@ -134,3 +148,11 @@ __Description:__
    * severity: logging severity. Values: 'debug', 'info', 'warning', 'error' (default: 'info')
 
  * [TagFiles] : Last used tags files. Section updated by plugin
+
+
+ ## CTags plugin client
+
+Includes static library that should be used to send commands to CTags plugin 
+from other plugin. Library uses boost libraries in version 1.61.0. 
+Includes also example plugin using provided library. Client plugin needs 
+to link required boost libraries.
