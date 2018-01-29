@@ -272,9 +272,9 @@ void TagsPlugin::initFunctionsTable()
     setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
     setSeparator();
     setCommand(TEXT("About"),              fun_info,             NULL);
-	setSeparator();
-    setCommand(TEXT("test 1"), myTest1, NULL);
-	setCommand(TEXT("test 2"), myTest2, NULL);
+	//setSeparator();
+    //setCommand(TEXT("test 1"), myTest1, NULL);
+	//setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 /**

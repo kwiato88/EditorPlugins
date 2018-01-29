@@ -52,7 +52,7 @@ public:
 	void generateTagsFile();
 	void info();
 
-	static const int s_funcNum = 16;
+	static const int s_funcNum = 13;// 16;
 
 	bool m_isInitialized;
 	WinApi::InstanceHandle m_hModule;
