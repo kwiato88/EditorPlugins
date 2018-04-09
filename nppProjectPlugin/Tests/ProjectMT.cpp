@@ -174,4 +174,24 @@ TEST_F(ProjectMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 	sut.openProject();
 }
 
+TEST_F(ProjectMT, shouldOpenAndCloseProject)
+{
+	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+
+	EXPECT_CALL(selectorMock, select(_))
+		.WillOnce(Return(testsRootPath + "Workspace\\SecondProject"));
+	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
+	sut.openProject();
+	sut.closeProject();
+}
+//MT:
+// - close with invalid workspace
+//   - workspace with invalid path
+//   - new project
+//   - close project failed due to invalid workspace
+// - close project will create project dir and file
+//   - workspace with valid path
+//   - new project
+//   - delete project dir and file if exist
+//   - close project (assert project dir and file created)
 }

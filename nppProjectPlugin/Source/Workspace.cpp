@@ -11,7 +11,14 @@
 
 namespace ProjectMgmt
 {
-
+namespace
+{
+void ensureDirExists(const std::string& p_path)
+{
+	if (!boost::filesystem::exists(p_path) || !boost::filesystem::is_directory(p_path))
+		throw std::runtime_error(std::string("Workspace dir ") + p_path + " is invalid");
+}
+}
 Workspace::Workspace(Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
 	: projectsDir(), printer(p_printer), selector(std::move(p_selector))
 {}
@@ -25,9 +32,8 @@ std::vector<std::string> Workspace::availableProjects() const
 	using namespace boost::filesystem;
 	using namespace boost::adaptors;
 	using namespace boost::range;
-	if (!exists(projectsDir) || !is_directory(projectsDir))
-		throw std::runtime_error(std::string("Workspace dir ") + projectsDir + " is invalid");
-	
+
+	ensureDirExists(projectsDir);
 	std::vector<std::string> projects;
 	copy(
 		boost::make_iterator_range(directory_iterator(projectsDir), directory_iterator())
@@ -57,7 +63,10 @@ void Workspace::openProject()
 	try
 	{
 		if (currentProject == nullptr)
+		{
 			currentProject = std::make_unique<Project>(open(select(availableProjects())));
+			printer.printInfoMessage("Open Project", std::string("Opened project: ") + currentProject->getName());
+		}
 		else
 			printer.printInfoMessage("Open Project", "There is already one project opened. Close it first.");
 	}
@@ -69,9 +78,9 @@ void Workspace::openProject()
 
 void Workspace::close(const Project& p_project) const
 {
+	ensureDirExists(projectsDir); //TODO: can be tested with newProject
+	//TODO: create project dir if not existing; needed after newProject is implemented; can be tested with newProject
 	boost::property_tree::json_parser::write_json(projectsDir + "\\" + p_project.getName() + "\\project.json", p_project.exportData());
-	printer.printInfoMessage("close",
-		std::string("project " + p_project.getName() + " saved to " + projectsDir + "\\" + p_project.getName() + "\\project.json"));
 }
 
 std::string Workspace::currentProjectName() const
@@ -81,19 +90,21 @@ std::string Workspace::currentProjectName() const
 
 void Workspace::closeProject()
 {
-	//TODO: should restore tag files paths after close?, what if failed to close project? set current to null? remove debug prints, MTs
+	//TODO: should restore tag files paths after close?
 	try
 	{
 		if (currentProject != nullptr)
 		{
 			close(*currentProject);
+			printer.printInfoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
 			currentProject.reset();
 		}
 	}
 	catch (std::exception& e)
 	{
 		printer.printErrorMessage("Close Project",
-			std::string("Failed to save project ") + currentProjectName() + " to dir " + projectsDir + ". Detail: " + e.what());
+			std::string("Error occured while closing project ") + currentProjectName() + ". Releasing project. Detail: " + e.what());
+		currentProject.reset();
 	}
 }
 

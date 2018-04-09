@@ -5,3 +5,4 @@ dir .\Build\nppHeaderSourceSwitcher\Debug\*Tests.exe | ForEach-Object { & $_.Ful
 dir .\Build\nppIncludeBrowser\Debug\*Tests.exe | ForEach-Object { & $_.FullName }
 #dir .\Build\nppOpenFile\Debug\*Tests.exe | ForEach-Object { & $_.FullName }
 dir .\Build\nppCtagPlugin\Release\*MT.exe | ForEach-Object { & $_.FullName }
+dir .\Build\nppProjectPlugin\Release\*MT.exe | ForEach-Object { & $_.FullName }
