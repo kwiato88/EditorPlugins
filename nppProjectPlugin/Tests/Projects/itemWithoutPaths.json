@@ -1,0 +1,11 @@
+{
+    "name": "NewProject",
+    "items": [
+        {
+            "sourcePath": "d:\\dir1",
+            "tagFilePath": "d:\\dir1\\file1.txt"
+        },
+        {
+        }
+    ]
+}

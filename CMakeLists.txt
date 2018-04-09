@@ -16,6 +16,7 @@ add_subdirectory(nppOpenFile)
 add_subdirectory(nppIncludeBrowser)
 add_subdirectory(nppHeaderSourceSwitcher)
 add_subdirectory(nppCTagPlugin)
+add_subdirectory(nppProjectPlugin)
 
 
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
