@@ -16,16 +16,26 @@ namespace
 void ensureDirExists(const std::string& p_path)
 {
 	if (!boost::filesystem::exists(p_path) || !boost::filesystem::is_directory(p_path))
-		throw std::runtime_error(std::string("Workspace dir ") + p_path + " is invalid");
+		throw std::runtime_error(std::string("Given dir ") + p_path + " is invalid");
 }
 }
 Workspace::Workspace(Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
-	: projectsDir(), printer(p_printer), selector(std::move(p_selector))
+	: projectFileName("project.json"), projectsDir(), printer(p_printer), selector(std::move(p_selector))
 {}
 
 Workspace::Workspace(Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector, const std::string& p_dir)
- : projectsDir(p_dir), printer(p_printer), selector(std::move(p_selector))
+ : projectFileName("project.json"), projectsDir(p_dir), printer(p_printer), selector(std::move(p_selector))
 {}
+
+std::string Workspace::projectDir(const std::string& p_projectName) const
+{
+	return projectsDir + "\\" + p_projectName;
+}
+
+std::string Workspace::projectFile(const std::string& p_projectName) const
+{
+	return projectDir(p_projectName) + "\\" + projectFileName;
+}
 
 std::vector<std::string> Workspace::availableProjects() const
 {
@@ -53,7 +63,7 @@ std::string Workspace::select(const std::vector<std::string>& p_projectsDirsPath
 Project Workspace::open(const std::string& p_projectDirPath) const
 {
     boost::property_tree::ptree projectData;
-    boost::property_tree::json_parser::read_json(p_projectDirPath + "\\project.json", projectData);
+    boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
     return Project{projectData};
 }
 
@@ -78,9 +88,9 @@ void Workspace::openProject()
 
 void Workspace::close(const Project& p_project) const
 {
-	ensureDirExists(projectsDir); //TODO: can be tested with newProject
-	//TODO: create project dir if not existing; needed after newProject is implemented; can be tested with newProject
-	boost::property_tree::json_parser::write_json(projectsDir + "\\" + p_project.getName() + "\\project.json", p_project.exportData());
+	ensureDirExists(projectsDir);
+	ensureDirExists(projectDir(p_project.getName()));
+	boost::property_tree::json_parser::write_json(projectFile(p_project.getName()), p_project.exportData());
 }
 
 std::string Workspace::currentProjectName() const
@@ -108,19 +118,33 @@ void Workspace::closeProject()
 	}
 }
 
-void Workspace::newProject()
+Project Workspace::newPr(const std::string& p_projectName) const
 {
-	printer.printInfoMessage("Project", "Not supported");
-	return;
-    if(currentProject == nullptr)
-        currentProject = std::make_unique<Project>("NewProject", std::vector<Elem>());
-    else
-		printer.printInfoMessage("New Project", "There is already one project opened. Close it first.");
+	using namespace boost::filesystem;
+	ensureDirExists(projectsDir);
+	if (exists(projectDir(p_projectName)))
+		throw std::runtime_error(std::string("Project ") + p_projectName + " already exists");
+	create_directory(projectDir(p_projectName));
+	return Project{ p_projectName, std::vector<Elem>() };
 }
 
-void Workspace::addRemoveItemInProject()
+void Workspace::newProject()
 {
-	printer.printInfoMessage("Project", "Not supported");
+	//TODO: get project name from user
+	try
+	{
+		if (currentProject == nullptr)
+		{
+			currentProject = std::make_unique<Project>(newPr("NewProject"));
+			printer.printInfoMessage("New Project", std::string("New project: ") + currentProject->getName());
+		}
+		else
+			printer.printInfoMessage("New Project", "There is already one project opened. Close it first.");
+	}
+	catch (std::exception& e)
+	{
+		printer.printErrorMessage("New Project", std::string("Failed to create new project. Detail: ") + e.what());
+	}
 }
 
 void Workspace::refreshProject()

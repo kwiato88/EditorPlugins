@@ -19,7 +19,6 @@ public:
 	virtual void openProject();
 	virtual void closeProject();
 	virtual void newProject();
-	virtual void addRemoveItemInProject();
 	virtual void refreshProject();
 
 private:
@@ -27,8 +26,12 @@ private:
 	std::string select(const std::vector<std::string>& p_projectsDirsPaths) const;
 	Project open(const std::string& p_projectDirPath) const;
 	void close(const Project& p_project) const;
+	Project newPr(const std::string& p_projectName) const;
 	std::string currentProjectName() const;
+	std::string projectDir(const std::string& p_projectName) const;
+	std::string projectFile(const std::string& p_projectName) const;
 
+	const std::string projectFileName;
 	std::string projectsDir;
 	std::unique_ptr<Project> currentProject;
 	Plugin::IMessagePrinter& printer;
