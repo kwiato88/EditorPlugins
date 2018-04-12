@@ -131,6 +131,7 @@ Project Workspace::newPr(const std::string& p_projectName) const
 void Workspace::newProject()
 {
 	//TODO: get project name from user
+	//TODO: set paths to tag files after new
 	try
 	{
 		if (currentProject == nullptr)

@@ -1,0 +1,40 @@
+#include <windows.h>
+#include <commctrl.h>
+#include <richedit.h>
+
+//
+// Version Information resources
+//
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+1 VERSIONINFO
+    FILEVERSION     0,3,0,0
+    PRODUCTVERSION  0,3,0,0
+    FILEOS          VOS_UNKNOWN
+    FILETYPE        VFT_DLL
+    FILESUBTYPE     VFT2_UNKNOWN
+    FILEFLAGSMASK   0
+    FILEFLAGS       0
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "080901B5"
+        {
+            VALUE "Comments", ""
+            VALUE "CompanyName", ""
+            VALUE "FileDescription", "Project management plugin for Notepad++"
+            VALUE "FileVersion", "0.3.0.0"
+            VALUE "InternalName", ""
+            VALUE "LegalCopyright", ""
+            VALUE "LegalTrademarks", ""
+            VALUE "OriginalFilename", "nppProjectPlugin.dll"
+            VALUE "PrivateBuild", ""
+            VALUE "ProductName", "nppProjectPlugin"
+            VALUE "ProductVersion", "0.3.0.0"
+            VALUE "SpecialBuild", ""
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0809, 0x01B5
+    }
+}
