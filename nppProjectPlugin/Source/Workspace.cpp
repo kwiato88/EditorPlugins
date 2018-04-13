@@ -18,6 +18,31 @@ void ensureDirExists(const std::string& p_path)
 	if (!boost::filesystem::exists(p_path) || !boost::filesystem::is_directory(p_path))
 		throw std::runtime_error(std::string("Given dir ") + p_path + " is invalid");
 }
+
+class ProjectWithTagsNavigation : public Project
+{
+public:
+	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags)
+		: Project(p_name, p_items, p_tags), tags(p_tags), originalTagFiles(p_tags.getTagFiles())
+	{
+		refershCodeNavigation();
+	}
+	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data, ITags& p_tags)
+		: Project(p_data, p_tags), tags(p_tags), originalTagFiles(p_tags.getTagFiles())
+	{
+		refershCodeNavigation();
+	}
+	~ProjectWithTagsNavigation()
+	{
+		//TODO: what will hapen of npp is closed with opened project???
+		// on destroy will try to send msg - will that work???
+		tags.setTagFiles(originalTagFiles);
+	}
+private:
+	ITags& tags;
+	std::vector<std::string> originalTagFiles;
+};
+
 }
 Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
 	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), printer(p_printer), selector(std::move(p_selector))
@@ -63,11 +88,11 @@ std::string Workspace::select(const std::vector<std::string>& p_projectsDirsPath
 	return selector->select(p_projectsDirsPaths);
 }
 
-Project Workspace::open(const std::string& p_projectDirPath) const
+std::unique_ptr<Project> Workspace::open(const std::string& p_projectDirPath) const
 {
     boost::property_tree::ptree projectData;
     boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
-    return Project{projectData, *tags};
+    return std::make_unique<ProjectWithTagsNavigation>(projectData, *tags);
 }
 
 void Workspace::openProject()
@@ -76,9 +101,7 @@ void Workspace::openProject()
 	{
 		if (currentProject == nullptr)
 		{
-			currentProject = std::make_unique<Project>(open(select(availableProjects())));
-			originalTagFiles = tags->getTagFiles();
-			currentProject->refershCodeNavigation();
+			currentProject = open(select(availableProjects()));
 			printer.printInfoMessage("Open Project", std::string("Opened project: ") + currentProject->getName());
 		}
 		else
@@ -109,7 +132,6 @@ void Workspace::closeProject()
 		if (currentProject != nullptr)
 		{
 			close(*currentProject);
-			tags->setTagFiles(originalTagFiles);
 			printer.printInfoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
 			currentProject.reset();
 		}
@@ -122,14 +144,14 @@ void Workspace::closeProject()
 	}
 }
 
-Project Workspace::newPr(const std::string& p_projectName) const
+std::unique_ptr<Project> Workspace::newPr(const std::string& p_projectName) const
 {
 	using namespace boost::filesystem;
 	ensureDirExists(projectsDir);
 	if (exists(projectDir(p_projectName)))
 		throw std::runtime_error(std::string("Project ") + p_projectName + " already exists");
 	create_directory(projectDir(p_projectName));
-	return Project{ p_projectName, std::vector<Elem>(), *tags };
+	return std::make_unique<ProjectWithTagsNavigation>(p_projectName, std::vector<Elem>(), *tags);
 }
 
 void Workspace::newProject()
@@ -139,9 +161,7 @@ void Workspace::newProject()
 	{
 		if (currentProject == nullptr)
 		{
-			currentProject = std::make_unique<Project>(newPr("NewProject"));
-			originalTagFiles = tags->getTagFiles();
-			currentProject->refershCodeNavigation();
+			currentProject = newPr("NewProject");
 			printer.printInfoMessage("New Project", std::string("New project: ") + currentProject->getName());
 		}
 		else

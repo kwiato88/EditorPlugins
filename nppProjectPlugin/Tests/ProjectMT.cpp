@@ -200,7 +200,7 @@ TEST_F(ProjectMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 TEST_F(ProjectMT, shouldOpenSelectedProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique < TagsProxy > (tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 	
 	EXPECT_CALL(selectorMock, select(std::vector<std::string>(
 	{ testsRootPath + "Workspace\\FirstProject", testsRootPath + "Workspace\\SecondProject" }))
@@ -283,8 +283,12 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenOpenProject)
 
 	EXPECT_CALL(selectorMock, select(_))
 		.WillOnce(Return(testsRootPath + "Workspace\\SecondProject"));
-	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
-	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
+		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>()));
+	}
 	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 }
@@ -358,7 +362,7 @@ TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
 	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
 
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
-	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({})));
+	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({}))).Times(2);
 	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
 }
@@ -381,7 +385,5 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
 	sut.newProject();
 	sut.closeProject();
 }
-
-//TODO: should restore tag files paths if failed to open???
 
 }
