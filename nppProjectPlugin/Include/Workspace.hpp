@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "IMessagePrinter.hpp"
+#include "UI.hpp"
 #include "Project.hpp"
 #include "IProjectsSelector.hpp"
 #include "ITags.hpp"
@@ -15,9 +15,9 @@ namespace ProjectMgmt
 class Workspace
 {
 public:
-	Workspace(std::unique_ptr<ITags> p_tags, Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector);
+	Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui, std::unique_ptr<IProjectsSelector> p_selector);
 	Workspace(std::unique_ptr<ITags> p_tags,
-		Plugin::IMessagePrinter& p_printer,
+		Plugin::UI& p_ui,
 		std::unique_ptr<IProjectsSelector> selector,
 		const std::string& p_dir);
 	virtual void openProject();
@@ -36,7 +36,7 @@ private:
 	std::string projectFile(const std::string& p_projectName) const;
 
 	std::unique_ptr<ITags> tags;
-	Plugin::IMessagePrinter& printer;
+	Plugin::UI& ui;
 	std::unique_ptr<IProjectsSelector> selector;
 
 	const std::string projectFileName;

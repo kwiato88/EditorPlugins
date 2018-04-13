@@ -23,7 +23,7 @@ public:
     using Row = std::vector<std::string>;
     virtual int selectRow(
         const std::vector<std::string>& p_columnsTitles,
-        const std::vector<Row> p_table) = 0;
+        const std::vector<Row>& p_table) = 0;
     virtual Row selectRow(
         const std::vector<std::string>& p_columnsTitles,
         const std::vector<Row>& p_table,

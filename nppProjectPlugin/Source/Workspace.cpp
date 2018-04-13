@@ -45,15 +45,15 @@ private:
 };
 
 }
-Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
-	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), printer(p_printer), selector(std::move(p_selector))
+Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui, std::unique_ptr<IProjectsSelector> p_selector)
+	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), ui(p_ui), selector(std::move(p_selector))
 {}
 
 Workspace::Workspace(std::unique_ptr<ITags> p_tags,
-	Plugin::IMessagePrinter& p_printer,
+	Plugin::UI& p_ui,
 	std::unique_ptr<IProjectsSelector> p_selector,
 	const std::string& p_dir)
- : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), printer(p_printer), selector(std::move(p_selector))
+ : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), ui(p_ui), selector(std::move(p_selector))
 {}
 
 std::string Workspace::projectDir(const std::string& p_projectName) const
@@ -103,14 +103,14 @@ void Workspace::openProject()
 		if (currentProject == nullptr)
 		{
 			currentProject = open(select(availableProjects()));
-			printer.printInfoMessage("Open Project", std::string("Opened project: ") + currentProject->getName());
+			ui.infoMessage("Open Project", std::string("Opened project : ") + currentProject->getName());
 		}
 		else
-			printer.printInfoMessage("Open Project", "There is already one project opened. Close it first.");
+			ui.infoMessage("Open Project", "There is already one project opened. Close it first.");
 	}
 	catch (std::exception& e)
 	{
-		printer.printErrorMessage("Open Project", std::string("Failed to open project. Detail: ") + e.what());
+		ui.errorMessage("Open Project", std::string("Failed to open project. Detail: ") + e.what());
 	}
 }
 
@@ -133,13 +133,13 @@ void Workspace::closeProject()
 		if (currentProject != nullptr)
 		{
 			close(*currentProject);
-			printer.printInfoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
+			ui.infoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
 			currentProject.reset();
 		}
 	}
 	catch (std::exception& e)
 	{
-		printer.printErrorMessage("Close Project",
+		ui.errorMessage("Close Project",
 			std::string("Error occured while closing project ") + currentProjectName() + ". Releasing project. Detail: " + e.what());
 		currentProject.reset();
 	}
@@ -163,14 +163,14 @@ void Workspace::newProject()
 		if (currentProject == nullptr)
 		{
 			currentProject = newPr("NewProject");
-			printer.printInfoMessage("New Project", std::string("New project: ") + currentProject->getName());
+			ui.infoMessage("New Project", std::string("New project: ") + currentProject->getName());
 		}
 		else
-			printer.printInfoMessage("New Project", "There is already one project opened. Close it first.");
+			ui.infoMessage("New Project", "There is already one project opened. Close it first.");
 	}
 	catch (std::exception& e)
 	{
-		printer.printErrorMessage("New Project", std::string("Failed to create new project. Detail: ") + e.what());
+		ui.errorMessage("New Project", std::string("Failed to create new project. Detail: ") + e.what());
 	}
 }
 

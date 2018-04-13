@@ -13,6 +13,14 @@ UI::UI(Handle& p_parrent, InstanceHandle& p_hModule)
 	: parrent(p_parrent), hModule(p_hModule)
 {}
 
+std::string UI::cutString(std::string p_string, size_t p_length)
+{
+	if (p_string.size() < p_length)
+		return p_string;
+	else
+		return p_string.substr(0, p_length);
+}
+
 int UI::printMessge(
 	std::string p_title,
 	std::string p_content,
@@ -57,6 +65,7 @@ int UI::select(const std::vector<std::string>& p_list)
 	dialog.show();
 	return dialog.getSelectedItemIndex();
 }
+
 std::string UI::select(const std::vector<std::string>& p_list, const std::string& p_default)
 {
 	try
@@ -72,7 +81,7 @@ std::string UI::select(const std::vector<std::string>& p_list, const std::string
 
 int UI::selectRow(
 	const std::vector<std::string>& p_columnsTitles,
-	const std::vector<Row> p_table)
+	const std::vector<Row>& p_table)
 {
 	if(p_table.empty())
 		return -1;

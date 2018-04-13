@@ -3,7 +3,7 @@
 #include "PluginInterface.h"
 #include "WinApiTypes.hpp"
 #include "EditorData.hpp"
-#include "NppMessagePrinter.hpp"
+#include "WinApiUI.hpp"
 
 #include "Workspace.hpp"
 
@@ -46,7 +46,7 @@ private:
 	int m_numberOfAddedFunctions;
 	bool m_isInitialized;
 
-	NppPlugin::NppMessagePrinter msgPrinter;
+	WinApi::UI ui;
 	std::unique_ptr<ProjectMgmt::Workspace> workspace;
 };
 

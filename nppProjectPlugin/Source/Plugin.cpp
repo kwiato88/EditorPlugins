@@ -27,37 +27,37 @@ void fun_refresh()
 class NotLoadedWorkspace : public ProjectMgmt::Workspace
 {
 public:
-	NotLoadedWorkspace(NppPlugin::NppMessagePrinter& p_printer)
-		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_printer, nullptr, ""), printer(p_printer)
+	NotLoadedWorkspace(Plugin::UI& p_ui)
+		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, nullptr, ""), ui(p_ui)
 	{}
 	void openProject()
 	{
-		printer.printInfoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded yet");
 	}
 	void closeProject()
 	{
-		printer.printInfoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded yet");
 	}
 	void newProject()
 	{
-		printer.printInfoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded yet");
 	}
 	void addRemoveItemInProject()
 	{
-		printer.printInfoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded yet");
 	}
 	void refreshProject()
 	{
-		printer.printInfoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded yet");
 	}
 private:
-	NppPlugin::NppMessagePrinter& printer;
+	Plugin::UI& ui;
 };
 
 
 ProjectPlugin::ProjectPlugin()
-	: m_numberOfAddedFunctions(0), m_isInitialized(false), msgPrinter(m_npp.npp, m_hModule),
-	workspace(std::make_unique<NotLoadedWorkspace>(msgPrinter))
+	: m_numberOfAddedFunctions(0), m_isInitialized(false), ui(m_npp.npp, m_hModule),
+	workspace(std::make_unique<NotLoadedWorkspace>(ui))
 {}
 
 void ProjectPlugin::init(HINSTANCE p_hModule)
@@ -71,7 +71,7 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 		// Factory:: notInitializdWorkspace(), validWorkspace(dirPath)
 		workspace = std::make_unique<ProjectMgmt::Workspace>(
 			std::make_unique<ProjectMgmt::DisabledTags>(),
-			msgPrinter,
+			ui,
 			std::make_unique<ProjectMgmt::GridViewProjectsSelector>(m_npp.npp, m_hModule),
 			workspacePath);
 	}
@@ -131,5 +131,5 @@ void ProjectPlugin::refreshPr()
 {
 	workspace->refreshProject();
 }
-//TODO: candiate for first release: working open, close and refresh
+
 }
