@@ -8,7 +8,7 @@ namespace Plugin
 class Editor
 {
 public:
-    ~Editor() {}
+    virtual ~Editor() {}
 
     virtual std::string getFile() const = 0;
     virtual int getLine() const = 0;
@@ -19,6 +19,6 @@ public:
     virtual void setColumn(int p_column) = 0;
    
     virtual std::string getCurrentWord() const = 0;
-}
+};
 
 }
