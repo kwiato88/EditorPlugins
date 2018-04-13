@@ -47,21 +47,41 @@ bool Elem::operator==(const Elem& p_other) const
 	return sourcePath == p_other.sourcePath && ctagsFilePath == p_other.ctagsFilePath;
 }
 
-Project::Project(const std::string& p_name, const std::vector<Elem>& p_items)
- : name(p_name), items(p_items)
+Project::~Project()
 {}
 
-Project::Project(const boost::property_tree::ptree& p_data)
- : name(p_data.get<std::string>("name", "")), items(getProjcetItems(p_data))
+Project::Project(const std::string& p_name, const std::vector<Elem>& p_items)
+	: Project(p_name, p_items, noTags)
+{}
+
+Project::Project(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags)
+ : name(p_name), items(p_items), tags(p_tags)
 {
 	if (name.empty())
 		throw std::runtime_error("Given project name is empty");
 }
 
+Project::Project(const boost::property_tree::ptree& p_data)
+	: Project(p_data, noTags)
+{}
+
+Project::Project(const boost::property_tree::ptree& p_data, ITags& p_tags)
+	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data), p_tags)
+{}
+
 void Project::refresh()
 {
     for(auto& item : items)
         item.refresh();
+}
+
+void Project::refershCodeNavigation()
+{
+	std::vector<std::string> tagFiles;
+	for (const auto& item : items)
+		if(!item.ctagsFilePath.empty())
+			tagFiles.push_back(item.ctagsFilePath);
+	tags.setTagFiles(tagFiles);
 }
 
 std::string Project::getName() const

@@ -9,6 +9,7 @@
 
 #include "MessagePrinterMock.hpp"
 #include "ProjectSelectorMock.hpp"
+#include "ITagsMock.hpp"
 
 namespace ProjectMgmt
 {
@@ -30,6 +31,26 @@ private:
 	IProjectsSelector& selector;
 };
 
+class TagsProxy : public ITags
+{
+public:
+	TagsProxy(ITags& p_tags) : tags(p_tags) {}
+	void generateTags(const std::string& p_tagFilePath, const std::vector<std::string>& p_sourceDirsPaths)
+	{
+		tags.generateTags(p_tagFilePath, p_sourceDirsPaths);
+	}
+	void setTagFiles(const std::vector<std::string>& p_filesPaths)
+	{
+		tags.setTagFiles(p_filesPaths);
+	}
+	std::vector<std::string> getTagFiles()
+	{
+		return tags.getTagFiles();
+	}
+private:
+	ITags& tags;
+};
+
 struct ProjectMT : public Test
 {
 	ProjectMT()
@@ -37,6 +58,7 @@ struct ProjectMT : public Test
 		rootPath = std::getenv("projectRootPath");
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
 		projectsDirPath = testsRootPath + "Projects\\";
+		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(std::vector<std::string>()));
 	}
 	~ProjectMT()
 	{
@@ -67,6 +89,8 @@ struct ProjectMT : public Test
 	std::string testsRootPath;
 	std::string projectsDirPath;
 	std::string projectDirToCleanup;
+	StrictMock<ITagsMock> tagsMock;
+	NiceMock<ITagsMock> tagsNiceMock;
 	StrictMock<Plugin::MessagePrinterMock> printerMock;
 	StrictMock<ProjectSelectorMock> selectorMock;
 };
@@ -125,10 +149,42 @@ TEST_F(ProjectMT, shouldThrowWhenItemHasNoPathsDefined)
 	ASSERT_THROW(Project{ projectData }, std::runtime_error);
 }
 
+TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt" }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
+	project.refershCodeNavigation();
+}
+
+TEST_F(ProjectMT, shouldIgnoreEmptyTagFilePathDuringRefreshCodeNavigation)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" },
+			Elem{ "d:\\dir2\\dir", "" }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir1\\file1.txt" })));
+	project.refershCodeNavigation();
+}
+
 TEST_F(ProjectMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "notExistingDir"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "notExistingDir");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "notExistingDir");
 	EXPECT_CALL(printerMock, printErrorMessage(_, _));
 	sut.openProject();
 }
@@ -136,7 +192,7 @@ TEST_F(ProjectMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 TEST_F(ProjectMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 {
 	ASSERT_TRUE(doesFileExist(testsRootPath + "WorkspaceFile"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "WorkspaceFile");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "WorkspaceFile");
 	EXPECT_CALL(printerMock, printErrorMessage(_, _));
 	sut.openProject();
 }
@@ -144,7 +200,7 @@ TEST_F(ProjectMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 TEST_F(ProjectMT, shouldOpenSelectedProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique < TagsProxy > (tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 	
 	EXPECT_CALL(selectorMock, select(std::vector<std::string>(
 	{ testsRootPath + "Workspace\\FirstProject", testsRootPath + "Workspace\\SecondProject" }))
@@ -156,7 +212,7 @@ TEST_F(ProjectMT, shouldOpenSelectedProject)
 TEST_F(ProjectMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 	
 	EXPECT_CALL(selectorMock, select(_))
 		.WillOnce(Return(testsRootPath + "Workspace\\FirstProject"));
@@ -169,7 +225,7 @@ TEST_F(ProjectMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 TEST_F(ProjectMT, shouldPrintMessageWhenNoProjectFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
 		testsRootPath + "WorkspaceWithInvalidProjects");
 
 	EXPECT_CALL(selectorMock, select(_))
@@ -181,7 +237,7 @@ TEST_F(ProjectMT, shouldPrintMessageWhenNoProjectFile)
 TEST_F(ProjectMT, shouldPrintMessageWhenProjectFileIsInvalid)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
 		testsRootPath + "WorkspaceWithInvalidProjects");
 
 	EXPECT_CALL(selectorMock, select(_))
@@ -193,7 +249,7 @@ TEST_F(ProjectMT, shouldPrintMessageWhenProjectFileIsInvalid)
 TEST_F(ProjectMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock),
 		testsRootPath + "WorkspaceWithInvalidProjects");
 	InSequence dummy;
 
@@ -211,7 +267,7 @@ TEST_F(ProjectMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 TEST_F(ProjectMT, shouldOpenAndCloseProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 
 	EXPECT_CALL(selectorMock, select(_))
 		.WillOnce(Return(testsRootPath + "Workspace\\SecondProject"));
@@ -220,11 +276,45 @@ TEST_F(ProjectMT, shouldOpenAndCloseProject)
 	sut.closeProject();
 }
 
+TEST_F(ProjectMT, shouldSetTagFilesPathsWhenOpenProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(std::make_unique<TagsProxy>(tagsMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+
+	EXPECT_CALL(selectorMock, select(_))
+		.WillOnce(Return(testsRootPath + "Workspace\\SecondProject"));
+	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
+	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
+	sut.openProject();
+}
+
+TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(std::make_unique<TagsProxy>(tagsMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+
+	std::vector<std::string> originalTagFilesPaths { "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
+	EXPECT_CALL(selectorMock, select(_))
+		.WillOnce(Return(testsRootPath + "Workspace\\SecondProject"));
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+
+		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
+	}
+	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
+
+	sut.openProject();
+	sut.closeProject();
+}
+
 TEST_F(ProjectMT, closingNewProjectShouldCreateProjectDirAndFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -239,7 +329,7 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -254,11 +344,44 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 TEST_F(ProjectMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
-	Workspace sut(printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "NotExistingWorkspace");
+	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "NotExistingWorkspace");
 	EXPECT_CALL(printerMock, printErrorMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace\\NewProject"));
 }
+
+TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(std::make_unique<TagsProxy>(tagsMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
+
+	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
+	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({})));
+	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
+	sut.newProject();
+}
+
+TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(std::make_unique<TagsProxy>(tagsMock), printerMock, std::make_unique<ProjectSelectorProxy>(selectorMock), testsRootPath + "Workspace");
+	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
+	
+	std::vector<std::string> originalTagFilesPaths{ "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({})));
+		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
+	}
+	EXPECT_CALL(printerMock, printInfoMessage(_, _)).Times(AtLeast(0));
+	
+	sut.newProject();
+	sut.closeProject();
+}
+
+//TODO: should restore tag files paths if failed to open???
 
 }

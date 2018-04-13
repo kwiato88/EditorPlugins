@@ -19,12 +19,15 @@ void ensureDirExists(const std::string& p_path)
 		throw std::runtime_error(std::string("Given dir ") + p_path + " is invalid");
 }
 }
-Workspace::Workspace(Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
-	: projectFileName("project.json"), projectsDir(), printer(p_printer), selector(std::move(p_selector))
+Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector)
+	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), printer(p_printer), selector(std::move(p_selector))
 {}
 
-Workspace::Workspace(Plugin::IMessagePrinter& p_printer, std::unique_ptr<IProjectsSelector> p_selector, const std::string& p_dir)
- : projectFileName("project.json"), projectsDir(p_dir), printer(p_printer), selector(std::move(p_selector))
+Workspace::Workspace(std::unique_ptr<ITags> p_tags,
+	Plugin::IMessagePrinter& p_printer,
+	std::unique_ptr<IProjectsSelector> p_selector,
+	const std::string& p_dir)
+ : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), printer(p_printer), selector(std::move(p_selector))
 {}
 
 std::string Workspace::projectDir(const std::string& p_projectName) const
@@ -64,17 +67,18 @@ Project Workspace::open(const std::string& p_projectDirPath) const
 {
     boost::property_tree::ptree projectData;
     boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
-    return Project{projectData};
+    return Project{projectData, *tags};
 }
 
 void Workspace::openProject()
 {
-	//TODO: set paths to tag files after open
 	try
 	{
 		if (currentProject == nullptr)
 		{
 			currentProject = std::make_unique<Project>(open(select(availableProjects())));
+			originalTagFiles = tags->getTagFiles();
+			currentProject->refershCodeNavigation();
 			printer.printInfoMessage("Open Project", std::string("Opened project: ") + currentProject->getName());
 		}
 		else
@@ -100,12 +104,12 @@ std::string Workspace::currentProjectName() const
 
 void Workspace::closeProject()
 {
-	//TODO: should restore tag files paths after close?
 	try
 	{
 		if (currentProject != nullptr)
 		{
 			close(*currentProject);
+			tags->setTagFiles(originalTagFiles);
 			printer.printInfoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
 			currentProject.reset();
 		}
@@ -125,18 +129,19 @@ Project Workspace::newPr(const std::string& p_projectName) const
 	if (exists(projectDir(p_projectName)))
 		throw std::runtime_error(std::string("Project ") + p_projectName + " already exists");
 	create_directory(projectDir(p_projectName));
-	return Project{ p_projectName, std::vector<Elem>() };
+	return Project{ p_projectName, std::vector<Elem>(), *tags };
 }
 
 void Workspace::newProject()
 {
 	//TODO: get project name from user
-	//TODO: set paths to tag files after new
 	try
 	{
 		if (currentProject == nullptr)
 		{
 			currentProject = std::make_unique<Project>(newPr("NewProject"));
+			originalTagFiles = tags->getTagFiles();
+			currentProject->refershCodeNavigation();
 			printer.printInfoMessage("New Project", std::string("New project: ") + currentProject->getName());
 		}
 		else
