@@ -176,7 +176,6 @@ void Workspace::newProject()
 
 void Workspace::refreshProject()
 {
-	//TODO: generate tag files with proper interface, MTs
     if(currentProject != nullptr)
         currentProject->refresh();
 }

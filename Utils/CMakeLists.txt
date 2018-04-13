@@ -9,6 +9,8 @@ add_library(
     STATIC
     Source/ShellCommand.cpp
     Source/EditorData.cpp
+    Source/NppEditor.cpp
+    Source/WinApiUI.cpp
     Source/Logger.cpp
     Source/Log.cpp
     Source/NppTextReader.cpp
