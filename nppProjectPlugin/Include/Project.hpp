@@ -17,17 +17,24 @@ public:
 	std::vector<std::string> getTagFiles() { return {}; }
 };
 
+static DisabledTags g_noTags;
+
 class Elem
 {
 public:
     Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath);
-    Elem(const boost::property_tree::ptree& p_data);
+	Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, ITags& p_tags);
+	Elem(const boost::property_tree::ptree& p_data);
+	Elem(const boost::property_tree::ptree& p_data, ITags& p_tags);
     void refresh();
     boost::property_tree::ptree exportData() const;
 	bool operator==(const Elem& p_other) const;
 
     std::string sourcePath;
     std::string ctagsFilePath;
+
+private:
+	ITags& tags;
 };
 
 class Project
@@ -47,7 +54,6 @@ private:
 	std::string name;
 	std::vector<Elem> items;
 	ITags& tags;
-	DisabledTags noTags;
 };
 
 }

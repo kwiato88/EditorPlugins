@@ -181,6 +181,55 @@ TEST_F(ProjectMT, shouldIgnoreEmptyTagFilePathDuringRefreshCodeNavigation)
 	project.refershCodeNavigation();
 }
 
+TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", std::vector<std::string>({ "d:\\dir1\\dir" })));
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", std::vector<std::string>({ "d:\\dir2\\dir" })));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemWithEmptyTagsFilePathDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "", tagsMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", std::vector<std::string>({ "d:\\dir2\\dir" })));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemWithEmptySourceFilePathDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
+			Elem{ "", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", std::vector<std::string>({ "d:\\dir1\\dir" })));
+	project.refresh();
+}
+
 TEST_F(ProjectMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "notExistingDir"));

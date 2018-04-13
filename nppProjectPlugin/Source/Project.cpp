@@ -18,20 +18,28 @@ std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data)
 }
 
 Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath)
- : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath)
+	: Elem(p_sourcePath, p_ctagsFilePath, g_noTags)
+{}
+
+Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, ITags& p_tags)
+ : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath), tags(p_tags)
 {
     if(sourcePath.empty() && ctagsFilePath.empty())
         throw std::runtime_error("Given source path and tag file path is empty");
 }
 
 Elem::Elem(const boost::property_tree::ptree& p_data)
- : Elem(p_data.get<std::string>("sourcePath", ""), p_data.get<std::string>("tagFilePath", ""))
-{
-}
+	: Elem(p_data, g_noTags)
+{}
+
+Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags)
+	: Elem(p_data.get<std::string>("sourcePath", ""), p_data.get<std::string>("tagFilePath", ""), p_tags)
+{}
 
 void Elem::refresh()
 {
-    std::cout << "Refresh source: " << sourcePath << " with tags file: " << ctagsFilePath << std::endl;
+	if(!ctagsFilePath.empty() && !sourcePath.empty())
+		tags.generateTags(ctagsFilePath, { sourcePath });
 }
 
 boost::property_tree::ptree Elem::exportData() const
@@ -51,7 +59,7 @@ Project::~Project()
 {}
 
 Project::Project(const std::string& p_name, const std::vector<Elem>& p_items)
-	: Project(p_name, p_items, noTags)
+	: Project(p_name, p_items, g_noTags)
 {}
 
 Project::Project(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags)
@@ -62,7 +70,7 @@ Project::Project(const std::string& p_name, const std::vector<Elem>& p_items, IT
 }
 
 Project::Project(const boost::property_tree::ptree& p_data)
-	: Project(p_data, noTags)
+	: Project(p_data, g_noTags)
 {}
 
 Project::Project(const boost::property_tree::ptree& p_data, ITags& p_tags)
