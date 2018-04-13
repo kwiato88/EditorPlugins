@@ -28,7 +28,7 @@ class NotLoadedWorkspace : public ProjectMgmt::Workspace
 {
 public:
 	NotLoadedWorkspace(NppPlugin::NppMessagePrinter& p_printer)
-		: ProjectMgmt::Workspace(p_printer, nullptr, ""), printer(p_printer)
+		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_printer, nullptr, ""), printer(p_printer)
 	{}
 	void openProject()
 	{
@@ -70,6 +70,7 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 		//TODO: create path if not existing (extract creating workspace to factory)
 		// Factory:: notInitializdWorkspace(), validWorkspace(dirPath)
 		workspace = std::make_unique<ProjectMgmt::Workspace>(
+			std::make_unique<ProjectMgmt::DisabledTags>(),
 			msgPrinter,
 			std::make_unique<ProjectMgmt::GridViewProjectsSelector>(m_npp.npp, m_hModule),
 			workspacePath);

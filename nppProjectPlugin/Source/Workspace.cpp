@@ -36,6 +36,7 @@ public:
 	{
 		//TODO: what will hapen of npp is closed with opened project???
 		// on destroy will try to send msg - will that work???
+		// check if there is message sent to plugins before cleanup
 		tags.setTagFiles(originalTagFiles);
 	}
 private:
