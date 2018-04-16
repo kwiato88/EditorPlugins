@@ -29,6 +29,7 @@ private:
 	std::unique_ptr<Project> open(const std::string& p_projectDirPath) const;
 	void close(const Project& p_project) const;
 	std::unique_ptr<Project> newPr(const std::string& p_projectName) const;
+	std::string newProjectName() const;
 	std::string currentProjectName() const;
 	std::string projectDir(const std::string& p_projectName) const;
 	std::string projectFile(const std::string& p_projectName) const;

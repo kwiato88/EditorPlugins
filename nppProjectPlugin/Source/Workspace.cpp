@@ -178,7 +178,7 @@ void Workspace::newProject()
 	{
 		if (currentProject == nullptr)
 		{
-			currentProject = newPr("NewProject");
+			currentProject = newPr(newProjectName());
 			ui.infoMessage("New Project", std::string("New project: ") + currentProject->getName());
 		}
 		else
@@ -188,6 +188,14 @@ void Workspace::newProject()
 	{
 		ui.errorMessage("New Project", std::string("Failed to create new project. Detail: ") + e.what());
 	}
+}
+
+std::string Workspace::newProjectName() const
+{
+	auto name = ui.query("New project name:", "");
+	if (name.empty())
+		throw std::runtime_error("New project name not provided");
+	return name;
 }
 
 void Workspace::refreshProject()
