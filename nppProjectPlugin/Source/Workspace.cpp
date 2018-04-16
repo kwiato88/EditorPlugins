@@ -18,6 +18,14 @@ void ensureDirExists(const std::string& p_path)
 	if (!boost::filesystem::exists(p_path) || !boost::filesystem::is_directory(p_path))
 		throw std::runtime_error(std::string("Given dir ") + p_path + " is invalid");
 }
+std::string getFileName(const std::string& p_filePath)
+{
+	size_t l_pos = p_filePath.find_last_of('\\');
+	if (l_pos != std::string::npos)
+		return p_filePath.substr(l_pos + 1);
+	else
+		return p_filePath;
+}
 
 class ProjectWithTagsNavigation : public Project
 {
@@ -45,15 +53,14 @@ private:
 };
 
 }
-Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui, std::unique_ptr<IProjectsSelector> p_selector)
-	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), ui(p_ui), selector(std::move(p_selector))
+Workspace::Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui)
+	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), ui(p_ui)
 {}
 
 Workspace::Workspace(std::unique_ptr<ITags> p_tags,
 	Plugin::UI& p_ui,
-	std::unique_ptr<IProjectsSelector> p_selector,
 	const std::string& p_dir)
- : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), ui(p_ui), selector(std::move(p_selector))
+ : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), ui(p_ui)
 {}
 
 std::string Workspace::projectDir(const std::string& p_projectName) const
@@ -86,7 +93,16 @@ std::string Workspace::select(const std::vector<std::string>& p_projectsDirsPath
 {
 	if (p_projectsDirsPaths.empty())
 		throw std::runtime_error(std::string("No existing projects in ") + projectsDir);
-	return selector->select(p_projectsDirsPaths);
+	
+	std::vector<std::vector<std::string>> table;
+	for (const auto& project : p_projectsDirsPaths)
+		table.push_back({ getFileName(project), project });
+	std::sort(table.begin(), table.end(), [&](const auto& lhs, const auto& rhs) { return lhs.at(1) < rhs.at(1); });
+	auto selected = ui.selectRow({ "Project", "Path" }, table, {"",""}).at(1);
+	
+	if(selected.empty())
+		std::runtime_error("No project was selected");
+	return selected;
 }
 
 std::unique_ptr<Project> Workspace::open(const std::string& p_projectDirPath) const

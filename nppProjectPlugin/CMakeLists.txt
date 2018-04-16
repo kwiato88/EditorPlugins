@@ -25,7 +25,6 @@ add_library(
     SHARED
     Source/dllmain.cpp
     Source/Plugin.cpp
-    Source/GridViewProjectsSelector.cpp
     Resource/ProjectPluginDetail.rc
     ../WinApi/Resource/GridDialog.rc
 )

@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include "Plugin.hpp"
-#include "GridViewProjectsSelector.hpp"
 
 extern NppPlugin::ProjectPlugin g_plugin;
 
@@ -28,7 +27,7 @@ class NotLoadedWorkspace : public ProjectMgmt::Workspace
 {
 public:
 	NotLoadedWorkspace(Plugin::UI& p_ui)
-		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, nullptr, ""), ui(p_ui)
+		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, ""), ui(p_ui)
 	{}
 	void openProject()
 	{
@@ -72,7 +71,6 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 		workspace = std::make_unique<ProjectMgmt::Workspace>(
 			std::make_unique<ProjectMgmt::DisabledTags>(),
 			ui,
-			std::make_unique<ProjectMgmt::GridViewProjectsSelector>(m_npp.npp, m_hModule),
 			workspacePath);
 	}
 }

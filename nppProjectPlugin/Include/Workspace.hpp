@@ -6,7 +6,6 @@
 
 #include "UI.hpp"
 #include "Project.hpp"
-#include "IProjectsSelector.hpp"
 #include "ITags.hpp"
 
 namespace ProjectMgmt
@@ -15,10 +14,9 @@ namespace ProjectMgmt
 class Workspace
 {
 public:
-	Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui, std::unique_ptr<IProjectsSelector> p_selector);
+	Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui);
 	Workspace(std::unique_ptr<ITags> p_tags,
 		Plugin::UI& p_ui,
-		std::unique_ptr<IProjectsSelector> selector,
 		const std::string& p_dir);
 	virtual void openProject();
 	virtual void closeProject();
@@ -37,7 +35,6 @@ private:
 
 	std::unique_ptr<ITags> tags;
 	Plugin::UI& ui;
-	std::unique_ptr<IProjectsSelector> selector;
 
 	const std::string projectFileName;
 	std::string projectsDir;
