@@ -53,10 +53,26 @@ private:
 	Plugin::UI& ui;
 };
 
+class WorkspaceFactory
+{
+public:
+	std::unique_ptr<ProjectMgmt::Workspace> invalidWorkspace(Plugin::UI& ui) const
+	{
+		return std::make_unique<NotLoadedWorkspace>(ui);
+	}
+	std::unique_ptr<ProjectMgmt::Workspace> validWorkspace(Plugin::UI& ui, const std::string& workspaceDir) const
+	{
+		//TODO: create workspace dir if not existing
+		return std::make_unique<ProjectMgmt::Workspace>(
+			std::make_unique<ProjectMgmt::DisabledTags>(),
+			ui,
+			workspaceDir);
+	}
+};
 
 ProjectPlugin::ProjectPlugin()
 	: m_numberOfAddedFunctions(0), m_isInitialized(false), ui(m_npp.npp, m_hModule),
-	workspace(std::make_unique<NotLoadedWorkspace>(ui))
+	workspace(WorkspaceFactory().invalidWorkspace(ui))
 {}
 
 void ProjectPlugin::init(HINSTANCE p_hModule)
@@ -66,12 +82,7 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 		m_hModule = p_hModule;
 		m_isInitialized = true;
 		std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
-		//TODO: create path if not existing (extract creating workspace to factory)
-		// Factory:: notInitializdWorkspace(), validWorkspace(dirPath)
-		workspace = std::make_unique<ProjectMgmt::Workspace>(
-			std::make_unique<ProjectMgmt::DisabledTags>(),
-			ui,
-			workspacePath);
+		workspace = WorkspaceFactory().validWorkspace(ui, workspacePath);
 	}
 }
 
@@ -99,7 +110,7 @@ void ProjectPlugin::onShoutdown()
 {
 	//TODO: test if it works
 	// this destroys project and restors original tag files paths (sends msg to other plugins)
-	workspace = std::make_unique<NotLoadedWorkspace>(ui);
+	workspace = WorkspaceFactory().invalidWorkspace(ui);
 }
 
 void ProjectPlugin::cleanup()
