@@ -12,7 +12,7 @@ namespace CTagsPlugin
 class ExternalCommand
 {
 public:
-    ExternalCommand(HWND p_npp, const std::string& p_source, const std::string& p_target = "nppCtagPlugin.dll");
+    ExternalCommand(HWND p_npp, const std::string& p_source, const std::string& p_target = "nppCTagPlugin.dll");
 
 	/**
 	* @throws NppPlugin::ExternalCommandFailure

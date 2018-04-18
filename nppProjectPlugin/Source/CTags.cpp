@@ -4,7 +4,7 @@ namespace NppPlugin
 {
     
 CTags::CTags(HWND p_npp, const std::string& p_sourcePluginName, Plugin::UI& p_ui)
- : cmd(p_npp, p_sourcePluginName, "nppCtagPlugin.dll"), ui(p_ui)
+ : cmd(p_npp, p_sourcePluginName, "nppCTagPlugin.dll"), ui(p_ui)
 {}
 
 void CTags::generateTags(const std::string& p_tagFilePath, const std::vector<std::string>& p_sourceDirsPaths)
