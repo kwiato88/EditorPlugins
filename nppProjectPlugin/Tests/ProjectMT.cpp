@@ -357,7 +357,7 @@ TEST_F(ProjectMT, closingNewProjectShouldCreateProjectDirAndFile)
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
 	deleteProjectDirIfExists(projectDir);
-	EXPECT_CALL(uiMock, query(_, _)).WillOnce(Return("NewProject"));
+	EXPECT_CALL(uiMock, query(_, "NewProject", "")).WillOnce(Return("NewProject"));
 	sut.newProject();
 	ASSERT_TRUE(doesDirExist(projectDir));
 	sut.closeProject();
@@ -373,7 +373,7 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
 	deleteProjectDirIfExists(projectDir);
-	EXPECT_CALL(uiMock, query(_, _)).WillRepeatedly(Return("NewProject"));
+	EXPECT_CALL(uiMock, query(_, _, _)).WillRepeatedly(Return("NewProject"));
 	sut.newProject();
 	sut.closeProject();
 	ASSERT_TRUE(doesDirExist(projectDir));
@@ -385,7 +385,7 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
 	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "NotExistingWorkspace");
-	EXPECT_CALL(uiMock, query(_, _)).WillOnce(Return("NewProject"));
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, errorMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
@@ -400,7 +400,7 @@ TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
 
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
 	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({}))).Times(2);
-	EXPECT_CALL(uiMock, query(_, _)).WillOnce(Return("NewProject"));
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
 }
@@ -418,7 +418,7 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
 		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({})));
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
-	EXPECT_CALL(uiMock, query(_, _)).WillOnce(Return("NewProject"));
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	
 	sut.newProject();

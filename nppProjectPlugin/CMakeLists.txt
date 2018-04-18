@@ -27,6 +27,7 @@ add_library(
     Source/Plugin.cpp
     Resource/ProjectPluginDetail.rc
     ../WinApi/Resource/GridDialog.rc
+    ../WinApi/Resource/QueryDialog.rc
 )
 
 target_include_directories(

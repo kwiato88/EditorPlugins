@@ -44,7 +44,8 @@ public:
 	{
 		//TODO: what will hapen of npp is closed with opened project???
 		// on destroy will try to send msg - will that work???
-		// check if there is message sent to plugins before cleanup
+		// http://docs.notepad-plus-plus.org/index.php/Messages_And_Notifications
+        // Notification: NPPN_SHUTDOWN - Notifies plugins that Notepad++ is about to shut down.
 		tags.setTagFiles(originalTagFiles);
 	}
 private:
@@ -173,7 +174,6 @@ std::unique_ptr<Project> Workspace::newPr(const std::string& p_projectName) cons
 
 void Workspace::newProject()
 {
-	//TODO: get project name from user
 	try
 	{
 		if (currentProject == nullptr)
@@ -192,7 +192,7 @@ void Workspace::newProject()
 
 std::string Workspace::newProjectName() const
 {
-	auto name = ui.query("New project name:", "");
+	auto name = ui.query("New project name:", "NewProject", "");
 	if (name.empty())
 		throw std::runtime_error("New project name not provided");
 	return name;

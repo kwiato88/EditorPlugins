@@ -14,7 +14,8 @@ public:
 	void infoMessage(const std::string& p_title, const std::string& p_content);
 	void errorMessage(const std::string& p_title, const std::string& p_content);
 
-	std::string query(const std::string& p_question, const std::string& p_defaultResult);
+	std::string query(
+        const std::string& p_question, const std::string& p_initialResponse, const std::string& p_defaultResponse);
 	bool binQuery(const std::string& p_question);
 
 	int select(const std::vector<std::string>& p_list);

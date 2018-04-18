@@ -12,7 +12,7 @@ public:
 	MOCK_METHOD2(infoMessage, void(const std::string&, const std::string&));
 	MOCK_METHOD2(errorMessage, void(const std::string&, const std::string&));
     
-	MOCK_METHOD2(query, std::string(const std::string&, const std::string&));
+	MOCK_METHOD3(query, std::string(const std::string&, const std::string&, const std::string&));
 	MOCK_METHOD1(binQuery, bool(const std::string&));
     
 	MOCK_METHOD1(select, int(const std::vector<std::string>&));

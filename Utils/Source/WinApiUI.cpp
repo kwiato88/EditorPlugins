@@ -5,6 +5,7 @@
 #include "WinApiUI.hpp"
 #include "ListBoxDialog.hpp"
 #include "GridDialog.hpp"
+#include "QueryDialog.hpp"
 
 namespace WinApi
 {
@@ -45,14 +46,20 @@ void UI::errorMessage(const std::string& p_title, const std::string& p_content)
 	printMessge(p_title, p_content, MB_OK | MB_ICONERROR);
 }
 
-std::string UI::query(const std::string& p_question, const std::string& p_defaultResult)
+std::string UI::query(
+    const std::string& p_question, const std::string& p_initialResponse, const std::string& p_defaultResponse)
 {
-	//TODO:
-	return "";
+	WinApi::QueryDialog dialog(hModule, parrent);
+    dialog.setQuestion(p_question);
+    dialog.setInitialResponse(p_initialResponse);
+    if(dialog.show() == WinApi::Dialog::RESULT_OK)
+        return dialog.getResponse();
+	return p_defaultResponse;
 }
+
 bool UI::binQuery(const std::string& p_question)
 {
-	return printMessge("Answer to question", p_question, MB_YESNO | MB_ICONQUESTION) == IDYES;
+	return printMessge("Answer question", p_question, MB_YESNO | MB_ICONQUESTION) == IDYES;
 }
 
 int UI::select(const std::vector<std::string>& p_list)

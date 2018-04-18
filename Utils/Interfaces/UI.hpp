@@ -14,7 +14,8 @@ public:
     virtual void infoMessage(const std::string& p_title, const std::string& p_content) = 0;
     virtual void errorMessage(const std::string& p_title, const std::string& p_content) = 0;
     
-    virtual std::string query(const std::string& p_question, const std::string& p_defaultResult) = 0;
+    virtual std::string query(
+        const std::string& p_question, const std::string& p_initialResponse, const std::string& p_defaultResponse) = 0;
     virtual bool binQuery(const std::string& p_question) = 0;
     
     virtual int select(const std::vector<std::string>& p_list) = 0;
