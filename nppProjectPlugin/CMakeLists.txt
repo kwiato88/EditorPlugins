@@ -26,6 +26,7 @@ add_library(
     SHARED
     Source/dllmain.cpp
     Source/Plugin.cpp
+    Source/CTags.cpp
     Resource/ProjectPluginDetail.rc
     ../WinApi/Resource/GridDialog.rc
     ../WinApi/Resource/QueryDialog.rc
@@ -38,6 +39,7 @@ target_include_directories(
     ../Utils/Interfaces
     ../Utils/Include
     ../WinApi/Include
+    ../nppCtagPlugin/Include/ExternalInterface
     Include
     D:/boost_1_61_0
 )
@@ -47,6 +49,7 @@ add_dependencies(
     ProjectMgmt
     nppUtils
     winApiUtils
+    nppCTagsExternalIf
 )
 
 target_link_libraries(
@@ -54,6 +57,7 @@ target_link_libraries(
     ProjectMgmt
     nppUtils
     winApiUtils
+    nppCTagsExternalIf
     comctl32
 )
 
