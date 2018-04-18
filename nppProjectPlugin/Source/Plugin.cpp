@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "Plugin.hpp"
+#include "CTags.hpp"
 
 extern NppPlugin::ProjectPlugin g_plugin;
 
@@ -34,8 +35,6 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 	{
 		m_hModule = p_hModule;
 		m_isInitialized = true;
-		std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
-		workspace->enable(workspacePath);
 	}
 }
 
@@ -44,6 +43,8 @@ void ProjectPlugin::commandMenuInit(NppData p_nppData)
 	m_npp.npp = WinApi::Handle(p_nppData._nppHandle);
 	m_npp.scintillaMain = WinApi::Handle(p_nppData._scintillaMainHandle);
 	m_npp.scintillaSecond = WinApi::Handle(p_nppData._scintillaSecondHandle);
+	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
+	workspace->enable(workspacePath, std::make_unique<CTags>(m_npp.npp, "nppProjectPlugin.dll", ui));
 	initFunctionsTable();
 }
 

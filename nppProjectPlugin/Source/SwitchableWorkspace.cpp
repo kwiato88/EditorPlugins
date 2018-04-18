@@ -47,7 +47,7 @@ void SwitchableWorkspace::refreshProject()
     currentWorkspace->refreshProject();
 }
 
-void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath)
+void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath, std::unique_ptr<ITags> p_tags)
 {
 	try
 	{
@@ -56,7 +56,7 @@ void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath)
 			if (!boost::filesystem::exists(p_workspaceDirPath))
 				boost::filesystem::create_directory(p_workspaceDirPath);
 			validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
-				std::make_unique<ProjectMgmt::DisabledTags>(),
+				std::move(p_tags),
 				ui,
 				p_workspaceDirPath);
 		}
