@@ -5,7 +5,7 @@
 #include "EditorData.hpp"
 #include "WinApiUI.hpp"
 
-#include "Workspace.hpp"
+#include "SwitchableWorkspace.hpp"
 
 namespace NppPlugin
 {
@@ -48,7 +48,7 @@ private:
 	bool m_isInitialized;
 
 	WinApi::UI ui;
-	std::unique_ptr<ProjectMgmt::Workspace> workspace;
+	std::unique_ptr<ProjectMgmt::SwitchableWorkspace> workspace;
 };
 
 }

@@ -23,56 +23,9 @@ void fun_refresh()
 	g_plugin.refreshPr();
 }
 
-class NotLoadedWorkspace : public ProjectMgmt::Workspace
-{
-public:
-	NotLoadedWorkspace(Plugin::UI& p_ui)
-		: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, ""), ui(p_ui)
-	{}
-	void openProject()
-	{
-		ui.infoMessage("nppProject", "Workspace is not loaded");
-	}
-	void closeProject()
-	{
-		ui.infoMessage("nppProject", "Workspace is not loaded");
-	}
-	void newProject()
-	{
-		ui.infoMessage("nppProject", "Workspace is not loaded");
-	}
-	void addRemoveItemInProject()
-	{
-		ui.infoMessage("nppProject", "Workspace is not loaded");
-	}
-	void refreshProject()
-	{
-		ui.infoMessage("nppProject", "Workspace is not loaded");
-	}
-private:
-	Plugin::UI& ui;
-};
-
-class WorkspaceFactory
-{
-public:
-	std::unique_ptr<ProjectMgmt::Workspace> invalidWorkspace(Plugin::UI& ui) const
-	{
-		return std::make_unique<NotLoadedWorkspace>(ui);
-	}
-	std::unique_ptr<ProjectMgmt::Workspace> validWorkspace(Plugin::UI& ui, const std::string& workspaceDir) const
-	{
-		//TODO: create workspace dir if not existing
-		return std::make_unique<ProjectMgmt::Workspace>(
-			std::make_unique<ProjectMgmt::DisabledTags>(),
-			ui,
-			workspaceDir);
-	}
-};
-
 ProjectPlugin::ProjectPlugin()
 	: m_numberOfAddedFunctions(0), m_isInitialized(false), ui(m_npp.npp, m_hModule),
-	workspace(WorkspaceFactory().invalidWorkspace(ui))
+	workspace(std::make_unique<ProjectMgmt::SwitchableWorkspace>(ui))
 {}
 
 void ProjectPlugin::init(HINSTANCE p_hModule)
@@ -82,7 +35,7 @@ void ProjectPlugin::init(HINSTANCE p_hModule)
 		m_hModule = p_hModule;
 		m_isInitialized = true;
 		std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
-		workspace = WorkspaceFactory().validWorkspace(ui, workspacePath);
+		workspace->enable(workspacePath);
 	}
 }
 
@@ -110,7 +63,7 @@ void ProjectPlugin::onShoutdown()
 {
 	//TODO: test if it works
 	// this destroys project and restors original tag files paths (sends msg to other plugins)
-	workspace = WorkspaceFactory().invalidWorkspace(ui);
+	workspace->disable();
 }
 
 void ProjectPlugin::cleanup()

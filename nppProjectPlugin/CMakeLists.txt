@@ -9,6 +9,7 @@ add_library(
     STATIC
     Source/Project.cpp
     Source/Workspace.cpp
+    Source/SwitchableWorkspace.cpp
 )
 
 target_include_directories(
