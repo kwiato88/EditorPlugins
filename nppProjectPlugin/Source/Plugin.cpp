@@ -62,9 +62,6 @@ void ProjectPlugin::commandMenuCleanUp()
 
 void ProjectPlugin::onShoutdown()
 {
-	//TODO: test if it works
-	// this destroys project and restors original tag files paths (sends msg to other plugins)
-	// not working :( debug
 	workspace->disable();
 }
 

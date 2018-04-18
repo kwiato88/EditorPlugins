@@ -127,6 +127,7 @@ void TagsPlugin::init(HINSTANCE p_hModule)
 */
 void TagsPlugin::cleanup()
 {
+	m_config.saveConfigFile(m_configFilePath);
 }
 
 /**
@@ -282,7 +283,6 @@ void TagsPlugin::initFunctionsTable()
 */
 void TagsPlugin::commandMenuCleanUp()
 {
-    m_config.saveConfigFile(m_configFilePath);
 }
 
 bool TagsPlugin::setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
