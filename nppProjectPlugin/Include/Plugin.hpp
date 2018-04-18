@@ -2,7 +2,7 @@
 
 #include "PluginInterface.h"
 #include "WinApiTypes.hpp"
-#include "EditorData.hpp"
+#include "NppEditor.hpp"
 #include "WinApiUI.hpp"
 
 #include "SwitchableWorkspace.hpp"
@@ -38,7 +38,7 @@ public:
 
 	WinApi::InstanceHandle m_hModule;
 	FuncItem m_funcItems[s_funcNum];
-	EditorData m_npp;
+	Editor m_npp;
 
 private:
 	bool setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
