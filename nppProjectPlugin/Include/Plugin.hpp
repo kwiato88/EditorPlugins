@@ -24,6 +24,7 @@ public:
 	void cleanup();
 	void commandMenuInit(NppData p_nppData);
 	void commandMenuCleanUp();
+	void onShoutdown();
 
 	/**
 	* plugin menu functions

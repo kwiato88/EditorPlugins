@@ -31,23 +31,23 @@ public:
 	{}
 	void openProject()
 	{
-		ui.infoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded");
 	}
 	void closeProject()
 	{
-		ui.infoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded");
 	}
 	void newProject()
 	{
-		ui.infoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded");
 	}
 	void addRemoveItemInProject()
 	{
-		ui.infoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded");
 	}
 	void refreshProject()
 	{
-		ui.infoMessage("nppProject", "Workspace is not loaded yet");
+		ui.infoMessage("nppProject", "Workspace is not loaded");
 	}
 private:
 	Plugin::UI& ui;
@@ -93,6 +93,13 @@ void ProjectPlugin::initFunctionsTable()
 
 void ProjectPlugin::commandMenuCleanUp()
 {
+}
+
+void ProjectPlugin::onShoutdown()
+{
+	//TODO: test if it works
+	// this destroys project and restors original tag files paths (sends msg to other plugins)
+	workspace = std::make_unique<NotLoadedWorkspace>(ui);
 }
 
 void ProjectPlugin::cleanup()

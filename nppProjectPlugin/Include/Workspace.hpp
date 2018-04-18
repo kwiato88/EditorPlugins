@@ -34,8 +34,8 @@ private:
 	std::string projectDir(const std::string& p_projectName) const;
 	std::string projectFile(const std::string& p_projectName) const;
 
-	std::unique_ptr<ITags> tags;
 	Plugin::UI& ui;
+	std::unique_ptr<ITags> tags;
 
 	const std::string projectFileName;
 	std::string projectsDir;

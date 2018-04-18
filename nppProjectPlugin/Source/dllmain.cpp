@@ -43,6 +43,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 		case NPPN_SHUTDOWN:
 		{
 			g_plugin.commandMenuCleanUp();
+			g_plugin.onShoutdown();
 		}
 		break;
 

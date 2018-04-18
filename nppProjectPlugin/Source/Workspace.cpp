@@ -42,10 +42,6 @@ public:
 	}
 	~ProjectWithTagsNavigation()
 	{
-		//TODO: what will hapen of npp is closed with opened project???
-		// on destroy will try to send msg - will that work???
-		// http://docs.notepad-plus-plus.org/index.php/Messages_And_Notifications
-        // Notification: NPPN_SHUTDOWN - Notifies plugins that Notepad++ is about to shut down.
 		tags.setTagFiles(originalTagFiles);
 	}
 private:
