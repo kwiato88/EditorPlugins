@@ -1,3 +1,5 @@
+#include <boost/filesystem.hpp>
+
 #include "SwitchableWorkspace.hpp"
 
 namespace ProjectMgmt
@@ -47,15 +49,23 @@ void SwitchableWorkspace::refreshProject()
 
 void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath)
 {
-    if(validWorkspace == nullptr)
-    {
-        //TODO: create workspace dir if not existing
-        validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
-			std::make_unique<ProjectMgmt::DisabledTags>(),
-			ui,
-			p_workspaceDirPath);
-    }
-    currentWorkspace = validWorkspace.get();
+	try
+	{
+		if (validWorkspace == nullptr)
+		{
+			if (!boost::filesystem::exists(p_workspaceDirPath))
+				boost::filesystem::create_directory(p_workspaceDirPath);
+			validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
+				std::make_unique<ProjectMgmt::DisabledTags>(),
+				ui,
+				p_workspaceDirPath);
+		}
+		currentWorkspace = validWorkspace.get();
+	}
+	catch (std::exception&)
+	{
+		disable();
+	}
 }
 
 void SwitchableWorkspace::disable()
