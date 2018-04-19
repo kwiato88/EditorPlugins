@@ -33,18 +33,14 @@ std::string findFile(const std::string& p_dir, const std::string& p_fileName)
 }
 }  // namespace
 
-Controller::Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
-                       std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
-                       std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
-                       std::shared_ptr<Plugin::IItemsSelector> p_selector,
-                       std::shared_ptr<Plugin::IMessagePrinter> p_printer,
-	                   std::shared_ptr<IFileHierarchySelector> p_fileSelector)
- : m_browser(&Controller::buildBrowser),
-   m_locationGetter(p_locationGetter),
-   m_locationSetter(p_locationSetter),
+Controller::Controller(Plugin::Editor& p_editor,
+					   Plugin::UI& p_ui,
+					   std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
+                       std::shared_ptr<IFileHierarchySelector> p_fileSelector)
+ : m_editor(p_editor),
+   m_ui(p_ui),
+   m_browser(&Controller::buildBrowser),
    m_pathGetter(p_pathGetter),
-   m_selector(p_selector),
-   m_printer(p_printer),
    m_fileSelector(p_fileSelector)
 {
 	addHandler<Command::Clear, Result::Basic>(&Controller::handleClear);
@@ -73,11 +69,11 @@ void Controller::parse()
 	{
 		std::string sourceDir = getSourceDir();
 		parseIncludes(sourceDir);
-		m_printer->printInfoMessage("Parse", "Parsing directory " + sourceDir + " finished");
+		m_ui.infoMessage("Parse", "Parsing directory " + sourceDir + " finished");
 	}
 	catch (std::runtime_error& e)
 	{
-		m_printer->printInfoMessage("Parse", e.what());
+		m_ui.infoMessage("Parse", e.what());
 	}
 }
 
@@ -102,7 +98,7 @@ Result::Basic Controller::handleParse(const Command::Parse& p_cmd)
 
 std::string Controller::getSourceDir() const
 {
-    std::string dir = m_pathGetter->getDirPath("Select source directory", getFileDir(m_locationGetter->getFile()));
+    std::string dir = m_pathGetter->getDirPath("Select source directory", getFileDir(m_editor.getFile()));
     if(dir.empty())
         throw std::runtime_error("Source directory not selected");
     return dir;
@@ -116,21 +112,21 @@ void Controller::showIncluders()
     }
     catch(std::out_of_range&)
     {
-        m_printer->printInfoMessage("Show Includers", "No file to show");
+        m_ui.infoMessage("Show Includers", "No file to show");
     }
     catch(Plugin::LocationSetterException& e)
     {
-        m_printer->printInfoMessage("Show Includers", e.what());
+        m_ui.infoMessage("Show Includers", e.what());
     }
     catch(std::runtime_error& e)
     {
-        m_printer->printInfoMessage("Show Includers", e.what());
+        m_ui.infoMessage("Show Includers", e.what());
     }
 }
 
 std::string Controller::getCurrentFileName() const
 {
-    std::string file = m_locationGetter->getFile();
+    std::string file = m_editor.getFile();
     if(file.empty())
         throw std::runtime_error("File not spcified");
     return boost::filesystem::path(file).filename().string();
@@ -138,7 +134,7 @@ std::string Controller::getCurrentFileName() const
 
 std::string Controller::selectFile(const std::vector<std::string>& p_files) const
 {
-    return p_files.at(m_selector->select(p_files));
+    return p_files.at(m_ui.select(p_files));
 }
 
 std::string Controller::selectFile(const FileHierarchy& p_files) const
@@ -173,7 +169,7 @@ std::vector<std::string> Controller::findFiles(const std::string& p_fileName) co
 
 void Controller::goToFile(const std::string& p_file)
 {
-    m_locationSetter->setFile(p_file);
+	m_editor.setFile(p_file);
 }
 
 void Controller::showIncluded()
@@ -184,15 +180,15 @@ void Controller::showIncluded()
     }
     catch(std::out_of_range&)
     {
-        m_printer->printInfoMessage("Show Included", "No file to show");
+        m_ui.infoMessage("Show Included", "No file to show");
     }
     catch(Plugin::LocationSetterException& e)
     {
-        m_printer->printInfoMessage("Show Included", e.what());
+        m_ui.infoMessage("Show Included", e.what());
     }
     catch(std::runtime_error& e)
     {
-        m_printer->printInfoMessage("Show Included", e.what());
+        m_ui.infoMessage("Show Included", e.what());
     }
 }
 

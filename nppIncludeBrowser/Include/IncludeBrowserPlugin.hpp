@@ -7,7 +7,8 @@
 
 #include "IncludeBrowserController.hpp"
 #include "WinApiTypes.hpp"
-#include "EditorData.hpp"
+#include "NppEditor.hpp"
+#include "WinApiUI.hpp"
 
 namespace NppPlugin
 {
@@ -41,13 +42,14 @@ public:
 	bool m_isInitialized;
 	WinApi::InstanceHandle m_hModule;
 	FuncItem m_funcItems[s_funcNum];
-	EditorData m_npp;
+	Editor m_npp;
 
 private:
 	void create();
 	bool setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
 	void initFunctionsTable();
 
+	WinApi::UI m_ui;
     std::shared_ptr<IncludeBrowser::Controller> m_includeBrowser;
 };
 

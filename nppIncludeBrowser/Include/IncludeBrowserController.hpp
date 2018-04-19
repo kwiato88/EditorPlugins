@@ -4,11 +4,9 @@
 #include <memory>
 #include <set>
 
-#include "ILocationGetter.hpp"
-#include "ILocationSetter.hpp"
+#include "Editor.hpp"
+#include "UI.hpp"
 #include "IPathGetter.hpp"
-#include "IItemsSelector.hpp"
-#include "IMessagePrinter.hpp"
 #include "IFileHierarchySelector.hpp"
 #include "IncludeBrowser.hpp"
 #include "MutilpeFilesIncludeBrowser.hpp"
@@ -23,11 +21,9 @@ namespace IncludeBrowser
 class Controller
 {
 public:
-    Controller(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
-               std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
+    Controller(Plugin::Editor& p_editor,
+			   Plugin::UI& p_ui,
                std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
-               std::shared_ptr<Plugin::IItemsSelector> p_selector,
-               std::shared_ptr<Plugin::IMessagePrinter> p_printer,
 			   std::shared_ptr<IFileHierarchySelector> p_fileSelector);
 
     void parse();
@@ -56,13 +52,11 @@ private:
 		m_handlers.addHandler<Command, Result>(Command::Id(), std::bind(p_handler, this, std::placeholders::_1));
 	}
 
+	Plugin::Editor& m_editor;
+	Plugin::UI& m_ui;
     MultipleFilesBrowser m_browser;
     std::set<std::string> m_sourceDirs;
-    std::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
-    std::shared_ptr<Plugin::ILocationSetter> m_locationSetter;
     std::shared_ptr<Plugin::IPathGetter> m_pathGetter;
-    std::shared_ptr<Plugin::IItemsSelector> m_selector;
-    std::shared_ptr<Plugin::IMessagePrinter> m_printer;
 	std::shared_ptr<IFileHierarchySelector> m_fileSelector;
 	Messaging::Handlers m_handlers;
 };

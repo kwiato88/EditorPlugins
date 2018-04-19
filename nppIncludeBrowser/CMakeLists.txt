@@ -61,6 +61,7 @@ target_link_libraries(
     nppIncludeBrowser
     nppUtils
     winApiUtils
+    comctl32
 )
 
 add_executable(

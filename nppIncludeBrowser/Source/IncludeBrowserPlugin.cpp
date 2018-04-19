@@ -4,11 +4,7 @@
 #include "menuCmdID.h"
 
 #include "IncludeBrowserPlugin.hpp"
-#include "NppLocationGetter.hpp"
-#include "NppLocationSetter.hpp"
 #include "NppPathGetter.hpp"
-#include "NppListViewSelector.hpp"
-#include "NppMessagePrinter.hpp"
 #include "TreeViewFileHierarchySelector.hpp"
 #include "Transaction.hpp"
 
@@ -38,7 +34,7 @@ void fun_clear()
 }
 
 IncludeBrowserPlugin::IncludeBrowserPlugin()
- : m_isInitialized(false)
+ : m_isInitialized(false), m_ui(m_npp.npp, m_hModule)
 {
 }
 
@@ -78,12 +74,10 @@ void IncludeBrowserPlugin::commandMenuInit(NppData p_nppData)
 void IncludeBrowserPlugin::create()
 {
     m_includeBrowser.reset(new IncludeBrowser::Controller(
-        std::make_shared<NppPlugin::NppLocationGetter>(m_npp),
-        std::make_shared<NppPlugin::NppLocationSetter>(m_npp),
+		m_npp,
+		m_ui,
         std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
-        std::make_shared<NppPlugin::NppListViewSelector>(m_npp.npp, m_hModule),
-        std::make_shared<NppPlugin::NppMessagePrinter>(m_npp.npp, m_hModule),
-		std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>(m_hModule, m_npp.npp)));
+        std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>(m_hModule, m_npp.npp)));
 }
 
 void IncludeBrowserPlugin::initFunctionsTable()
@@ -128,8 +122,7 @@ void IncludeBrowserPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 	{
 		Messaging::Transaction* transaction = static_cast<Messaging::Transaction*>(p_message.info);
 		transaction->result.size = 0;
-		NppPlugin::NppMessagePrinter printer(m_npp.npp, m_hModule);
-		printer.printErrorMessage("Include Brower", std::string("Error during message to plugin handling:") + e.what());
+		m_ui.errorMessage("Include Brower", std::string("Error during message to plugin handling:") + e.what());
 	}
 }
 
