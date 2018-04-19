@@ -4,8 +4,6 @@
 #include "menuCmdID.h"
 #include "SwitcherPlugin.hpp"
 
-#include "NppLocationSetter.hpp"
-#include "NppLocationGetter.hpp"
 #include "SwitcherFunction.hpp"
 
 extern NppPlugin::SwitcherPlugin g_plugin;
@@ -60,8 +58,6 @@ void SwitcherPlugin::commandMenuInit(NppData p_nppData)
 
 void SwitcherPlugin::create()
 {
-    m_locationSetter.reset(new NppPlugin::NppLocationSetter(m_npp));
-    m_locationGetter.reset(new NppPlugin::NppLocationGetter(m_npp));
 }
 
 void SwitcherPlugin::initFunctionsTable()
@@ -94,7 +90,7 @@ bool SwitcherPlugin::setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFu
 
 void SwitcherPlugin::switchFile()
 {
-	HeaderSourceSwitcher::switchFile(*m_locationGetter, *m_locationSetter);
+	HeaderSourceSwitcher::switchFile(m_npp);
 }
 
 } // namespace NppPlugin

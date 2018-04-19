@@ -37,22 +37,22 @@ FileSwitchInfo buildCCppSwitchInfo()
 	return c_cpp_switch_info;
 }
 
-void setLocation(const std::string& p_file, Plugin::ILocationSetter& p_setter)
+void setLocation(const std::string& p_file, Plugin::Editor& p_editor)
 {
 	try
 	{
-		p_setter.setFile(p_file);
+		p_editor.setFile(p_file);
 	}
 	catch(Plugin::LocationSetterException&)
 	{
 	}
 }
 
-void switchFile(Plugin::ILocationGetter& p_getter, Plugin::ILocationSetter& p_setter)
+void switchFile(Plugin::Editor& p_editor)
 {
-	std::string l_currentFile = p_getter.getFile();
+	std::string l_currentFile = p_editor.getFile();
 	std::string l_fileToSet = switchFile(l_currentFile, buildCCppSwitchInfo());
-	setLocation(l_fileToSet, p_setter);
+	setLocation(l_fileToSet, p_editor);
 }
 
 } // HeaderSourceSwitcher

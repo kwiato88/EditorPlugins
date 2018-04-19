@@ -6,10 +6,8 @@
 
 #include "PluginInterface.h"
 
-#include "ILocationSetter.hpp"
-#include "ILocationGetter.hpp"
 #include "WinApiTypes.hpp"
-#include "EditorData.hpp"
+#include "NppEditor.hpp"
 
 namespace NppPlugin
 {
@@ -39,16 +37,12 @@ public:
 	bool m_isInitialized;
 	WinApi::InstanceHandle m_hModule;
 	FuncItem m_funcItems[s_funcNum];
-	EditorData m_npp;
+	Editor m_npp;
 
 private:
 	void create();
 	bool setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
 	void initFunctionsTable();
-
-	boost::shared_ptr<Plugin::ILocationSetter> m_locationSetter;
-	boost::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
-
 };
 
 } // namespace NppPlugin
