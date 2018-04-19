@@ -8,7 +8,8 @@
 
 #include "PluginInterface.h"
 #include "WinApiTypes.hpp"
-#include "EditorData.hpp"
+#include "WinApiUI.hpp"
+#include "NppEditor.hpp"
 
 namespace NppPlugin
 {
@@ -41,7 +42,7 @@ public:
 	bool m_isInitialized;
 	WinApi::InstanceHandle m_hModule;
 	FuncItem m_funcItems[s_funcNum];
-	EditorData m_npp;
+	Editor m_npp;
 
 private:
 	void create();
@@ -49,8 +50,7 @@ private:
 	void initFunctionsTable();
 	std::vector<std::string> getSerachDirs();
 
-	// boost::shared_ptr<Plugin::ILocationSetter> m_locationSetter;
-	// boost::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
+	WinApi::UI ui;
     std::vector<std::string> m_searchDirs;
 
 };

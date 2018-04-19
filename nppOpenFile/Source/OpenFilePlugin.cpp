@@ -5,9 +5,6 @@
 #include "OpenFilePlugin.hpp"
 #include "OpenFileDialog.hpp"
 #include "NppPathsSelector.hpp"
-#include "NppLocationGetter.hpp"
-#include "NppLocationSetter.hpp"
-#include "NppMessagePrinter.hpp"
 
 extern NppPlugin::OpenFilePlugin g_plugin;
 
@@ -35,7 +32,7 @@ std::string getFileDir(std::string p_filePath)
 }
 
 OpenFilePlugin::OpenFilePlugin()
- : m_isInitialized(false)
+ : m_isInitialized(false), ui(m_npp.npp, m_hModule)
 {
 }
 
@@ -113,8 +110,7 @@ void OpenFilePlugin::open()
     }
     catch(const std::exception& e)
     {
-        NppMessagePrinter printer(m_npp.npp, m_hModule);
-        printer.printErrorMessage("Open File", e.what());
+		ui.errorMessage("Open File", e.what());
     }
 }
 
@@ -125,8 +121,7 @@ void OpenFilePlugin::openFile()
     int result = dialog.show();
     if(result == WinApi::Dialog::RESULT_OK)
     {
-        NppLocationSetter setter(m_npp);
-        setter.setFile(dialog.getSelectedFile());
+        m_npp.setFile(dialog.getSelectedFile());
     }
 }
 
@@ -142,9 +137,7 @@ std::vector<std::string> OpenFilePlugin::getSerachDirs()
 void OpenFilePlugin::setDirs()
 {
 	PathsSelector<SelectorType::Directory> dirs(m_npp.npp, m_hModule);
-    NppLocationGetter locationGetter(m_npp);
-
-	m_searchDirs = dirs.select(m_searchDirs, getFileDir(locationGetter.getFile()));
+	m_searchDirs = dirs.select(m_searchDirs, getFileDir(m_npp.getFile()));
 }
 
 void OpenFilePlugin::setDirsSafe()
@@ -155,8 +148,7 @@ void OpenFilePlugin::setDirsSafe()
 	}
 	catch (const std::exception& e)
 	{
-		NppMessagePrinter printer(m_npp.npp, m_hModule);
-		printer.printErrorMessage("Set dir", e.what());
+		ui.errorMessage("Set dir", e.what());
 	}
 }
 
