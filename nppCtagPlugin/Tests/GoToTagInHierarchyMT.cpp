@@ -107,9 +107,9 @@ TEST_F(GoToTagInHierarchyMT, shoudGoToSelectedBaseClass)
 		.WillOnce(Return(baseTag));
 
 	expectGetAnyLocation();
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\Tag.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(8));
-	EXPECT_CALL(*locationSetter, setColumn(0));
+	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\Tag.hpp")));
+	EXPECT_CALL(editor, setLine(8));
+	EXPECT_CALL(editor, setColumn(0));
 
 	tagsNavigator.goToTagInHierarchy("CppTag");
 }

@@ -154,6 +154,8 @@ target_include_directories(
     CTagsTests
     PUBLIC
     ../Utils/Include
+    ../Utils/Interfaces
+    ../Utils/Tests
     Include
     D:/boost_1_61_0
     D:/googletest-release-1.6.0/include
@@ -196,6 +198,7 @@ target_include_directories(
     PUBLIC
     ../Utils/Interfaces
     ../Utils/Include
+    ../Utils/Tests
     Include
     D:/boost_1_61_0
     D:/googletest-release-1.6.0/include

@@ -20,28 +20,25 @@ std::string getFileDir(std::string p_filePath)
 }  // namespace
 
 CTagsController::CTagsController(
-    std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
-	std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
-	std::shared_ptr<Plugin::IMessagePrinter> p_messagePrinter,
+	Plugin::Editor& p_editor,
+	Plugin::UI& p_ui,
 	std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
     SelectorFactory p_selectorFactory,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
-	std::shared_ptr<Plugin::ITextReader> p_textReader,
 	std::shared_ptr<Plugin::IPathsSelector> p_dirsSelector,
 	std::shared_ptr<Plugin::IPathsSelector> p_filesSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader,
     IConfiguration& p_config,
 	GetTagSearchMatcher p_tagSearchMatcherFactory)
- : m_locationsNavigator(p_locationSetter, p_locationGetter),
-   m_tagsNavigator(p_locationGetter, m_locationsNavigator, p_selectorFactory, std::move(p_hierSelector), p_tagsReader),
-   m_messagePrinter(p_messagePrinter),
-   m_locationGetter(p_locationGetter),
+ : m_editor(p_editor),
+   m_ui(p_ui),
    m_pathGetter(p_pathGetter),
-   m_textReader(p_textReader),
    m_dirsSelector(p_dirsSelector),
    m_filesSelector(p_filesSelector),
    m_config(p_config),
-   m_tagSearchMatcherFactory(p_tagSearchMatcherFactory)
+   m_tagSearchMatcherFactory(p_tagSearchMatcherFactory),
+   m_locationsNavigator(m_editor),
+   m_tagsNavigator(m_locationsNavigator, m_editor, p_selectorFactory, std::move(p_hierSelector), p_tagsReader)
 {
 	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
 		Command::GenerateTags::Id(), [&](const auto& p) { return handleGenerateTags(p); });
@@ -68,7 +65,7 @@ void CTagsController::next()
     catch (Plugin::LocationSetterException& e)
     {
 		LOG_WARN << "Error during go to next tag: " << typeid(e).name() << ". Details: " << e.what();
-        m_messagePrinter->printErrorMessage("Next Tag", e.what());
+		m_ui.errorMessage("Next Tag", e.what());
     }
 }
 
@@ -81,7 +78,7 @@ void CTagsController::previous()
     catch (Plugin::LocationSetterException& e)
     {
 		LOG_WARN << "Error during go to previous tag: " << typeid(e).name() << ". Details: " << e.what();
-        m_messagePrinter->printErrorMessage("Previous Tag", e.what());
+		m_ui.errorMessage("Previous Tag", e.what());
     }
 }
 
@@ -94,22 +91,22 @@ void CTagsController::find()
     catch(Plugin::UserInputError& e)
     {
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-        m_messagePrinter->printInfoMessage("Find Tag", e.what());
+        m_ui.infoMessage("Find Tag", e.what());
     }
 	catch(TagsReaderException& e)
 	{
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-        m_messagePrinter->printInfoMessage("Find Tag", e.what());
+        m_ui.infoMessage("Find Tag", e.what());
 	}
 	catch(TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-	    m_messagePrinter->printInfoMessage("Find Tag", e.what());
+	    m_ui.infoMessage("Find Tag", e.what());
 	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during find tag: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Find Tag", e.what());
+		m_ui.errorMessage("Find Tag", e.what());
 	}
 }
 
@@ -122,7 +119,7 @@ void CTagsController::tagInfo()
 	catch (Plugin::UserInputError& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag Info", e.what());
+		m_ui.infoMessage("Tag Info", e.what());
 	}
 }
 
@@ -135,23 +132,23 @@ void CTagsController::showTagInfo(const std::string& p_tagName)
     catch(TagsReaderException& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag Info", e.what());
+		m_ui.infoMessage("Tag Info", e.what());
 	}
 	catch(TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-	    m_messagePrinter->printInfoMessage("Tag Info", e.what());
+	    m_ui.infoMessage("Tag Info", e.what());
 	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag Info", e.what());
+		m_ui.errorMessage("Tag Info", e.what());
 	}
 }
 
 std::string CTagsController::getCurrentWord() const
 {
-    std::string l_tagName = m_textReader->getCurrentWord();
+    std::string l_tagName = m_editor.getCurrentWord();
     if(l_tagName.empty())
         throw Plugin::UserInputError("No tag name to find specified");
     return l_tagName;
@@ -164,7 +161,7 @@ void CTagsController::setTagFiles()
     if(!l_tagFiles.empty())
         m_config.setTagsFilesPaths(l_tagFiles);
     else
-        m_messagePrinter->printInfoMessage("Set Tags","Tag files set can't be empty");
+        m_ui.infoMessage("Set Tags","Tag files set can't be empty");
 }
 
 Result::Basic CTagsController::handleSetTagFiles(const Command::SetTagFiles& p_cmd)
@@ -194,7 +191,7 @@ void CTagsController::clear()
 std::vector<std::string> CTagsController::getSourceDirs() const
 {
     std::vector<std::string> l_projectDirs = m_dirsSelector->select(std::vector<std::string>(),
-                                                                    getFileDir(m_locationGetter->getFile()));
+                                                                    getFileDir(m_editor.getFile()));
 	if(l_projectDirs.empty())
 		throw Plugin::UserInputError("Source folders not specified");
     return l_projectDirs;
@@ -217,17 +214,17 @@ void CTagsController::generateTags()
 	catch (Plugin::UserInputError& e)
 	{
 		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
+		m_ui.infoMessage("Gen Tags", e.what());
 	}
 	catch (GenerateTagsException& e)
 	{
 		LOG_WARN << "Error during tags generation: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Gen Tags", e.what());
+		m_ui.infoMessage("Gen Tags", e.what());
 	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag info: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Gen Tags", e.what());
+		m_ui.errorMessage("Gen Tags", e.what());
 	}
 }
 
@@ -235,7 +232,7 @@ void CTagsController::gnerateTags(std::string p_outFile, std::vector<std::string
 {
 	LOG_INFO << "Generate tags to file: " << p_outFile;
     CTagsGenerator(m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
-	m_messagePrinter->printInfoMessage("Gen Tags", "Tags saved to file: " + p_outFile);
+	m_ui.infoMessage("Gen Tags", "Tags saved to file: " + p_outFile);
 }
 
 Result::Basic CTagsController::handleGenerateTags(const Command::GenerateTags& p_com)
@@ -261,22 +258,22 @@ void CTagsController::tagsSearch()
 	catch(Plugin::UserInputError& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag search", e.what());
+		m_ui.infoMessage("Tag search", e.what());
 	}
 	catch (TagsReaderException& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag search", e.what());
+		m_ui.infoMessage("Tag search", e.what());
 	}
 	catch (TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag search", e.what());
+		m_ui.infoMessage("Tag search", e.what());
 	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag search: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag search", e.what());
+		m_ui.errorMessage("Tag search", e.what());
 	}
 }
 
@@ -289,22 +286,22 @@ void CTagsController::tagHierarchy()
 	catch (Plugin::UserInputError& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag hierarchy", e.what());
+		m_ui.infoMessage("Tag hierarchy", e.what());
 	}
 	catch (TagsReaderException& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag hierarchy", e.what());
+		m_ui.infoMessage("Tag hierarchy", e.what());
 	}
 	catch (TagNotFoundException& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printInfoMessage("Tag hierarchy", e.what());
+		m_ui.infoMessage("Tag hierarchy", e.what());
 	}
 	catch (std::exception& e)
 	{
 		LOG_WARN << "Error during tag hierarchy: " << typeid(e).name() << ". Details: " << e.what();
-		m_messagePrinter->printErrorMessage("Tag hierarchy", e.what());
+		m_ui.errorMessage("Tag hierarchy", e.what());
 	}
 }
 

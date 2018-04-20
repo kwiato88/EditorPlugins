@@ -12,27 +12,27 @@ struct ManageLocationMT : public CTagsMT
 {
 	void getBeginingLocation()
 	{
-		EXPECT_CALL(*locationGetter, getFile()).WillOnce(Return(beginingFile));
-		EXPECT_CALL(*locationGetter, getLine()).WillOnce(Return(beginingLineNum));
-		EXPECT_CALL(*locationGetter, getColumn()).WillOnce(Return(beginingColNum));
+		EXPECT_CALL(editor, getFile()).WillOnce(Return(beginingFile));
+		EXPECT_CALL(editor, getLine()).WillOnce(Return(beginingLineNum));
+		EXPECT_CALL(editor, getColumn()).WillOnce(Return(beginingColNum));
 	}
 	void goToBeginingLocation()
 	{
-		EXPECT_CALL(*locationSetter, setFile(beginingFile));
-		EXPECT_CALL(*locationSetter, setLine(beginingLineNum));
-		EXPECT_CALL(*locationSetter, setColumn(beginingColNum));
+		EXPECT_CALL(editor, setFile(beginingFile));
+		EXPECT_CALL(editor, setLine(beginingLineNum));
+		EXPECT_CALL(editor, setColumn(beginingColNum));
 	}
 	void goToTargetTagLocation_getName()
 	{
-		EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\TagFileReader.cpp")));
-		EXPECT_CALL(*locationSetter, setLine(88));
-		EXPECT_CALL(*locationSetter, setColumn(0));
+		EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Source\\\\TagFileReader.cpp")));
+		EXPECT_CALL(editor, setLine(88));
+		EXPECT_CALL(editor, setColumn(0));
 	}
 	void goToChildTagLocation_parentTagGenerateTagsException()
 	{
-		EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\GenerateTagsException.hpp")));
-		EXPECT_CALL(*locationSetter, setLine(10));
-		EXPECT_CALL(*locationSetter, setColumn(0));
+		EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\GenerateTagsException.hpp")));
+		EXPECT_CALL(editor, setLine(10));
+		EXPECT_CALL(editor, setColumn(0));
 	}
 
 	const std::string beginingFile = "filePath";

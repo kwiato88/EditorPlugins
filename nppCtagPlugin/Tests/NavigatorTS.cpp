@@ -3,8 +3,7 @@
 #include <memory>
 
 #include "Navigator.hpp"
-#include "LocationGetterMock.hpp"
-#include "LocationSetterMock.hpp"
+#include "EditorMock.hpp"
 
 using namespace ::testing;
 
@@ -17,16 +16,15 @@ struct NavigatorTS : public Test
 	Location secondLocation{ "destination second file path", 65, 42 };
 	Location thirdLocation{ "destination third file path", 431, 356 };
 
-	std::shared_ptr <StrictMock<Plugin::LocationGetterMock>> locationGetterMock = std::make_shared<StrictMock<Plugin::LocationGetterMock>>();
-	std::shared_ptr <StrictMock<Plugin::LocationSetterMock>> locationSetterMock = std::make_shared<StrictMock<Plugin::LocationSetterMock>>();
+	StrictMock<Plugin::EditorMock> editorMock;
 
-	Navigator navigator{ locationSetterMock, locationGetterMock };
+	Navigator navigator{ editorMock };
 
 	void expectGoToLocation(const Location& p_destination)
 	{
-		EXPECT_CALL(*locationSetterMock, setFile(p_destination.filePath));
-		EXPECT_CALL(*locationSetterMock, setLine(p_destination.lineNumber));
-		EXPECT_CALL(*locationSetterMock, setColumn(p_destination.columNumber));
+		EXPECT_CALL(editorMock, setFile(p_destination.filePath));
+		EXPECT_CALL(editorMock, setLine(p_destination.lineNumber));
+		EXPECT_CALL(editorMock, setColumn(p_destination.columNumber));
 	}
 	Location generateLocation(int p_number)
 	{

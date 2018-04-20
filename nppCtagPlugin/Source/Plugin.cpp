@@ -4,12 +4,8 @@
 #include "menuCmdID.h"
 #include "Plugin.hpp"
 
-#include "NppLocationSetter.hpp"
-#include "NppLocationGetter.hpp"
-#include "NppMessagePrinter.hpp"
 #include "NppListViewSelector.hpp"
 #include "NppPathGetter.hpp"
-#include "NppTextReader.hpp"
 #include "NppPathsSelector.hpp"
 #include "ReadTagsProxy.hpp"
 #include "TagFileReader.hpp"
@@ -103,7 +99,7 @@ static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
 
 TagsPlugin::TagsPlugin()
- : m_isInitialized(false)
+ : m_isInitialized(false), m_ui(m_npp.npp, m_hModule)
 {
 }
 
@@ -170,16 +166,12 @@ std::string TagsPlugin::getPluginsConfigDir()
 
 void TagsPlugin::createTagsController()
 {
-    m_printer.reset(new NppPlugin::NppMessagePrinter(m_npp.npp, m_hModule));
-
     m_tagsController.reset(new CTagsPlugin::CTagsController(
-		std::make_shared<NppPlugin::NppLocationSetter>(m_npp),
-		std::make_shared<NppPlugin::NppLocationGetter>(m_npp),
-        m_printer,
-		std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
+		m_npp,
+		m_ui,
+        std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
 		std::bind(&TagsPlugin::getTagsSelector, this),
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(m_hModule, m_npp.npp),
-		std::make_shared<NppPlugin::NppTextReader>(m_npp),
 		std::make_shared<NppPlugin::PathsSelector<SelectorType::Directory>>(m_npp.npp, m_hModule),
 		std::make_shared<NppPlugin::PathsSelector<SelectorType::File>>(m_npp.npp, m_hModule),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
@@ -216,7 +208,7 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildCachedTagFileReader(c
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader)
 {
 	return std::make_unique<CTagsPlugin::FileScopedTagFilteringReader>(
-		std::make_shared<NppPlugin::NppLocationGetter>(m_npp),
+		m_npp,
 		std::move(p_reader));
 }
 
@@ -415,7 +407,7 @@ void TagsPlugin::generateTagsFile()
 void TagsPlugin::info()
 {
     std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.7.0\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
-    m_printer->printInfoMessage("About", l_info);
+    m_ui.infoMessage("About", l_info);
 }
 
 } // namespace NppPlugin

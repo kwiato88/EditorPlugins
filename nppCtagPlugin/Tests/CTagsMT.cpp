@@ -14,9 +14,9 @@ boost::optional<TagHolder> TagHierarchySelectorProxy::select(const TagHierarchy&
 
 void CTagsMT::expectGetAnyLocation()
 {
-	EXPECT_CALL(*locationGetter, getFile()).WillRepeatedly(Return(""));
-	EXPECT_CALL(*locationGetter, getLine()).WillRepeatedly(Return(0));
-	EXPECT_CALL(*locationGetter, getColumn()).WillRepeatedly(Return(0));
+	EXPECT_CALL(editor, getFile()).WillRepeatedly(Return(""));
+	EXPECT_CALL(editor, getLine()).WillRepeatedly(Return(0));
+	EXPECT_CALL(editor, getColumn()).WillRepeatedly(Return(0));
 }
 void CTagsMT::setPathToFileWithInvalidTags()
 {

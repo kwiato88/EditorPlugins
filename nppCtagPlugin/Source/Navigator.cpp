@@ -8,12 +8,10 @@ bool operator==(const Location& p_lhs, const Location& p_rhs)
     return p_lhs.filePath == p_rhs.filePath && p_lhs.lineNumber == p_rhs.lineNumber;
 }
 
-Navigator::Navigator(std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
-	                 std::shared_ptr<Plugin::ILocationGetter> p_locationGetter)
- : m_locations(),
-   m_currentLocationIndex(-1),
-   m_locationSetter(p_locationSetter),
-   m_locationGetter(p_locationGetter)
+Navigator::Navigator(Plugin::Editor& p_editor)
+ : m_editor(p_editor),
+   m_locations(),
+   m_currentLocationIndex(-1)
 {
 }
 
@@ -56,9 +54,9 @@ bool Navigator::isCurrentLocationIndexValid() const
 void Navigator::goTo(unsigned int p_locationIndex)
 {
     Location l_location = m_locations[p_locationIndex];
-    m_locationSetter->setFile(l_location.filePath);
-    m_locationSetter->setLine(l_location.lineNumber);
-    m_locationSetter->setColumn(l_location.columNumber);
+	m_editor.setFile(l_location.filePath);
+	m_editor.setLine(l_location.lineNumber);
+	m_editor.setColumn(l_location.columNumber);
 }
 
 void Navigator::clear()

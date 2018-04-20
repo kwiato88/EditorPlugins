@@ -5,8 +5,8 @@
 
 #include "PluginInterface.h"
 
-#include "EditorData.hpp"
-#include "NppMessagePrinter.hpp"
+#include "NppEditor.hpp"
+#include "WinApiUI.hpp"
 #include "ITagsSelector.hpp"
 #include "ITagsReader.hpp"
 #include "CTagsController.hpp"
@@ -57,7 +57,7 @@ public:
 	bool m_isInitialized;
 	WinApi::InstanceHandle m_hModule;
 	FuncItem m_funcItems[s_funcNum];
-	EditorData m_npp;
+	Editor m_npp;
 
 private:
 	bool setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
@@ -79,7 +79,7 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
 
 	int m_numberOfAddedFunctions = 0;
-	std::shared_ptr<NppPlugin::NppMessagePrinter> m_printer;
+	WinApi::UI m_ui;
 	std::shared_ptr<CTagsPlugin::ITagsSelector> m_selector;
 	CTagsPlugin::ConfigGetter m_config;
 	std::string m_configFilePath;

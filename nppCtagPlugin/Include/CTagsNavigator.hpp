@@ -7,11 +7,11 @@
 #include <functional>
 
 #include "Navigator.hpp"
-#include "ILocationGetter.hpp"
 #include "ITagsReader.hpp"
 #include "ITagsSelector.hpp"
 #include "TagHierarchy.hpp"
 #include "ITagHierarchySelector.hpp"
+#include "Editor.hpp"
 
 namespace CTagsPlugin
 {
@@ -21,8 +21,8 @@ typedef std::function<std::shared_ptr<ITagsSelector>()> SelectorFactory;
 class CTagsNavigator
 {
 public:
-    CTagsNavigator(std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
-                   Navigator& p_navigator,
+    CTagsNavigator(Navigator& p_navigator,
+				   Plugin::Editor& p_editor,
                    SelectorFactory p_selectorFactory,
 		           std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 				   std::shared_ptr<ITagsReader> p_tagsReader);
@@ -53,7 +53,7 @@ private:
     void goTo(const TagHolder& p_tag);
 
     Navigator& m_navigator;
-	std::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
+	Plugin::Editor& m_editor;
     SelectorFactory m_selectorFactory;
 	std::unique_ptr<ITagHierarchySelector> m_hierSelector;
 	std::shared_ptr<ITagsReader> m_tagsReader;

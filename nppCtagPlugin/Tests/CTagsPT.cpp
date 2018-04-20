@@ -20,20 +20,18 @@ namespace CTagsPlugin
 {
 using namespace ::testing;
 
-struct LocationGetterStub : public Plugin::ILocationGetter
+struct EditorStub : public Plugin::Editor
 {
 	std::string getFile() const { return ""; }
-	int getLine() const { return 0;	}
+	int getLine() const { return 0; }
 	int getColumn() const { return 0; }
-};
 
-struct LocationSetterStub : public Plugin::ILocationSetter
-{
-	void setFile(std::string) {}
+	void setFile(const std::string&) {}
 	void setLine(int) {}
 	void setColumn(int) {}
-};
 
+	std::string getCurrentWord() const { return ""; }
+};
 struct TagsSelectorStub : public ITagsSelector
 {
 	int selectTag(const std::vector<TagHolder>&) { return 0; }
@@ -48,14 +46,15 @@ constexpr int c_numberOfIterations = 100;
 
 struct CtagsPerformanceTests : public Test
 {
-	Navigator navigator{ std::make_shared<LocationSetterStub>(), std::make_shared<LocationGetterStub>() };
+	EditorStub editor;
+	Navigator navigator{ editor };
 	std::shared_ptr<ITagsReader> tagsReader = std::make_shared<TagFileReader>([&]() {return bigTagsFilePath; });
 	std::shared_ptr<ITagsSelector> selector = std::make_shared<TagsSelectorStub>();
 
 	CTagsNavigator tagsNavigator
 	{
-		std::make_shared<LocationGetterStub>(),
 		navigator,
+		editor,
 		[&]() {return selector; },
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReader
@@ -148,8 +147,8 @@ struct CachedCtagsPerformanceTests : public CtagsPerformanceTests
 		bigTagsFilePath);
 	CTagsNavigator tagsNavigatorCache =
 	{
-		std::make_shared<LocationGetterStub>(),
 		navigator,
+		editor,
 		[&]() {return selector; },
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReaderWithCache

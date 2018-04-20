@@ -26,9 +26,9 @@ TEST_F(GoToCppTagMT, goToClassWithName)
 		{ CppTag::Kind::Class },
 		{ CppTag::Access::None, CppTag::Access::Private, CppTag::Access::Protected, CppTag::Access::Public });
 
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\CTagsNavigator.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(18));
-	EXPECT_CALL(*locationSetter, setColumn(0));
+	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\CTagsNavigator.hpp")));
+	EXPECT_CALL(editor, setLine(18));
+	EXPECT_CALL(editor, setColumn(0));
 	tagsNavigator.goToTag(matcher);
 }
 

@@ -98,9 +98,9 @@ TEST_F(GoToChildTagMT, shouldThrowWhenNoParentTagSelected)
 TEST_F(GoToChildTagMT, shouldGoToChildTag_OneParentTagFoundOneChildTagFound)
 {
 	expectGetAnyLocation();
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\GenerateTagsException.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(10));
-	EXPECT_CALL(*locationSetter, setColumn(0));
+	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\GenerateTagsException.hpp")));
+	EXPECT_CALL(editor, setLine(10));
+	EXPECT_CALL(editor, setColumn(0));
 	tagsNavigator.goToChildTag("GenerateTagsException");
 }
 
@@ -117,9 +117,9 @@ TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_OneParentTagFoundMultipleChild
 {
 	expectGetAnyLocation();
 	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_Field()))).WillOnce(Return(2));
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Include\\\\BuildTag.hpp")));
-	EXPECT_CALL(*locationSetter, setLine(20));
-	EXPECT_CALL(*locationSetter, setColumn(0));
+	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\BuildTag.hpp")));
+	EXPECT_CALL(editor, setLine(20));
+	EXPECT_CALL(editor, setColumn(0));
 	tagsNavigator.goToChildTag("Field");
 }
 TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_MultipleParentTagFoundMultipleChildTagsFound)
@@ -128,9 +128,9 @@ TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_MultipleParentTagFoundMultiple
 	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedParentTagsForParent_TagPrinter()))).WillOnce(Return(0));
 	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_CppTagPrinter()))).WillOnce(Return(3));
 	expectGetAnyLocation();
-	EXPECT_CALL(*locationSetter, setFile(EndsWith("TestSourceCode\\\\Source\\\\CppTagPrinter.cpp")));
-	EXPECT_CALL(*locationSetter, setLine(54));
-	EXPECT_CALL(*locationSetter, setColumn(0));
+	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Source\\\\CppTagPrinter.cpp")));
+	EXPECT_CALL(editor, setLine(54));
+	EXPECT_CALL(editor, setColumn(0));
 	tagsNavigator.goToChildTag("TagPrinter");
 }
 

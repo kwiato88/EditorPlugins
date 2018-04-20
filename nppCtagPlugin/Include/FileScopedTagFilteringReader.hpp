@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "ITagsReader.hpp"
-#include "ILocationGetter.hpp"
+#include "Editor.hpp"
 
 namespace CTagsPlugin
 {
@@ -12,7 +12,7 @@ class FileScopedTagFilteringReader : public ITagsReader
 {
 public:
 	FileScopedTagFilteringReader(
-		std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
+		Plugin::Editor& p_editor,
 		std::unique_ptr<ITagsReader> p_reader);
 
     std::vector<TagHolder> findTag(const std::string& p_tagName) const;
@@ -21,7 +21,7 @@ public:
 private:
 	std::vector<TagHolder> filter(const std::vector<TagHolder> p_tags) const;
 
-	std::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
+	Plugin::Editor& m_editor;
 	std::unique_ptr<ITagsReader> m_reader;
 };
 

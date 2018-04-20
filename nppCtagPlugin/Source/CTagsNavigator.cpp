@@ -57,13 +57,13 @@ std::vector<TagHolder> findTag(std::shared_ptr<ITagsReader> p_tagsReader, const 
 }
 
 CTagsNavigator::CTagsNavigator(
-	std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
-    Navigator& p_navigator,
+	Navigator& p_navigator,
+	Plugin::Editor& p_editor,
     SelectorFactory p_selectorFactory,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader)
  : m_navigator(p_navigator),
-   m_locationGetter(p_locationGetter),
+   m_editor(p_editor),
    m_selectorFactory(p_selectorFactory),
    m_hierSelector(std::move(p_hierSelector)),
    m_tagsReader(p_tagsReader)
@@ -85,9 +85,9 @@ void CTagsNavigator::goToChildTag(const std::string& p_parentTagName)
 Location CTagsNavigator::getCurrentLocation() const
 {
     Location l_currentlocation;
-    l_currentlocation.filePath = m_locationGetter->getFile();
-    l_currentlocation.lineNumber = m_locationGetter->getLine();
-    l_currentlocation.columNumber = m_locationGetter->getColumn();
+    l_currentlocation.filePath = m_editor.getFile();
+    l_currentlocation.lineNumber = m_editor.getLine();
+    l_currentlocation.columNumber = m_editor.getColumn();
 
     return l_currentlocation;
 }

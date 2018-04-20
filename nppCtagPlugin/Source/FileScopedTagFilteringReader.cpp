@@ -19,9 +19,9 @@ std::string fixPath(std::string p_path)
 }
 
 FileScopedTagFilteringReader::FileScopedTagFilteringReader(
-	std::shared_ptr<Plugin::ILocationGetter> p_locationGetter,
+	Plugin::Editor& p_editor,
 	std::unique_ptr<ITagsReader> p_reader)
-	: m_locationGetter(p_locationGetter), m_reader(std::move(p_reader))
+	: m_editor(p_editor), m_reader(std::move(p_reader))
 {}
 
 std::vector<TagHolder> FileScopedTagFilteringReader::findTag(const std::string& p_tagName) const
@@ -36,7 +36,7 @@ std::vector<TagHolder> FileScopedTagFilteringReader::findTag(TagMatcher p_matche
 
 std::vector<TagHolder> FileScopedTagFilteringReader::filter(const std::vector<TagHolder> p_tags) const
 {
-	std::string file = m_locationGetter->getFile();
+	std::string file = m_editor.getFile();
 	std::vector<TagHolder> filtered;
 	boost::range::copy(
 		p_tags | boost::adaptors::filtered(

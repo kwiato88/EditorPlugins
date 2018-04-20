@@ -11,8 +11,7 @@
 #include "Tag.hpp"
 
 #include "TestsGlobals.hpp"
-#include "LocationGetterMock.hpp"
-#include "LocationSetterMock.hpp"
+#include "EditorMock.hpp"
 #include "TagsSelectorMock.hpp"
 #include "TagHierarchySelectorMock.hpp"
 
@@ -34,18 +33,17 @@ struct CTagsMT : public Test
 	void expectGetAnyLocation();
 	void setPathToFileWithInvalidTags();
 
-	std::shared_ptr<NiceMock<Plugin::LocationGetterMock>> locationGetter = std::make_shared<NiceMock<Plugin::LocationGetterMock>>();
-	std::shared_ptr<StrictMock<Plugin::LocationSetterMock>> locationSetter = std::make_shared<StrictMock<Plugin::LocationSetterMock>>();
+	StrictMock<Plugin::EditorMock> editor;
 	std::shared_ptr<StrictMock<TagsSelectorMock>> selector = std::make_shared<StrictMock<TagsSelectorMock>>();
 	StrictMock<TagHierarchySelectorMock> hierSelector;
 
-	Navigator navigator{ locationSetter, locationGetter };
+	Navigator navigator{ editor };
 	std::shared_ptr<ITagsReader> tagsReader = std::make_shared<TagFileReader>([&]() {return tagsFilePath; });
 
 	CTagsNavigator tagsNavigator
 	{
-		locationGetter,
 		navigator,
+		editor,
 		[&]() { return selector; },
 		std::make_unique<TagHierarchySelectorProxy>(hierSelector),
 		tagsReader

@@ -4,8 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "ILocationSetter.hpp"
-#include "ILocationGetter.hpp"
+#include "Editor.hpp"
 
 namespace CTagsPlugin
 {
@@ -22,8 +21,7 @@ bool operator==(const Location& p_lhs, const Location& p_rhs);
 class Navigator
 {
 public:
-    Navigator(std::shared_ptr<Plugin::ILocationSetter> p_locationSetter,
-		      std::shared_ptr<Plugin::ILocationGetter> p_locationGetter);
+    Navigator(Plugin::Editor& p_editor);
 
     /*
      * @throws: LocationSetterException
@@ -50,11 +48,10 @@ private:
     void addLocationOnTop(const Location& p_location);
     void cutLocationsQueue();
 
+	Plugin::Editor& m_editor;
+
     std::vector<Location> m_locations;
     int m_currentLocationIndex;
-
-	std::shared_ptr<Plugin::ILocationSetter> m_locationSetter;
-	std::shared_ptr<Plugin::ILocationGetter> m_locationGetter;
 };
 
 } // namespace CTagsPlugin
