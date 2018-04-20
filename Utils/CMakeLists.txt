@@ -8,16 +8,10 @@ add_library(
     nppUtils
     STATIC
     Source/ShellCommand.cpp
-    Source/EditorData.cpp
     Source/NppEditor.cpp
     Source/WinApiUI.cpp
     Source/Logger.cpp
     Source/Log.cpp
-    Source/NppTextReader.cpp
-    Source/NppMessagePrinter.cpp
-    Source/NppLocationGetter.cpp
-    Source/NppLocationSetter.cpp
-    Source/NppListViewSelector.cpp
     Source/NppPathGetter.cpp
     Source/NppPathsSelector.cpp
     Source/MessageHandler.cpp
