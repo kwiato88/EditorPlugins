@@ -4,7 +4,6 @@
 #include "menuCmdID.h"
 #include "Plugin.hpp"
 
-#include "NppListViewSelector.hpp"
 #include "NppPathGetter.hpp"
 #include "NppPathsSelector.hpp"
 #include "ReadTagsProxy.hpp"
