@@ -14,6 +14,8 @@ namespace ProjectMgmt
 {
 using namespace ::testing;
 
+using Strings = std::vector<std::string>;
+
 class TagsProxy : public ITags
 {
 public:
@@ -41,7 +43,7 @@ struct ProjectMT : public Test
 		rootPath = std::getenv("projectRootPath");
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
 		projectsDirPath = testsRootPath + "Projects\\";
-		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(std::vector<std::string>()));
+		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(Strings()));
 	}
 	~ProjectMT()
 	{
@@ -143,7 +145,7 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 		tagsMock
 	};
 
-	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
 	project.refershCodeNavigation();
 }
 
@@ -159,7 +161,7 @@ TEST_F(ProjectMT, shouldIgnoreEmptyTagFilePathDuringRefreshCodeNavigation)
 		tagsMock
 	};
 
-	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir1\\file1.txt" })));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt" })));
 	project.refershCodeNavigation();
 }
 
@@ -175,8 +177,8 @@ TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 		tagsMock
 	};
 
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", std::vector<std::string>({ "d:\\dir1\\dir" })));
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", std::vector<std::string>({ "d:\\dir2\\dir" })));
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", Strings({ "d:\\dir2\\dir" })));
 	project.refresh();
 }
 
@@ -192,7 +194,7 @@ TEST_F(ProjectMT, shouldIgnoreItemWithEmptyTagsFilePathDuringRefresh)
 		tagsMock
 	};
 
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", std::vector<std::string>({ "d:\\dir2\\dir" })));
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", Strings({ "d:\\dir2\\dir" })));
 	project.refresh();
 }
 
@@ -208,7 +210,22 @@ TEST_F(ProjectMT, shouldIgnoreItemWithEmptySourceFilePathDuringRefresh)
 		tagsMock
 	};
 
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", std::vector<std::string>({ "d:\\dir1\\dir" })));
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1 q\\dir w", "d:\\dir 2\\file 1.txt", tagsMock },
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, generateTags("d:\\dir 2\\file 1.txt", Strings({ "d:\\dir1 q\\dir w" })));
 	project.refresh();
 }
 
@@ -234,7 +251,7 @@ TEST_F(ProjectMT, shouldOpenSelectedProject)
 	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
 	
 	EXPECT_CALL(uiMock, selectRow(
-		std::vector<std::string>({ "Project", "Path" }),
+		Strings({ "Project", "Path" }),
 		std::vector<Plugin::UI::Row>(
 		{
 			Plugin::UI::Row({"FirstProject", testsRootPath + "Workspace\\FirstProject"}),
@@ -319,9 +336,9 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenOpenProject)
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
 	{
 		InSequence seq;
-		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
-		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
-		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>()));
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
@@ -332,13 +349,13 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseProject)
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
 
-	std::vector<std::string> originalTagFilesPaths { "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
+	Strings originalTagFilesPaths { "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
 	{
 		InSequence seq;
 		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
-		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
 
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
@@ -398,8 +415,8 @@ TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
 	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
 	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
 
-	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(std::vector<std::string>()));
-	EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({}))).Times(2);
+	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
@@ -411,17 +428,39 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
 	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
 	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
 	
-	std::vector<std::string> originalTagFilesPaths{ "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
+	Strings originalTagFilesPaths{ "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
 	{
 		InSequence seq;
 		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
-		EXPECT_CALL(tagsMock, setTagFiles(std::vector<std::string>({})));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({})));
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	
 	sut.newProject();
+	sut.closeProject();
+}
+
+TEST_F(ProjectMT, shouldRefreshProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
+		EXPECT_CALL(tagsMock, generateTags("d:\\dir12\\file12.txt", Strings({ "d:\\dir12" })));
+		EXPECT_CALL(tagsMock, generateTags("d:\\dir43\\file2.txt", Strings({ "d:\\dir44\\dir" })));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
+	}
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	sut.openProject();
+	sut.refreshProject();
 	sut.closeProject();
 }
 

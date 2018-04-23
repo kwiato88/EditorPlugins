@@ -8,11 +8,11 @@ namespace ProjectMgmt
 
 namespace
 {
-std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data)
+std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data, ITags& p_tags)
 {
     std::vector<Elem> items;
     for(const auto& item : p_data.get_child("items"))
-        items.push_back(Elem(item.second));
+        items.push_back(Elem(item.second, p_tags));
     return items;
 }
 }
@@ -47,6 +47,10 @@ boost::property_tree::ptree Elem::exportData() const
     boost::property_tree::ptree data;
     data.put("sourcePath", sourcePath);
     data.put("tagFilePath", ctagsFilePath);
+	//data.put("tagsGeneration", "enabled");
+	//data.put("tagsNavigation", "enabled");
+	//data.put("includesBrowsing", "enabled");
+	//data.put("fileSearching", "enabled");
     return data;
 }
 
@@ -74,7 +78,7 @@ Project::Project(const boost::property_tree::ptree& p_data)
 {}
 
 Project::Project(const boost::property_tree::ptree& p_data, ITags& p_tags)
-	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data), p_tags)
+	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data, p_tags), p_tags)
 {}
 
 void Project::refresh()

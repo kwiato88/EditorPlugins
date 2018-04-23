@@ -196,8 +196,18 @@ std::string Workspace::newProjectName() const
 
 void Workspace::refreshProject()
 {
-    if(currentProject != nullptr)
-        currentProject->refresh();
+	try
+	{
+		if (currentProject != nullptr)
+		{
+			currentProject->refresh();
+			ui.infoMessage("Refresh Project", std::string("Refreshed project: ") + currentProject->getName());
+		}
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("Refresh Project", std::string("Failed to refresh project ") + currentProjectName() + ". Detail: " + e.what());
+	}
 }
 
 }
