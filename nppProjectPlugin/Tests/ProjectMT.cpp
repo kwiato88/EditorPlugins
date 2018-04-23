@@ -55,61 +55,56 @@ struct ProjectMgmyMT : public Test
 	StrictMock<Plugin::UiMock> uiMock;
 };
 
-class ProjectMT : public ProjectMgmyMT
-{};
+struct ProjectMT : public ProjectMgmyMT
+{
+	Project loadProject(const std::string& p_projectFile)
+	{
+		boost::property_tree::ptree projectData;
+		boost::property_tree::json_parser::read_json(projectsDirPath + p_projectFile, projectData);
+		
+		return Project(projectData);
+	}
+	void saveProject(const Project& p_project, const std::string& p_projectFile)
+	{
+		boost::property_tree::json_parser::write_json(projectsDirPath + p_projectFile, p_project.exportData());
+	}
+};
 
 TEST_F(ProjectMT, shouldLoadProjectFromConfigFile)
 {
-	boost::property_tree::ptree projectData;
-	boost::property_tree::json_parser::read_json(projectsDirPath + "projectFile.json", projectData);
-
 	ASSERT_EQ(
 		(Project{ "NewProject",
 				{
 					Elem{ "d:\\dir1", "d:\\dir1\\file1.txt" },
 					Elem{ "d:\\dir2", "d:\\dir2\\file2.txt" }
 				}}),
-		Project{ projectData });
+		loadProject("projectFile.json"));
 }
 
 TEST_F(ProjectMT, loadedProjectShouldBeTheSameAsSaved)
 {
 	Project project{ "ProjectName",{ Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" }, Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt" } } };
-	std::string configFile = projectsDirPath + "tmpProjectFile.json";
-	boost::property_tree::json_parser::write_json(configFile, project.exportData());
-
-	boost::property_tree::ptree loadedData;
-	boost::property_tree::json_parser::read_json(configFile, loadedData);
-
-	ASSERT_EQ(project, Project(loadedData));
+	
+	saveProject(project, "tmpProjectFile.json");
+	ASSERT_EQ(project, loadProject("tmpProjectFile.json"));
 }
 
 TEST_F(ProjectMT, shouldSaveAndLoadProjectWithoutItems)
 {
 	Project project{ "ProjectName",{} };
-	std::string configFile = projectsDirPath + "tmpProjectFile.json";
-	boost::property_tree::json_parser::write_json(configFile, project.exportData());
 
-	boost::property_tree::ptree loadedData;
-	boost::property_tree::json_parser::read_json(configFile, loadedData);
-
-	ASSERT_EQ(project, Project(loadedData));
+	saveProject(project, "tmpProjectFile.json");
+	ASSERT_EQ(project, loadProject("tmpProjectFile.json"));
 }
 
 TEST_F(ProjectMT, shouldThrowWhenProjectNameIsNotDefinedInFile)
 {
-	boost::property_tree::ptree projectData;
-	boost::property_tree::json_parser::read_json(projectsDirPath + "projectWithNoName.json" , projectData);
-
-	ASSERT_THROW(Project{ projectData }, std::runtime_error);
+	ASSERT_THROW(loadProject("projectWithNoName.json"), std::runtime_error);
 }
 
 TEST_F(ProjectMT, shouldThrowWhenItemHasNoPathsDefined)
 {
-	boost::property_tree::ptree projectData;
-	boost::property_tree::json_parser::read_json(projectsDirPath + "itemWithoutPaths.json", projectData);
-
-	ASSERT_THROW(Project{ projectData }, std::runtime_error);
+	ASSERT_THROW(loadProject("itemWithoutPaths.json"), std::runtime_error);
 }
 
 TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
