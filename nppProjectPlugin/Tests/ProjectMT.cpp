@@ -36,48 +36,27 @@ private:
 	ITags& tags;
 };
 
-struct ProjectMT : public Test
+struct ProjectMgmyMT : public Test
 {
-	ProjectMT()
+	ProjectMgmyMT()
 	{
 		rootPath = std::getenv("projectRootPath");
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
 		projectsDirPath = testsRootPath + "Projects\\";
 		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(Strings()));
 	}
-	~ProjectMT()
-	{
-		if (!projectDirToCleanup.empty())
-			deleteProjectDirIfExists(projectDirToCleanup);
-	}
-
-	bool doesDirExist(const std::string& p_path)
-	{
-		return boost::filesystem::exists(p_path) && boost::filesystem::is_directory(p_path);
-	}
-	bool doesFileExist(const std::string& p_path)
-	{
-		return boost::filesystem::exists(p_path) && boost::filesystem::is_regular_file(p_path);
-	}
-	void deleteIfExists(const std::string& p_path)
-	{
-		if (boost::filesystem::exists(p_path))
-			boost::filesystem::remove(p_path);
-	}
-	void deleteProjectDirIfExists(const std::string& p_rojectDirPath)
-	{
-		deleteIfExists(p_rojectDirPath + "\\project.json");
-		deleteIfExists(p_rojectDirPath);
-	}
 
 	std::string rootPath;
 	std::string testsRootPath;
 	std::string projectsDirPath;
-	std::string projectDirToCleanup;
+
 	StrictMock<ITagsMock> tagsMock;
 	NiceMock<ITagsMock> tagsNiceMock;
 	StrictMock<Plugin::UiMock> uiMock;
 };
+
+class ProjectMT : public ProjectMgmyMT
+{};
 
 TEST_F(ProjectMT, shouldLoadProjectFromConfigFile)
 {
@@ -229,26 +208,64 @@ TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
 	project.refresh();
 }
 
-TEST_F(ProjectMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
+struct WorkspaceMT : public ProjectMgmyMT
+{
+	~WorkspaceMT()
+	{
+		if (!projectDirToCleanup.empty())
+			deleteProjectDirIfExists(projectDirToCleanup);
+	}
+
+	bool doesDirExist(const std::string& p_path)
+	{
+		return boost::filesystem::exists(p_path) && boost::filesystem::is_directory(p_path);
+	}
+	bool doesFileExist(const std::string& p_path)
+	{
+		return boost::filesystem::exists(p_path) && boost::filesystem::is_regular_file(p_path);
+	}
+	void deleteIfExists(const std::string& p_path)
+	{
+		if (boost::filesystem::exists(p_path))
+			boost::filesystem::remove(p_path);
+	}
+	void deleteProjectDirIfExists(const std::string& p_rojectDirPath)
+	{
+		deleteIfExists(p_rojectDirPath + "\\project.json");
+		deleteIfExists(p_rojectDirPath);
+	}
+	Workspace buildWorkspace(const std::string& p_workspaceDir)
+	{
+		return Workspace(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + p_workspaceDir);
+	}
+	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
+	{
+		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + p_workspaceDir);
+	}
+
+	std::string projectDirToCleanup;
+};
+
+TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "notExistingDir"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "notExistingDir");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("notExistingDir"));
 	EXPECT_CALL(uiMock, errorMessage(_, _));
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
+TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 {
 	ASSERT_TRUE(doesFileExist(testsRootPath + "WorkspaceFile"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "WorkspaceFile");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceFile"));
 	EXPECT_CALL(uiMock, errorMessage(_, _));
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldOpenSelectedProject)
+TEST_F(WorkspaceMT, shouldOpenSelectedProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
 	
 	EXPECT_CALL(uiMock, selectRow(
 		Strings({ "Project", "Path" }),
@@ -263,10 +280,10 @@ TEST_F(ProjectMT, shouldOpenSelectedProject)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldNotOpenProjectWhenOneAlreadyOpened)
+TEST_F(WorkspaceMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
 	
 	EXPECT_CALL(uiMock, selectRow(_, _,	_))
 		.WillOnce(Return(Plugin::UI::Row({ "FirstProject", testsRootPath + "Workspace\\FirstProject" })));
@@ -276,10 +293,10 @@ TEST_F(ProjectMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldPrintMessageWhenNoProjectFile)
+TEST_F(WorkspaceMT, shouldPrintMessageWhenNoProjectFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "WorkspaceWithInvalidProjects");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "NoProjectFile", testsRootPath + "WorkspaceWithInvalidProjects\\NoProjectFile" })));
@@ -287,10 +304,10 @@ TEST_F(ProjectMT, shouldPrintMessageWhenNoProjectFile)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldPrintMessageWhenProjectFileIsInvalid)
+TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectFileIsInvalid)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "WorkspaceWithInvalidProjects");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "InvaliProjectFile", testsRootPath + "WorkspaceWithInvalidProjects\\InvaliProjectFile" })));
@@ -298,10 +315,10 @@ TEST_F(ProjectMT, shouldPrintMessageWhenProjectFileIsInvalid)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
+TEST_F(WorkspaceMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "WorkspaceWithInvalidProjects");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
 	InSequence dummy;
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
@@ -315,10 +332,10 @@ TEST_F(ProjectMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldOpenAndCloseProject)
+TEST_F(WorkspaceMT, shouldOpenAndCloseProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
@@ -327,10 +344,10 @@ TEST_F(ProjectMT, shouldOpenAndCloseProject)
 	sut.closeProject();
 }
 
-TEST_F(ProjectMT, shouldSetTagFilesPathsWhenOpenProject)
+TEST_F(WorkspaceMT, shouldSetTagFilesPathsWhenOpenProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspace("Workspace"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
@@ -344,10 +361,10 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenOpenProject)
 	sut.openProject();
 }
 
-TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseProject)
+TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAfterCloseProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspace("Workspace"));
 
 	Strings originalTagFilesPaths { "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
@@ -365,11 +382,11 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseProject)
 	sut.closeProject();
 }
 
-TEST_F(ProjectMT, closingNewProjectShouldCreateProjectDirAndFile)
+TEST_F(WorkspaceMT, closingNewProjectShouldCreateProjectDirAndFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -381,11 +398,11 @@ TEST_F(ProjectMT, closingNewProjectShouldCreateProjectDirAndFile)
 	ASSERT_TRUE(doesFileExist(projectDir + "\\project.json"));
 }
 
-TEST_F(ProjectMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
+TEST_F(WorkspaceMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock( "Workspace"));
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -398,10 +415,10 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 	sut.newProject();
 }
 
-TEST_F(ProjectMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
+TEST_F(WorkspaceMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + "NotExistingWorkspace");
+	Workspace sut(buildWorkspaceWithNiceTagsMock("NotExistingWorkspace"));
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, errorMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
@@ -409,10 +426,10 @@ TEST_F(ProjectMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace\\NewProject"));
 }
 
-TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
+TEST_F(WorkspaceMT, shouldClearTagFilesPathsWhenCreateNewProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspace("Workspace"));
 	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
 
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
@@ -422,10 +439,10 @@ TEST_F(ProjectMT, shouldClearTagFilesPathsWhenCreateNewProject)
 	sut.newProject();
 }
 
-TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
+TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspace("Workspace"));
 	projectDirToCleanup = testsRootPath + "Workspace\\NewProject";
 	
 	Strings originalTagFilesPaths{ "D:\\tagFile1.txt", "D:\\tagFile2.txt", "D:\\dir\\TagFile3.txt" };
@@ -442,10 +459,10 @@ TEST_F(ProjectMT, shouldRestoreTagFilesPathsAfterCloseNewProject)
 	sut.closeProject();
 }
 
-TEST_F(ProjectMT, shouldRefreshProject)
+TEST_F(WorkspaceMT, shouldRefreshProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + "Workspace");
+	Workspace sut(buildWorkspace("Workspace"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
