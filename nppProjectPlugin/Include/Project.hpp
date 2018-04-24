@@ -34,13 +34,13 @@ public:
 	void refresh();
 	void appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const;
 
-    std::string sourcePath;
-    std::string ctagsFilePath;
-	bool shouldGenerateTags;
-	bool shouldIncludeTagsInNavigation;
-
 private:
 	ITags& tags;
+
+	std::string sourcePath;
+	std::string ctagsFilePath;
+	bool shouldGenerateTags;
+	bool shouldIncludeTagsInNavigation;
 };
 
 class Project
