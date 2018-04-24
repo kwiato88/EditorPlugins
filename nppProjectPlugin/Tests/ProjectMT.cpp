@@ -114,6 +114,21 @@ TEST_F(ProjectMT, shouldThrowWhenItemHasNoPathsDefined)
 	ASSERT_THROW(loadProject("itemWithoutPaths.json"), std::runtime_error);
 }
 
+TEST_F(ProjectMT, shoukdNotCreateItemWithTagNavigationButWithNoTagFile)
+{
+	ASSERT_THROW(Elem("source", "", tagsNiceMock, false, true), std::runtime_error);
+}
+
+TEST_F(ProjectMT, shoukdNotCreateItemWithTagGenerationButWithNoTagFile)
+{
+	ASSERT_THROW(Elem("source", "", tagsNiceMock, true, false), std::runtime_error);
+}
+
+TEST_F(ProjectMT, shoukdNotCreateItemWithTagGenerationButWithNoSource)
+{
+	ASSERT_THROW(Elem("", "tagFile", tagsNiceMock, true, false), std::runtime_error);
+}
+
 TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 {
 	Project project
@@ -127,22 +142,6 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
-	project.refershCodeNavigation();
-}
-
-TEST_F(ProjectMT, shouldIgnoreEmptyTagFilePathDuringRefreshCodeNavigation)
-{
-	Project project
-	{
-		"ProjectName",
-		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
-			Elem{ "d:\\dir2\\dir", "", tagsMock }
-		},
-		tagsMock
-	};
-
-	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt" })));
 	project.refershCodeNavigation();
 }
 
@@ -176,38 +175,6 @@ TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", Strings({ "d:\\dir2\\dir" })));
-	project.refresh();
-}
-
-TEST_F(ProjectMT, shouldIgnoreItemWithEmptyTagsFilePathDuringRefresh)
-{
-	Project project
-	{
-		"ProjectName",
-		{
-			Elem{ "d:\\dir1\\dir", "", tagsMock },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
-		},
-		tagsMock
-	};
-
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", Strings({ "d:\\dir2\\dir" })));
-	project.refresh();
-}
-
-TEST_F(ProjectMT, shouldIgnoreItemWithEmptySourceFilePathDuringRefresh)
-{
-	Project project
-	{
-		"ProjectName",
-		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
-			Elem{ "", "d:\\dir2\\dir3\\file2.txt", tagsMock }
-		},
-		tagsMock
-	};
-
-	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
 	project.refresh();
 }
 

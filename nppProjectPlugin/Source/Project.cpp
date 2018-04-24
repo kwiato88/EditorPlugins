@@ -30,8 +30,10 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, 
  : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath), tags(p_tags),
 	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation)
 {
-    if(sourcePath.empty() && ctagsFilePath.empty())
-        throw std::runtime_error("Given source path and tag file path is empty");
+	if (p_tagsNavigation && ctagsFilePath.empty())
+		throw std::runtime_error("Tag file for elem with tags navigation can not be empty");
+	if(p_genTags && (ctagsFilePath.empty() || sourcePath.empty()))
+		throw std::runtime_error("Tag file and source for elem with tags generation can not be empty");
 }
 
 Elem::Elem(const boost::property_tree::ptree& p_data)
@@ -48,13 +50,13 @@ Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags)
 
 void Elem::refresh()
 {
-	if(!ctagsFilePath.empty() && !sourcePath.empty() && shouldGenerateTags)
+	if(shouldGenerateTags)
 		tags.generateTags(ctagsFilePath, { sourcePath });
 }
 
 void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
 {
-	if (!ctagsFilePath.empty() && shouldIncludeTagsInNavigation)
+	if(shouldIncludeTagsInNavigation)
 		p_tagFiles.push_back(ctagsFilePath);
 }
 
