@@ -3,11 +3,15 @@
     "items": [
         {
             "sourcePath": "d:\\dir12",
-            "tagFilePath": "d:\\dir12\\file12.txt"
+            "tagFilePath": "d:\\dir12\\file12.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled"
         },
         {
             "sourcePath": "d:\\dir44\\dir",
-            "tagFilePath": "d:\\dir43\\file2.txt"
+            "tagFilePath": "d:\\dir43\\file2.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled"
         }
     ]
 }

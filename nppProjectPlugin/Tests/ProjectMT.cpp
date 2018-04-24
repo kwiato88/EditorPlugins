@@ -83,7 +83,14 @@ TEST_F(ProjectMT, shouldLoadProjectFromConfigFile)
 
 TEST_F(ProjectMT, loadedProjectShouldBeTheSameAsSaved)
 {
-	Project project{ "ProjectName",{ Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" }, Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt" } } };
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", g_noTags, false, true },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", g_noTags, true, false }
+		}
+	};
 	
 	saveProject(project, "tmpProjectFile.json");
 	ASSERT_EQ(project, loadProject("tmpProjectFile.json"));
@@ -113,8 +120,8 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt" }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
 		},
 		tagsMock
 	};
@@ -129,13 +136,29 @@ TEST_F(ProjectMT, shouldIgnoreEmptyTagFilePathDuringRefreshCodeNavigation)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt" },
-			Elem{ "d:\\dir2\\dir", "" }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
+			Elem{ "d:\\dir2\\dir", "", tagsMock }
 		},
 		tagsMock
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt" })));
+	project.refershCodeNavigation();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledTagsNavigationDuringRefreshCodeNavigation)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock, true, false },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir2\\dir3\\file2.txt" })));
 	project.refershCodeNavigation();
 }
 
@@ -200,6 +223,22 @@ TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir 2\\file 1.txt", Strings({ "d:\\dir1 q\\dir w" })));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemWithDisabledTagsGenerationDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\file1.txt", tagsMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, false }
+		},
+		tagsMock
+	};
+
+	EXPECT_CALL(tagsMock, generateTags("d:\\file1.txt", Strings({ "d:\\dir1\\dir" })));
 	project.refresh();
 }
 

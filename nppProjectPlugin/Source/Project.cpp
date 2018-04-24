@@ -15,14 +15,20 @@ std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data, ITa
         items.push_back(Elem(item.second, p_tags));
     return items;
 }
+bool enbleStatetoBool(const std::string& p_value)
+{
+	return p_value == "enabled";
+}
 }
 
 Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath)
 	: Elem(p_sourcePath, p_ctagsFilePath, g_noTags)
 {}
 
-Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, ITags& p_tags)
- : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath), tags(p_tags)
+Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, ITags& p_tags,
+	bool p_genTags, bool p_tagsNavigation)
+ : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath), tags(p_tags),
+	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation)
 {
     if(sourcePath.empty() && ctagsFilePath.empty())
         throw std::runtime_error("Given source path and tag file path is empty");
@@ -33,13 +39,23 @@ Elem::Elem(const boost::property_tree::ptree& p_data)
 {}
 
 Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags)
-	: Elem(p_data.get<std::string>("sourcePath", ""), p_data.get<std::string>("tagFilePath", ""), p_tags)
+	: Elem(p_data.get<std::string>("sourcePath", ""),
+		p_data.get<std::string>("tagFilePath", ""),
+		p_tags,
+		enbleStatetoBool(p_data.get<std::string>("tagsGeneration", "enabled")),
+		enbleStatetoBool(p_data.get<std::string>("tagsNavigation", "enabled")))
 {}
 
 void Elem::refresh()
 {
-	if(!ctagsFilePath.empty() && !sourcePath.empty())
+	if(!ctagsFilePath.empty() && !sourcePath.empty() && shouldGenerateTags)
 		tags.generateTags(ctagsFilePath, { sourcePath });
+}
+
+void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
+{
+	if (!ctagsFilePath.empty() && shouldIncludeTagsInNavigation)
+		p_tagFiles.push_back(ctagsFilePath);
 }
 
 boost::property_tree::ptree Elem::exportData() const
@@ -47,8 +63,8 @@ boost::property_tree::ptree Elem::exportData() const
     boost::property_tree::ptree data;
     data.put("sourcePath", sourcePath);
     data.put("tagFilePath", ctagsFilePath);
-	//data.put("tagsGeneration", "enabled");
-	//data.put("tagsNavigation", "enabled");
+	data.put("tagsGeneration", shouldGenerateTags ? "enabled" : "disabled");
+	data.put("tagsNavigation", shouldIncludeTagsInNavigation ? "enabled" : "disabled");
 	//data.put("includesBrowsing", "enabled");
 	//data.put("fileSearching", "enabled");
     return data;
@@ -56,7 +72,9 @@ boost::property_tree::ptree Elem::exportData() const
 
 bool Elem::operator==(const Elem& p_other) const
 {
-	return sourcePath == p_other.sourcePath && ctagsFilePath == p_other.ctagsFilePath;
+	return sourcePath == p_other.sourcePath && ctagsFilePath == p_other.ctagsFilePath
+		&& shouldGenerateTags == p_other.shouldGenerateTags
+		&& shouldIncludeTagsInNavigation == p_other.shouldIncludeTagsInNavigation;
 }
 
 Project::~Project()
@@ -91,8 +109,7 @@ void Project::refershCodeNavigation()
 {
 	std::vector<std::string> tagFiles;
 	for (const auto& item : items)
-		if(!item.ctagsFilePath.empty())
-			tagFiles.push_back(item.ctagsFilePath);
+		item.appendNavigationTagFile(tagFiles);
 	tags.setTagFiles(tagFiles);
 }
 
