@@ -7,6 +7,7 @@
 #include "UI.hpp"
 #include "Project.hpp"
 #include "ITags.hpp"
+#include "IIncludes.hpp"
 
 namespace ProjectMgmt
 {
@@ -14,8 +15,8 @@ namespace ProjectMgmt
 class Workspace
 {
 public:
-	Workspace(std::unique_ptr<ITags> p_tags, Plugin::UI& p_ui);
-	Workspace(std::unique_ptr<ITags> p_tags,
+	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, Plugin::UI& p_ui);
+	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc,
 		Plugin::UI& p_ui,
 		const std::string& p_dir);
 	virtual void openProject();
@@ -36,6 +37,7 @@ private:
 
 	Plugin::UI& ui;
 	std::unique_ptr<ITags> tags;
+	std::unique_ptr<IIncludes> inc;
 
 	const std::string projectFileName;
 	std::string projectsDir;

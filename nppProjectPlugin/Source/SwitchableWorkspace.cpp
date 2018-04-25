@@ -6,7 +6,7 @@ namespace ProjectMgmt
 {
 
 NotLoadedWorkspace::NotLoadedWorkspace(Plugin::UI& p_ui)
-	: ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, ""), ui(p_ui)
+	: ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), p_ui, ""), ui(p_ui)
 {}
 void NotLoadedWorkspace::openProject()
 {
@@ -26,7 +26,7 @@ void NotLoadedWorkspace::refreshProject()
 }
 
 SwitchableWorkspace::SwitchableWorkspace(Plugin::UI& p_ui)
- : ProjectMgmt::Workspace(std::make_unique<ProjectMgmt::DisabledTags>(), p_ui, ""),
+ : ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), p_ui, ""),
 	ui(p_ui), invalidWorkspace(ui), validWorkspace(), currentWorkspace(&invalidWorkspace)
 {}
 
@@ -47,7 +47,9 @@ void SwitchableWorkspace::refreshProject()
     currentWorkspace->refreshProject();
 }
 
-void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath, std::unique_ptr<ITags> p_tags)
+void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
+	std::unique_ptr<ITags> p_tags,
+	std::unique_ptr<IIncludes> p_inc)
 {
 	try
 	{
@@ -57,6 +59,7 @@ void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath, std::uni
 				boost::filesystem::create_directory(p_workspaceDirPath);
 			validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
 				std::move(p_tags),
+				std::move(p_inc),
 				ui,
 				p_workspaceDirPath);
 		}

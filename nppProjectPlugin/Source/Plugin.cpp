@@ -44,7 +44,9 @@ void ProjectPlugin::commandMenuInit(NppData p_nppData)
 	m_npp.scintillaMain = WinApi::Handle(p_nppData._scintillaMainHandle);
 	m_npp.scintillaSecond = WinApi::Handle(p_nppData._scintillaSecondHandle);
 	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
-	workspace->enable(workspacePath, std::make_unique<CTags>(m_npp.npp, "nppProjectPlugin.dll", ui));
+	workspace->enable(workspacePath,
+		std::make_unique<CTags>(m_npp.npp, "nppProjectPlugin.dll", ui),
+		std::make_unique<ProjectMgmt::DisabledIncludes>());
 	initFunctionsTable();
 }
 

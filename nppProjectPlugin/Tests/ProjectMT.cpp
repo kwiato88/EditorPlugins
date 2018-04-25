@@ -9,6 +9,7 @@
 
 #include "UiMock.hpp"
 #include "ITagsMock.hpp"
+#include "IIncludesMock.hpp"
 
 namespace ProjectMgmt
 {
@@ -36,6 +37,22 @@ private:
 	ITags& tags;
 };
 
+class IncludesProxy : public IIncludes
+{
+public:
+	IncludesProxy(IIncludes& p_inc) : inc(p_inc) {}
+	void parse(const std::string& p_dirPath)
+	{
+		inc.parse(p_dirPath);
+	}
+	void clear()
+	{
+		inc.clear();
+	}
+private:
+	IIncludes& inc;
+};
+
 struct ProjectMgmyMT : public Test
 {
 	ProjectMgmyMT()
@@ -52,6 +69,8 @@ struct ProjectMgmyMT : public Test
 
 	StrictMock<ITagsMock> tagsMock;
 	NiceMock<ITagsMock> tagsNiceMock;
+	StrictMock<IIncludesMock> incMock;
+	NiceMock<IIncludesMock> incNiceMock;
 	StrictMock<Plugin::UiMock> uiMock;
 };
 
@@ -87,8 +106,8 @@ TEST_F(ProjectMT, loadedProjectShouldBeTheSameAsSaved)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", g_noTags, false, true },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", g_noTags, true, false }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", g_noTags, g_noIncludes, false, true },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", g_noTags, g_noIncludes, true, false }
 		}
 	};
 	
@@ -116,17 +135,17 @@ TEST_F(ProjectMT, shouldThrowWhenItemHasNoPathsDefined)
 
 TEST_F(ProjectMT, shoukdNotCreateItemWithTagNavigationButWithNoTagFile)
 {
-	ASSERT_THROW(Elem("source", "", tagsNiceMock, false, true), std::runtime_error);
+	ASSERT_THROW(Elem("source", "", tagsNiceMock, incNiceMock, false, true), std::runtime_error);
 }
 
 TEST_F(ProjectMT, shoukdNotCreateItemWithTagGenerationButWithNoTagFile)
 {
-	ASSERT_THROW(Elem("source", "", tagsNiceMock, true, false), std::runtime_error);
+	ASSERT_THROW(Elem("source", "", tagsNiceMock, incNiceMock, true, false), std::runtime_error);
 }
 
 TEST_F(ProjectMT, shoukdNotCreateItemWithTagGenerationButWithNoSource)
 {
-	ASSERT_THROW(Elem("", "tagFile", tagsNiceMock, true, false), std::runtime_error);
+	ASSERT_THROW(Elem("", "tagFile", tagsNiceMock, incNiceMock, true, false), std::runtime_error);
 }
 
 TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
@@ -135,10 +154,11 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock, incNiceMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
-		tagsMock
+		tagsMock,
+		incNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
@@ -151,10 +171,11 @@ TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledTagsNavigationDuringRefreshCodeNa
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock, true, false },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock, incNiceMock, true, false },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
-		tagsMock
+		tagsMock,
+		incNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir2\\dir3\\file2.txt" })));
@@ -167,10 +188,11 @@ TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsMock, incNiceMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
-		tagsMock
+		tagsMock,
+		incNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
@@ -184,9 +206,10 @@ TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1 q\\dir w", "d:\\dir 2\\file 1.txt", tagsMock },
+			Elem{ "d:\\dir1 q\\dir w", "d:\\dir 2\\file 1.txt", tagsMock, incNiceMock },
 		},
-		tagsMock
+		tagsMock,
+		incNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir 2\\file 1.txt", Strings({ "d:\\dir1 q\\dir w" })));
@@ -199,10 +222,11 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledTagsGenerationDuringRefresh)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\file1.txt", tagsMock },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, false }
+			Elem{ "d:\\dir1\\dir", "d:\\file1.txt", tagsMock, incNiceMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock, false }
 		},
-		tagsMock
+		tagsMock,
+		incNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\file1.txt", Strings({ "d:\\dir1\\dir" })));
@@ -237,11 +261,13 @@ struct WorkspaceMT : public ProjectMgmyMT
 	}
 	Workspace buildWorkspace(const std::string& p_workspaceDir)
 	{
-		return Workspace(std::make_unique<TagsProxy>(tagsMock), uiMock, testsRootPath + p_workspaceDir);
+		return Workspace(std::make_unique<TagsProxy>(tagsMock), std::make_unique<IncludesProxy>(incMock),
+			uiMock, testsRootPath + p_workspaceDir);
 	}
 	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
 	{
-		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock), uiMock, testsRootPath + p_workspaceDir);
+		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock), std::make_unique<IncludesProxy>(incNiceMock),
+			uiMock, testsRootPath + p_workspaceDir);
 	}
 
 	std::string projectDirToCleanup;

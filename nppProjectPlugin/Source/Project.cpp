@@ -8,11 +8,11 @@ namespace ProjectMgmt
 
 namespace
 {
-std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data, ITags& p_tags)
+std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes)
 {
     std::vector<Elem> items;
     for(const auto& item : p_data.get_child("items"))
-        items.push_back(Elem(item.second, p_tags));
+        items.push_back(Elem(item.second, p_tags, p_includes));
     return items;
 }
 bool enbleStatetoBool(const std::string& p_value)
@@ -22,13 +22,15 @@ bool enbleStatetoBool(const std::string& p_value)
 }
 
 Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath)
-	: Elem(p_sourcePath, p_ctagsFilePath, g_noTags)
+	: Elem(p_sourcePath, p_ctagsFilePath, g_noTags, g_noIncludes)
 {}
 
-Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, ITags& p_tags,
-	bool p_genTags, bool p_tagsNavigation)
- : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath), tags(p_tags),
-	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation)
+Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
+	ITags& p_tags, IIncludes& p_includes,
+	bool p_genTags, bool p_tagsNavigation, bool p_parseInc)
+ : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath),
+	tags(p_tags), includes(p_includes),
+	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation), shouldParseIncludes(p_parseInc)
 {
 	if (p_tagsNavigation && ctagsFilePath.empty())
 		throw std::runtime_error("Tag file for elem with tags navigation can not be empty");
@@ -37,15 +39,17 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath, 
 }
 
 Elem::Elem(const boost::property_tree::ptree& p_data)
-	: Elem(p_data, g_noTags)
+	: Elem(p_data, g_noTags, g_noIncludes)
 {}
 
-Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags)
+Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes)
 	: Elem(p_data.get<std::string>("sourcePath", ""),
 		p_data.get<std::string>("tagFilePath", ""),
 		p_tags,
+		p_includes,
 		enbleStatetoBool(p_data.get<std::string>("tagsGeneration", "enabled")),
-		enbleStatetoBool(p_data.get<std::string>("tagsNavigation", "enabled")))
+		enbleStatetoBool(p_data.get<std::string>("tagsNavigation", "enabled")),
+		enbleStatetoBool(p_data.get<std::string>("includesBrowsing", "enabled")))
 {}
 
 void Elem::refresh()
@@ -67,7 +71,7 @@ boost::property_tree::ptree Elem::exportData() const
     data.put("tagFilePath", ctagsFilePath);
 	data.put("tagsGeneration", shouldGenerateTags ? "enabled" : "disabled");
 	data.put("tagsNavigation", shouldIncludeTagsInNavigation ? "enabled" : "disabled");
-	//data.put("includesBrowsing", "enabled");
+	data.put("includesBrowsing", "enabled");
 	//data.put("fileSearching", "enabled");
     return data;
 }
@@ -83,22 +87,24 @@ Project::~Project()
 {}
 
 Project::Project(const std::string& p_name, const std::vector<Elem>& p_items)
-	: Project(p_name, p_items, g_noTags)
+	: Project(p_name, p_items, g_noTags, g_noIncludes)
 {}
 
-Project::Project(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags)
- : name(p_name), items(p_items), tags(p_tags)
+Project::Project(const std::string& p_name, const std::vector<Elem>& p_items,
+	ITags& p_tags, IIncludes& p_includes)
+ : name(p_name), items(p_items), tags(p_tags), includes(p_includes)
 {
 	if (name.empty())
 		throw std::runtime_error("Given project name is empty");
 }
 
 Project::Project(const boost::property_tree::ptree& p_data)
-	: Project(p_data, g_noTags)
+	: Project(p_data, g_noTags, g_noIncludes)
 {}
 
-Project::Project(const boost::property_tree::ptree& p_data, ITags& p_tags)
-	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data, p_tags), p_tags)
+Project::Project(const boost::property_tree::ptree& p_data,
+	ITags& p_tags, IIncludes& p_includes)
+	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data, p_tags, p_includes), p_tags, p_includes)
 {}
 
 void Project::refresh()

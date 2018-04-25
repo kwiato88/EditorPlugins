@@ -5,6 +5,7 @@
 
 #include "Workspace.hpp"
 #include "ITags.hpp"
+#include "IIncludes.hpp"
 #include "UI.hpp"
 
 namespace ProjectMgmt
@@ -32,7 +33,9 @@ public:
 	void newProject();
 	void refreshProject();
 
-    void enable(const std::string& p_workspaceDirPath, std::unique_ptr<ITags> p_tags);
+    void enable(const std::string& p_workspaceDirPath,
+		std::unique_ptr<ITags> p_tags,
+		std::unique_ptr<IIncludes> p_inc);
     void disable();
 
 private:
