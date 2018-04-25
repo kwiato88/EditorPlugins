@@ -1,0 +1,19 @@
+{
+    "name": "ProjectWithIncBrowser",
+    "items": [
+        {
+            "sourcePath": "d:\\dir12",
+            "tagFilePath": "d:\\dir12\\file12.txt",
+            "tagsGeneration": "disabled",
+            "tagsNavigation": "disabled",
+            "includesBrowsing": "enabled"
+        },
+        {
+            "sourcePath": "d:\\dir44\\dir",
+            "tagFilePath": "d:\\dir43\\file2.txt",
+            "tagsGeneration": "disabled",
+            "tagsNavigation": "disabled",
+            "includesBrowsing": "enabled"
+        }
+    ]
+}

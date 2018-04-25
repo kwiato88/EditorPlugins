@@ -46,7 +46,7 @@ void ProjectPlugin::commandMenuInit(NppData p_nppData)
 	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
 	workspace->enable(workspacePath,
 		std::make_unique<CTags>(m_npp.npp, "nppProjectPlugin.dll", ui),
-		std::make_unique<ProjectMgmt::DisabledIncludes>());
+		std::make_unique<ProjectMgmt::DisabledIncludes>()); //TODO: inject real includes parser
 	initFunctionsTable();
 }
 

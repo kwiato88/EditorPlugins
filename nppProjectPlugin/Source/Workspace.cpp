@@ -31,21 +31,23 @@ class ProjectWithTagsNavigation : public Project
 {
 public:
 	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags, IIncludes& p_includes)
-		: Project(p_name, p_items, p_tags, p_includes), tags(p_tags), originalTagFiles(p_tags.getTagFiles())
+		: Project(p_name, p_items, p_tags, p_includes), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
 	{
 		refershCodeNavigation();
 	}
 	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes)
-		: Project(p_data, p_tags, p_includes), tags(p_tags), originalTagFiles(p_tags.getTagFiles())
+		: Project(p_data, p_tags, p_includes), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
 	{
 		refershCodeNavigation();
 	}
 	~ProjectWithTagsNavigation()
 	{
 		tags.setTagFiles(originalTagFiles);
+		inc.clear();
 	}
 private:
 	ITags& tags;
+	IIncludes& inc;
 	std::vector<std::string> originalTagFiles;
 };
 

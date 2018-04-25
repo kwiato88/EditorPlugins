@@ -43,6 +43,7 @@ public:
 
 	void refresh();
 	void appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const;
+	void refreshIncludesNavigation();
 
 private:
 	ITags& tags;
@@ -72,6 +73,9 @@ public:
 	void refershCodeNavigation();
 
 private:
+	void refreshTagsNavigation();
+	void refreshIncludesNavigation();
+
 	std::string name;
 	std::vector<Elem> items;
 	ITags& tags;

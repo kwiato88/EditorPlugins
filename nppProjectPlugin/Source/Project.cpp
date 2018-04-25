@@ -64,6 +64,12 @@ void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
 		p_tagFiles.push_back(ctagsFilePath);
 }
 
+void Elem::refreshIncludesNavigation()
+{
+	if(shouldParseIncludes)
+		includes.parse(sourcePath);
+}
+
 boost::property_tree::ptree Elem::exportData() const
 {
     boost::property_tree::ptree data;
@@ -71,7 +77,7 @@ boost::property_tree::ptree Elem::exportData() const
     data.put("tagFilePath", ctagsFilePath);
 	data.put("tagsGeneration", shouldGenerateTags ? "enabled" : "disabled");
 	data.put("tagsNavigation", shouldIncludeTagsInNavigation ? "enabled" : "disabled");
-	data.put("includesBrowsing", "enabled");
+	data.put("includesBrowsing", shouldParseIncludes ? "enabled" : "disabled");
 	//data.put("fileSearching", "enabled");
     return data;
 }
@@ -111,14 +117,28 @@ void Project::refresh()
 {
     for(auto& item : items)
         item.refresh();
+	refreshIncludesNavigation();
 }
 
-void Project::refershCodeNavigation()
+void Project::refreshTagsNavigation()
 {
 	std::vector<std::string> tagFiles;
 	for (const auto& item : items)
 		item.appendNavigationTagFile(tagFiles);
 	tags.setTagFiles(tagFiles);
+}
+
+void Project::refreshIncludesNavigation()
+{
+	includes.clear();
+	for (auto& item : items)
+		item.refreshIncludesNavigation();
+}
+
+void Project::refershCodeNavigation()
+{
+	refreshTagsNavigation();
+	refreshIncludesNavigation();
 }
 
 std::string Project::getName() const
