@@ -38,6 +38,8 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
 {
 	if (p_parseInc)
 		currentInc = &includes;
+	if (isIncludesParsingEnabled() && sourcePath.empty())
+		throw std::runtime_error("Source for elem with includes navigation can not be empty");
 	if (p_tagsNavigation && ctagsFilePath.empty())
 		throw std::runtime_error("Tag file for elem with tags navigation can not be empty");
 	if(p_genTags && (ctagsFilePath.empty() || sourcePath.empty()))

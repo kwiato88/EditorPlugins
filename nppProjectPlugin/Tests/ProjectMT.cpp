@@ -148,6 +148,11 @@ TEST_F(ProjectMT, shoukdNotCreateItemWithTagGenerationButWithNoSource)
 	ASSERT_THROW(Elem("", "tagFile", tagsNiceMock, incNiceMock, true, false), std::runtime_error);
 }
 
+TEST_F(ProjectMT, shoukdNotCreateItemWithIncludesNavigationButWithNoSource)
+{
+	ASSERT_THROW(Elem("", "tagFile", tagsNiceMock, incNiceMock, false, false, true), std::runtime_error);
+}
+
 TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 {
 	Project project
