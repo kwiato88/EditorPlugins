@@ -110,9 +110,13 @@ void TagsPlugin::init(HINSTANCE p_hModule)
 {
     if(!m_isInitialized)
     {
+		m_isInitialized = true;
         m_hModule = p_hModule;
         createTagsController();
-        m_isInitialized = true;
+		messagesNames.add(CTagsPlugin::Command::GenerateTags::Id(), "CTags::GenerateTags");
+		messagesNames.add(CTagsPlugin::Command::GetTagFiles::Id(), "CTags::GetTagFiles");
+		messagesNames.add(CTagsPlugin::Command::SetTagFiles::Id(), "CTags::SetTagFiles");
+		messagesNames.add(CTagsPlugin::Command::Test::Id(), "CTags::Test");
     }
 }
 
@@ -297,7 +301,9 @@ void TagsPlugin::setSeparator()
 
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 {
-	LOG_INFO << "Received message with internal Id " << p_message.internalMsg << " from " << p_message.srcModuleName;
+	LOG_INFO << "Received message with internal Id " << p_message.internalMsg
+		<< " [" << messagesNames.get(p_message.internalMsg) << "]"
+		<< " from " << p_message.srcModuleName;
 	try
 	{
 		m_tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));

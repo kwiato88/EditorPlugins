@@ -2,6 +2,7 @@
 #define PLUGIN_HPP
 
 #include <memory>
+#include <map>
 
 #include "PluginInterface.h"
 
@@ -15,6 +16,24 @@
 
 namespace NppPlugin
 {
+
+class MesgTraits
+{
+public:
+	void add(long p_msgId, const std::string& p_msgName)
+	{
+		idsToNames[p_msgId] = p_msgName;
+	}
+	std::string get(long p_msgId)
+	{
+		auto msg = idsToNames.find(p_msgId);
+		if (msg == idsToNames.end())
+			return "UnknownMessage";
+		return msg->second;
+	}
+private:
+	std::map<long, std::string> idsToNames;
+};
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 
@@ -84,6 +103,7 @@ private:
 	CTagsPlugin::ConfigGetter m_config;
 	std::string m_configFilePath;
 	std::shared_ptr<CTagsPlugin::CTagsController> m_tagsController;
+	MesgTraits messagesNames;
 
 };
 
