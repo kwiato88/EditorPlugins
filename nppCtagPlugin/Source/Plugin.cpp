@@ -411,7 +411,7 @@ void TagsPlugin::generateTagsFile()
 
 void TagsPlugin::info()
 {
-    std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.7.0\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
+    std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.7.1\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
     m_ui.infoMessage("About", l_info);
 }
 
