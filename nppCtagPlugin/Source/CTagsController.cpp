@@ -209,7 +209,9 @@ void CTagsController::generateTags()
 {
 	try
 	{
-		gnerateTags(getTargetFile(), getSourceDirs());
+		auto tagFile = getTargetFile();
+		gnerateTags(tagFile, getSourceDirs());
+		m_ui.infoMessage("Gen Tags", "Tags saved to file: " + tagFile);
 	}
 	catch (Plugin::UserInputError& e)
 	{
@@ -232,7 +234,6 @@ void CTagsController::gnerateTags(std::string p_outFile, std::vector<std::string
 {
 	LOG_INFO << "Generate tags to file: " << p_outFile;
     CTagsGenerator(m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
-	m_ui.infoMessage("Gen Tags", "Tags saved to file: " + p_outFile);
 }
 
 Result::Basic CTagsController::handleGenerateTags(const Command::GenerateTags& p_com)
