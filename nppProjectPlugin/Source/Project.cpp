@@ -29,9 +29,11 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
 	ITags& p_tags, IIncludes& p_includes,
 	bool p_genTags, bool p_tagsNavigation, bool p_parseInc)
  : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath),
-	tags(p_tags), includes(p_includes),
-	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation), shouldParseIncludes(p_parseInc)
+	tags(p_tags), includes(p_includes), currentInc(&g_noIncludes),
+	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation)
 {
+	if (p_parseInc)
+		currentInc = &includes;
 	if (p_tagsNavigation && ctagsFilePath.empty())
 		throw std::runtime_error("Tag file for elem with tags navigation can not be empty");
 	if(p_genTags && (ctagsFilePath.empty() || sourcePath.empty()))
@@ -66,8 +68,7 @@ void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
 
 void Elem::refreshIncludesNavigation()
 {
-	if(shouldParseIncludes)
-		includes.parse(sourcePath);
+	currentInc->parse(sourcePath);
 }
 
 boost::property_tree::ptree Elem::exportData() const
@@ -77,7 +78,7 @@ boost::property_tree::ptree Elem::exportData() const
     data.put("tagFilePath", ctagsFilePath);
 	data.put("tagsGeneration", shouldGenerateTags ? "enabled" : "disabled");
 	data.put("tagsNavigation", shouldIncludeTagsInNavigation ? "enabled" : "disabled");
-	data.put("includesBrowsing", shouldParseIncludes ? "enabled" : "disabled");
+	data.put("includesBrowsing", (currentInc == &g_noIncludes) ? "disabled" : "enabled");
 	//data.put("fileSearching", "enabled");
     return data;
 }

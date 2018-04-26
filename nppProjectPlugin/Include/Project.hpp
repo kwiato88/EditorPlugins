@@ -48,12 +48,12 @@ public:
 private:
 	ITags& tags;
 	IIncludes& includes;
+	IIncludes* currentInc;
 
 	std::string sourcePath;
 	std::string ctagsFilePath;
 	bool shouldGenerateTags;
 	bool shouldIncludeTagsInNavigation;
-	bool shouldParseIncludes;
 };
 
 class Project
