@@ -61,6 +61,7 @@ target_link_libraries(
     nppUtils
     winApiUtils
     nppCTagsExternalIf
+    nppIncludeBrowserExternalIf
     comctl32
 )
 
