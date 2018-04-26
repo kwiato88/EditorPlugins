@@ -18,7 +18,7 @@ void ensureDirExists(const std::string& p_path)
 	if (!boost::filesystem::exists(p_path) || !boost::filesystem::is_directory(p_path))
 		throw std::runtime_error(std::string("Given dir ") + p_path + " is invalid");
 }
-std::string getFileName(const std::string& p_filePath)
+std::string getLastComponentName(const std::string& p_filePath)
 {
 	size_t l_pos = p_filePath.find_last_of('\\');
 	if (l_pos != std::string::npos)
@@ -95,7 +95,7 @@ std::string Workspace::select(const std::vector<std::string>& p_projectsDirsPath
 	
 	std::vector<std::vector<std::string>> table;
 	for (const auto& project : p_projectsDirsPaths)
-		table.push_back({ getFileName(project), project });
+		table.push_back({ getLastComponentName(project), project });
 	std::sort(table.begin(), table.end(), [&](const auto& lhs, const auto& rhs) { return lhs.at(1) < rhs.at(1); });
 	auto selected = ui.selectRow({ "Project", "Path" }, table, {"",""}).at(1);
 	
@@ -108,7 +108,10 @@ std::unique_ptr<Project> Workspace::open(const std::string& p_projectDirPath) co
 {
     boost::property_tree::ptree projectData;
     boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
-    return std::make_unique<ProjectWithTagsNavigation>(projectData, *tags, *inc);
+    auto project = std::make_unique<ProjectWithTagsNavigation>(projectData, *tags, *inc);
+	if (getLastComponentName(p_projectDirPath) != project->getName())
+		throw std::runtime_error("Loaded Project name is inconsistent");
+	return std::move(project);
 }
 
 void Workspace::openProject()

@@ -417,6 +417,17 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectFileIsInvalid)
 	sut.openProject();
 }
 
+TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectNameIsNoSameAsProjectDir)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
+	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "WrongProjectName", testsRootPath + "WorkspaceWithInvalidProjects\\WrongProjectName" })));
+	EXPECT_CALL(uiMock, errorMessage(_, _));
+	sut.openProject();
+}
+
 TEST_F(WorkspaceMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
