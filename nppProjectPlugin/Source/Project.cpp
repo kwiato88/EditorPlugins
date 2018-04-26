@@ -15,9 +15,13 @@ std::vector<Elem> getProjcetItems(const boost::property_tree::ptree& p_data, ITa
         items.push_back(Elem(item.second, p_tags, p_includes));
     return items;
 }
-bool enbleStatetoBool(const std::string& p_value)
+bool enbleStateToBool(const std::string& p_value)
 {
 	return p_value == "enabled";
+}
+std::string toEnbleState(bool p_value)
+{
+	return p_value ? "enabled" : "disabled";
 }
 }
 
@@ -49,9 +53,9 @@ Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& 
 		p_data.get<std::string>("tagFilePath", ""),
 		p_tags,
 		p_includes,
-		enbleStatetoBool(p_data.get<std::string>("tagsGeneration", "enabled")),
-		enbleStatetoBool(p_data.get<std::string>("tagsNavigation", "enabled")),
-		enbleStatetoBool(p_data.get<std::string>("includesBrowsing", "enabled")))
+		enbleStateToBool(p_data.get<std::string>("tagsGeneration", "enabled")),
+		enbleStateToBool(p_data.get<std::string>("tagsNavigation", "enabled")),
+		enbleStateToBool(p_data.get<std::string>("includesBrowsing", "enabled")))
 {}
 
 void Elem::refresh()
@@ -76,9 +80,9 @@ boost::property_tree::ptree Elem::exportData() const
     boost::property_tree::ptree data;
     data.put("sourcePath", sourcePath);
     data.put("tagFilePath", ctagsFilePath);
-	data.put("tagsGeneration", shouldGenerateTags ? "enabled" : "disabled");
-	data.put("tagsNavigation", shouldIncludeTagsInNavigation ? "enabled" : "disabled");
-	data.put("includesBrowsing", (currentInc == &g_noIncludes) ? "disabled" : "enabled");
+	data.put("tagsGeneration", toEnbleState(shouldGenerateTags));
+	data.put("tagsNavigation", toEnbleState(shouldIncludeTagsInNavigation));
+	data.put("includesBrowsing", toEnbleState(isIncludesParsingEnabled()));
 	//data.put("fileSearching", "enabled");
     return data;
 }
@@ -87,7 +91,13 @@ bool Elem::operator==(const Elem& p_other) const
 {
 	return sourcePath == p_other.sourcePath && ctagsFilePath == p_other.ctagsFilePath
 		&& shouldGenerateTags == p_other.shouldGenerateTags
-		&& shouldIncludeTagsInNavigation == p_other.shouldIncludeTagsInNavigation;
+		&& shouldIncludeTagsInNavigation == p_other.shouldIncludeTagsInNavigation
+		&& isIncludesParsingEnabled() == p_other.isIncludesParsingEnabled();
+}
+
+bool Elem::isIncludesParsingEnabled() const
+{
+	return currentInc == &includes;
 }
 
 Project::~Project()

@@ -46,6 +46,8 @@ public:
 	void refreshIncludesNavigation();
 
 private:
+	bool isIncludesParsingEnabled() const;
+
 	ITags& tags;
 	IIncludes& includes;
 	IIncludes* currentInc;

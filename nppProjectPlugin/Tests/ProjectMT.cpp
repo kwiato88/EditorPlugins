@@ -81,7 +81,7 @@ struct ProjectMT : public ProjectMgmyMT
 		boost::property_tree::ptree projectData;
 		boost::property_tree::json_parser::read_json(projectsDirPath + p_projectFile, projectData);
 		
-		return Project(projectData);
+		return Project(projectData, tagsNiceMock, incNiceMock);
 	}
 	void saveProject(const Project& p_project, const std::string& p_projectFile)
 	{
@@ -106,8 +106,8 @@ TEST_F(ProjectMT, loadedProjectShouldBeTheSameAsSaved)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", g_noTags, g_noIncludes, false, true },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", g_noTags, g_noIncludes, true, false }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock, false, true, true },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", tagsNiceMock, incNiceMock, true, false, false }
 		}
 	};
 	
