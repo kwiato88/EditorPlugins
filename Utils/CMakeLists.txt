@@ -12,6 +12,7 @@ add_library(
     Source/WinApiUI.cpp
     Source/Logger.cpp
     Source/Log.cpp
+    Source/NppPlugin.cpp
     Source/NppPathGetter.cpp
     Source/NppPathsSelector.cpp
     Source/MessageHandler.cpp
