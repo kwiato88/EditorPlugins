@@ -42,6 +42,21 @@ target_link_libraries(
     comctl32
 )
 
+add_library(
+    nppOpenFileExternalIf
+    STATIC
+    Source/OpenFileExternalCommand.cpp
+)
+
+target_include_directories(
+    nppOpenFileExternalIf
+    PUBLIC
+    ../PluginInterface
+    ../Utils/Include/ExternalInterface
+    Include/ExternalInterface
+    D:/boost_1_61_0
+)
+
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
     add_definitions( /D _VARIADIC_MAX=10 )
 endif()
