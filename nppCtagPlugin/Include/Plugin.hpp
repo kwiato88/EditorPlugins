@@ -4,15 +4,12 @@
 #include <memory>
 #include <map>
 
-#include "PluginInterface.h"
+#include "NppPlugin.hpp"
 
-#include "NppEditor.hpp"
-#include "WinApiUI.hpp"
 #include "ITagsSelector.hpp"
 #include "ITagsReader.hpp"
 #include "CTagsController.hpp"
 #include "ConfigGetter.hpp"
-#include "WinApiTypes.hpp"
 
 namespace NppPlugin
 {
@@ -37,19 +34,11 @@ private:
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 
-class TagsPlugin
+class TagsPlugin : public BasePlugin<13>
 {
 public:
-	TagsPlugin();
-
-	/**
-	 * plugin interface
-	 */
-	void init(HINSTANCE p_hModule);
-	void cleanup();
-	void commandMenuInit(NppData p_nppData);
-	void commandMenuCleanUp();
-	void handleMsgToPlugin(CommunicationInfo& p_message);
+	void handleMsgToPlugin(CommunicationInfo& p_message) override;
+	void detach() override;
 
 	/**
 	 * plugin test functions
@@ -71,18 +60,13 @@ public:
 	void generateTagsFile();
 	void info();
 
-	static const int s_funcNum = 13;// 16;
-
-	bool m_isInitialized;
-	WinApi::InstanceHandle m_hModule;
-	FuncItem m_funcItems[s_funcNum];
-	Editor m_npp;
+protected:
+	void onInstanceHandleSet() override;
+	void onNppHandleSet() override;
+	void initMenu() override;
 
 private:
-	bool setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk);
-	void setSeparator();
 	void createTagsController();
-	void initFunctionsTable();
 	void loadConfigFile();
 	void setLoggerParams();
 	std::string getPluginsConfigDir();
@@ -97,8 +81,6 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
 
-	int m_numberOfAddedFunctions = 0;
-	WinApi::UI m_ui;
 	std::shared_ptr<CTagsPlugin::ITagsSelector> m_selector;
 	CTagsPlugin::ConfigGetter m_config;
 	std::string m_configFilePath;

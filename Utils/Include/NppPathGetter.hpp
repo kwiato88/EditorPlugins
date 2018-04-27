@@ -1,7 +1,6 @@
 #ifndef NPPPATHGETTER_HPP
 #define NPPPATHGETTER_HPP
 
-#include "PluginInterface.h"
 #include "IPathGetter.hpp"
 #include "WinApiTypes.hpp"
 

@@ -9,10 +9,10 @@ namespace NppPlugin
 {
 
 template<unsigned int funCount>
-class Plugin
+class BasePlugin
 {
 public:
-	Plugin() : isInitialized(false), numberOfAddedFunctions(0), ui(npp.npp, hModule) {}
+	BasePlugin() : isInitialized(false), numberOfAddedFunctions(0), ui(npp.npp, hModule) {}
 	void attach(HINSTANCE p_hModule)
 	{
 		if (!isInitialized)
@@ -50,8 +50,15 @@ public:
 			onShoutdown();
 		}
 	}
-
-	virtual void handleMsgToPlugin(CommunicationInfo& p_message) {}
+	bool handleMessage(UINT Message, WPARAM wParam, LPARAM lParam)
+	{
+		if (Message == NPPM_MSGTOPLUGIN)
+		{
+			CommunicationInfo* message = (CommunicationInfo*)(lParam);
+			handleMsgToPlugin(*message);
+		}
+		return true;
+	}
 
 protected:
 	virtual void onInstanceHandleSet() {}
@@ -59,19 +66,24 @@ protected:
 	virtual void onShoutdown() {}
 	virtual void initMenu() {}
 	virtual void cleanupMenu() {}
+	virtual void handleMsgToPlugin(CommunicationInfo& p_message) {}
 
 	bool setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
 	{
-		if (m_numberOfAddedFunctions >= funCount)
+		if (numberOfAddedFunctions >= funCount)
 			return false;
 
 		lstrcpy(funcItems[numberOfAddedFunctions]._itemName, cmdName);
-		funcItems[m_numberOfAddedFunctions]._pFunc = pFunc;
-		funcItems[m_numberOfAddedFunctions]._init2Check = false;
-		funcItems[m_numberOfAddedFunctions]._pShKey = sk;
+		funcItems[numberOfAddedFunctions]._pFunc = pFunc;
+		funcItems[numberOfAddedFunctions]._init2Check = false;
+		funcItems[numberOfAddedFunctions]._pShKey = sk;
 		numberOfAddedFunctions++;
 
 		return true;
+	}
+	void setSeparator()
+	{
+		setCommand(TEXT("-----"), NULL, NULL);
 	}
 
 private:

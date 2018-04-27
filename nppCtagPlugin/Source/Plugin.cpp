@@ -1,7 +1,6 @@
 #include <memory>
 #include <fstream>
 
-#include "menuCmdID.h"
 #include "Plugin.hpp"
 
 #include "NppPathGetter.hpp"
@@ -17,19 +16,11 @@
 #include "TreeViewTagHierSelector.hpp"
 #include "GetCppTagSearchMatcher.hpp"
 
-#include <boost/assign/list_of.hpp>
-#include "GridDialog.hpp"
-#include "SelectPathsDialog.hpp"
 #include "Logger.hpp"
 #include "Log.hpp"
 
-#include <boost/lexical_cast.hpp>
-#include "TreeDialog.hpp"
-#include "TagHierarchyDialog.hpp"
-
 #include "Commands.hpp"
 #include "Results.hpp"
-#include "Codec.hpp"
 #include "MessageHandler.hpp"
 
 extern NppPlugin::TagsPlugin g_plugin;
@@ -97,50 +88,46 @@ static ShortcutKey setTagFilesSk = {true,  true, false, 'O'};
 static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
 
-TagsPlugin::TagsPlugin()
- : m_isInitialized(false), m_ui(m_npp.npp, m_hModule)
+
+void TagsPlugin::onInstanceHandleSet()
 {
+    createTagsController();
+	messagesNames.add(CTagsPlugin::Command::GenerateTags::Id(), "CTags::GenerateTags");
+	messagesNames.add(CTagsPlugin::Command::GetTagFiles::Id(), "CTags::GetTagFiles");
+	messagesNames.add(CTagsPlugin::Command::SetTagFiles::Id(), "CTags::SetTagFiles");
+	messagesNames.add(CTagsPlugin::Command::Test::Id(), "CTags::Test");
 }
 
-/**
-* Initialize your plugin data here
-* It will be called while plugin loading   
-*/
-void TagsPlugin::init(HINSTANCE p_hModule)
-{
-    if(!m_isInitialized)
-    {
-		m_isInitialized = true;
-        m_hModule = p_hModule;
-        createTagsController();
-		messagesNames.add(CTagsPlugin::Command::GenerateTags::Id(), "CTags::GenerateTags");
-		messagesNames.add(CTagsPlugin::Command::GetTagFiles::Id(), "CTags::GetTagFiles");
-		messagesNames.add(CTagsPlugin::Command::SetTagFiles::Id(), "CTags::SetTagFiles");
-		messagesNames.add(CTagsPlugin::Command::Test::Id(), "CTags::Test");
-    }
-}
-
-/**
-* Cleaning of your plugin
-* It will be called while plugin unloading
-*/
-void TagsPlugin::cleanup()
+void TagsPlugin::detach()
 {
 	m_config.saveConfigFile(m_configFilePath);
 }
 
-/**
-* Initialization of your plugin commands
-*/
-void TagsPlugin::commandMenuInit(NppData p_nppData)
+void TagsPlugin::onNppHandleSet()
 {
-	m_npp.npp = WinApi::Handle(p_nppData._nppHandle);
-	m_npp.scintillaMain = WinApi::Handle(p_nppData._scintillaMainHandle);
-	m_npp.scintillaSecond = WinApi::Handle(p_nppData._scintillaSecondHandle);
 	Logger::init(getPluginsConfigDir() + "\\nppCTagPlugin.logs");
-    loadConfigFile();
+	loadConfigFile();
 	setLoggerParams();
-    initFunctionsTable();
+}
+
+void TagsPlugin::initMenu()
+{
+	setCommand(TEXT("Next tag"), fun_nextTag, &nextTagSk);
+	setCommand(TEXT("Previous tag"), fun_previousTag, &previousTagSk);
+	setCommand(TEXT("Clear tags queue"), fun_clearTags, &clearTagsSk);
+	setSeparator();
+	setCommand(TEXT("Find tag"), fun_findTag, &findTagSk);
+	setCommand(TEXT("Tag info"), fun_tagInfo, &tagInfoSk);
+	setCommand(TEXT("Tag hierarchy"), fun_tagHier, NULL);
+	setCommand(TEXT("Cpp search"), fun_cppSearch, &cppSearchSk);
+	setSeparator();
+	setCommand(TEXT("Set tags files"), fun_setTagsFiles, &setTagFilesSk);
+	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
+	setSeparator();
+	setCommand(TEXT("About"), fun_info, NULL);
+	//setSeparator();
+	//setCommand(TEXT("test 1"), myTest1, NULL);
+	//setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 void TagsPlugin::setLoggerParams()
@@ -161,7 +148,7 @@ void TagsPlugin::loadConfigFile()
 std::string TagsPlugin::getPluginsConfigDir()
 {
     TCHAR l_configDirPath[_MAX_PATH];
-    ::SendMessage(m_npp.npp, NPPM_GETPLUGINSCONFIGDIR , (WPARAM)_MAX_PATH, (LPARAM)l_configDirPath);
+    ::SendMessage(npp.npp, NPPM_GETPLUGINSCONFIGDIR , (WPARAM)_MAX_PATH, (LPARAM)l_configDirPath);
     char l_configDirPathBuff[_MAX_PATH];
     wcstombs(l_configDirPathBuff, l_configDirPath, _MAX_PATH - 1);
     return l_configDirPathBuff;
@@ -170,16 +157,16 @@ std::string TagsPlugin::getPluginsConfigDir()
 void TagsPlugin::createTagsController()
 {
     m_tagsController.reset(new CTagsPlugin::CTagsController(
-		m_npp,
-		m_ui,
-        std::make_shared<NppPlugin::NppPathGetter>(m_npp.npp, m_hModule),
+		npp,
+		ui,
+        std::make_shared<NppPlugin::NppPathGetter>(npp.npp, hModule),
 		std::bind(&TagsPlugin::getTagsSelector, this),
-		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(m_hModule, m_npp.npp),
-		std::make_shared<NppPlugin::PathsSelector<SelectorType::Directory>>(m_npp.npp, m_hModule),
-		std::make_shared<NppPlugin::PathsSelector<SelectorType::File>>(m_npp.npp, m_hModule),
+		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
+		std::make_shared<NppPlugin::PathsSelector<SelectorType::Directory>>(npp.npp, hModule),
+		std::make_shared<NppPlugin::PathsSelector<SelectorType::File>>(npp.npp, hModule),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
         m_config,
-		WinApi::CppSearchMatcherGetter(m_npp.npp, m_hModule)));
+		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
@@ -211,7 +198,7 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildCachedTagFileReader(c
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader)
 {
 	return std::make_unique<CTagsPlugin::FileScopedTagFilteringReader>(
-		m_npp,
+		npp,
 		std::move(p_reader));
 }
 
@@ -228,13 +215,13 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagReader(const std::
 
 std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildListViewSelector()
 {
-	return std::make_shared<CTagsPlugin::ListViewTagsSelector>(m_hModule, m_npp.npp);
+	return std::make_shared<CTagsPlugin::ListViewTagsSelector>(hModule, npp.npp);
 }
 
 std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildGridViewSelector()
 {
     return std::make_shared<CTagsPlugin::GridViewTagsSelector>(
-        m_npp.npp, m_hModule, m_config);
+        npp.npp, hModule, m_config);
 }
 
 std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildTagsSelector()
@@ -251,52 +238,6 @@ std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::getTagsSelector()
     if(!m_selector)
         m_selector = buildTagsSelector();
     return m_selector;
-}
-
-void TagsPlugin::initFunctionsTable()
-{
-    setCommand(TEXT("Next tag"),           fun_nextTag,          &nextTagSk);
-    setCommand(TEXT("Previous tag"),       fun_previousTag,      &previousTagSk);
-	setCommand(TEXT("Clear tags queue"),   fun_clearTags,        &clearTagsSk);
-	setSeparator();
-	setCommand(TEXT("Find tag"),           fun_findTag,          &findTagSk);
-	setCommand(TEXT("Tag info"),           fun_tagInfo,    &tagInfoSk);
-	setCommand(TEXT("Tag hierarchy"),      fun_tagHier,          NULL);
-	setCommand(TEXT("Cpp search"),         fun_cppSearch,        &cppSearchSk);
-    setSeparator();
-    setCommand(TEXT("Set tags files"),     fun_setTagsFiles,     &setTagFilesSk);
-    setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
-    setSeparator();
-    setCommand(TEXT("About"),              fun_info,             NULL);
-	//setSeparator();
-    //setCommand(TEXT("test 1"), myTest1, NULL);
-	//setCommand(TEXT("test 2"), myTest2, NULL);
-}
-
-/**
-* Clean up your plugin commands allocation (if any)
-*/
-void TagsPlugin::commandMenuCleanUp()
-{
-}
-
-bool TagsPlugin::setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
-{
-	if (m_numberOfAddedFunctions >= TagsPlugin::s_funcNum)
-        return false;
-
-    lstrcpy(m_funcItems[m_numberOfAddedFunctions]._itemName, cmdName);
-    m_funcItems[m_numberOfAddedFunctions]._pFunc = pFunc;
-    m_funcItems[m_numberOfAddedFunctions]._init2Check = false;
-    m_funcItems[m_numberOfAddedFunctions]._pShKey = sk;
-	m_numberOfAddedFunctions++;
-
-    return true;
-}
-
-void TagsPlugin::setSeparator()
-{
-    setCommand(TEXT("-----"), NULL, NULL);
 }
 
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
@@ -318,53 +259,11 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-	CTagsPlugin::Command::Test req;
-	req.value = 5;
-	LOG_INFO << "req value: " << req.value;
-	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Test>(req);
-	std::string payload = "payload ";
-	for (const auto& b : reqBuff)
-		payload += boost::lexical_cast<std::string>((int)b) += " ";
-	LOG_INFO << payload;
-	auto decodedReq = Messaging::decode<CTagsPlugin::Command::Test>(reqBuff.data(), reqBuff.size());
-	LOG_INFO << "decoded req value: " << decodedReq.value;
 
 }
 
 void TagsPlugin::test2()
 {
-	CTagsPlugin::Command::Test req;
-	req.value = 5;
-	LOG_INFO << "sender. secd request: " << req.value;
-
-	auto reqBuff = Messaging::encode<CTagsPlugin::Command::Test>(req);
-	Messaging::BufferType respBuff(1024, 0);
-
-	Messaging::Transaction transaction;
-	transaction.command.size = reqBuff.size();
-	transaction.command.data = reqBuff.data();
-	transaction.result.size = respBuff.size();
-	transaction.result.data = respBuff.data();
-
-	CommunicationInfo communication;
-	communication.internalMsg = 45;
-	communication.info = static_cast<void*>(&transaction);
-	
-	//HANDLER START
-	CommunicationInfo& receivedComm = communication;
-	Messaging::Transaction& receivedTrans = *(static_cast<Messaging::Transaction*>(receivedComm.info));
-	auto receivedReq = Messaging::decode<CTagsPlugin::Command::Test>(receivedTrans.command.data, receivedTrans.command.size);
-	LOG_INFO << "receoved. received req: " << receivedReq.value;
-	CTagsPlugin::Result::Test receiverResp;
-	receiverResp.value = 45;
-	LOG_INFO << "received. send resp: " << receiverResp.value;
-	auto encodedResp = Messaging::encode <CTagsPlugin::Result::Test>(receiverResp);
-	receivedTrans.result.size = encodedResp.size();
-	std::copy_n(encodedResp.begin(), encodedResp.size(), receivedTrans.result.data);
-	//HANDLER END
-
-	auto resp = Messaging::decode<CTagsPlugin::Result::Test>(transaction.result.data, transaction.result.size);
-	LOG_INFO << "sender. received response: " << resp.value;
 
 }
 
@@ -412,7 +311,7 @@ void TagsPlugin::generateTagsFile()
 void TagsPlugin::info()
 {
     std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.7.1\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
-    m_ui.infoMessage("About", l_info);
+    ui.infoMessage("About", l_info);
 }
 
 } // namespace NppPlugin
