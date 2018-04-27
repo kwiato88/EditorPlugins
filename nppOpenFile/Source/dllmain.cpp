@@ -52,6 +52,11 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 // http://sourceforge.net/forum/forum.php?forum_id=482781
 extern "C" __declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam)
 {
+	if (Message == NPPM_MSGTOPLUGIN)
+	{
+		CommunicationInfo* message = (CommunicationInfo*)(lParam);
+		g_plugin.handleMsgToPlugin(*message);
+	}
 	return TRUE;
 }
 

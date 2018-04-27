@@ -10,6 +10,9 @@
 #include "WinApiTypes.hpp"
 #include "WinApiUI.hpp"
 #include "NppEditor.hpp"
+#include "MessageHandler.hpp"
+#include "Commands.hpp"
+#include "Results.hpp"
 
 namespace NppPlugin
 {
@@ -36,6 +39,7 @@ public:
     void openFile();
     void setDirs();
 	void setDirsSafe();
+	void handleMsgToPlugin(CommunicationInfo& p_message);
 
 	static const int s_funcNum = 2;
 
@@ -50,9 +54,13 @@ private:
 	void initFunctionsTable();
 	std::vector<std::string> getSerachDirs();
 
+	OpenFileResult::Basic handleSetSearchDirs(const OpenFileCommand::SetSearchDirs&);
+	OpenFileResult::SearchDirs  handleGetSearchDirs(const OpenFileCommand::GetSearchDirs&);
+	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
+
 	WinApi::UI ui;
     std::vector<std::string> m_searchDirs;
-
+	Messaging::Handlers handlers;
 };
 
 } // namespace NppPlugin

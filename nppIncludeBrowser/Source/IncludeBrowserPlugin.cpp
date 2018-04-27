@@ -122,7 +122,7 @@ void IncludeBrowserPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 	{
 		Messaging::Transaction* transaction = static_cast<Messaging::Transaction*>(p_message.info);
 		transaction->result.size = 0;
-		m_ui.errorMessage("Include Brower", std::string("Error during message to plugin handling:") + e.what());
+		m_ui.errorMessage("Include Brower", std::string("Error during message to plugin handling: ") + e.what());
 	}
 }
 
