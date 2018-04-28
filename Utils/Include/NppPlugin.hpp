@@ -12,7 +12,7 @@ template<unsigned int funCount>
 class BasePlugin
 {
 public:
-	BasePlugin() : isInitialized(false), numberOfAddedFunctions(0), ui(npp.npp, hModule) {}
+	BasePlugin() : isInitialized(false), numberOfAddedFunctions(0) {}
 	void attach(HINSTANCE p_hModule)
 	{
 		if (!isInitialized)
@@ -94,6 +94,15 @@ private:
 protected:
 	WinApi::InstanceHandle hModule;
 	Editor npp;
+};
+
+template<unsigned int funCount>
+class BasePluginWithUI : public BasePlugin<funCount>
+{
+public:
+	BasePluginWithUI() : BasePlugin(), ui(npp.npp, hModule) {}
+
+protected:
 	WinApi::UI ui;
 };
 

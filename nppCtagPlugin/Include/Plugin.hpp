@@ -34,7 +34,7 @@ private:
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 
-class TagsPlugin : public BasePlugin<13>
+class TagsPlugin : public BasePluginWithUI<13>
 {
 public:
 	void handleMsgToPlugin(CommunicationInfo& p_message) override;
