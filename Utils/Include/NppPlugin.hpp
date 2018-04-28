@@ -19,7 +19,7 @@ public:
 		{
 			isInitialized = true;
 			hModule = p_hModule;
-			onInstanceHandleSet();
+			init();
 		}
 	}
 	virtual void detach() {}
@@ -61,7 +61,7 @@ public:
 	}
 
 protected:
-	virtual void onInstanceHandleSet() {}
+	virtual void init() {}
 	virtual void onNppHandleSet() {}
 	virtual void onShoutdown() {}
 	virtual void initMenu() {}

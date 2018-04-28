@@ -31,7 +31,7 @@ std::string getFileDir(std::string p_filePath)
 }
 }
 
-void OpenFilePlugin::onInstanceHandleSet()
+void OpenFilePlugin::init()
 {
 	handlers.addHandler<OpenFileCommand::SetSearchDirs, OpenFileResult::Basic>(
 		OpenFileCommand::SetSearchDirs::Id(),

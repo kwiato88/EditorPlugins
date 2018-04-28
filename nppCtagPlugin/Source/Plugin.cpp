@@ -89,7 +89,7 @@ static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
 
 
-void TagsPlugin::onInstanceHandleSet()
+void TagsPlugin::init()
 {
     createTagsController();
 	messagesNames.add(CTagsPlugin::Command::GenerateTags::Id(), "CTags::GenerateTags");

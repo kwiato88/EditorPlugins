@@ -24,7 +24,7 @@ public:
 	void setDirsSafe();
 
 protected:
-	void onInstanceHandleSet() override;
+	void init() override;
 	void initMenu() override;
 	void handleMsgToPlugin(CommunicationInfo& p_message) override;
 	

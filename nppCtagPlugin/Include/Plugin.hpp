@@ -61,7 +61,7 @@ public:
 	void info();
 
 protected:
-	void onInstanceHandleSet() override;
+	void init() override;
 	void onNppHandleSet() override;
 	void initMenu() override;
 

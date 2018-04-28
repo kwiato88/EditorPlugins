@@ -31,7 +31,7 @@ void fun_clear()
     g_plugin.clear();
 }
 
-void IncludeBrowserPlugin::onInstanceHandleSet()
+void IncludeBrowserPlugin::init()
 {
     includeBrowser.reset(new IncludeBrowser::Controller(
 		npp,
