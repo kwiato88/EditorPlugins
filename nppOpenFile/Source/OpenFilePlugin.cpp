@@ -1,7 +1,6 @@
 #include <memory>
 #include <fstream>
 
-#include "menuCmdID.h"
 #include "OpenFilePlugin.hpp"
 #include "OpenFileDialog.hpp"
 #include "NppPathsSelector.hpp"
@@ -32,45 +31,7 @@ std::string getFileDir(std::string p_filePath)
 }
 }
 
-OpenFilePlugin::OpenFilePlugin()
- : m_isInitialized(false), ui(m_npp.npp, m_hModule)
-{
-}
-
-/**
-* Initialize your plugin data here
-* It will be called while plugin loading   
-*/
-void OpenFilePlugin::init(HINSTANCE p_hModule)
-{
-    if(!m_isInitialized)
-    {
-		m_isInitialized = true;
-        m_hModule = p_hModule;
-        create();
-    }
-}
-
-/**
-* Cleaning of your plugin
-* It will be called while plugin unloading
-*/
-void OpenFilePlugin::cleanup()
-{
-}
-
-/**
-* Initialization of your plugin commands
-*/
-void OpenFilePlugin::commandMenuInit(NppData p_nppData)
-{
-	m_npp.npp = WinApi::Handle(p_nppData._nppHandle);
-	m_npp.scintillaMain = WinApi::Handle(p_nppData._scintillaMainHandle);
-	m_npp.scintillaSecond = WinApi::Handle(p_nppData._scintillaSecondHandle);
-    initFunctionsTable();
-}
-
-void OpenFilePlugin::create()
+void OpenFilePlugin::onInstanceHandleSet()
 {
 	handlers.addHandler<OpenFileCommand::SetSearchDirs, OpenFileResult::Basic>(
 		OpenFileCommand::SetSearchDirs::Id(),
@@ -83,33 +44,10 @@ void OpenFilePlugin::create()
 		[&](const auto& p) {return handleFindFiles(p); });
 }
 
-void OpenFilePlugin::initFunctionsTable()
+void OpenFilePlugin::initMenu()
 {
-	setCommand(0, TEXT("Open File"),       fun_open,   NULL);
-    setCommand(1, TEXT("Set search dirs"), fun_setDirs, NULL);
-}
-
-/**
-* Clean up your plugin commands allocation (if any)
-*/
-void OpenFilePlugin::commandMenuCleanUp()
-{
-}
-
-bool OpenFilePlugin::setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
-{
-	if (index >= OpenFilePlugin::s_funcNum)
-        return false;
-
-    if (!pFunc)
-        return false;
-
-    lstrcpy(m_funcItems[index]._itemName, cmdName);
-    m_funcItems[index]._pFunc = pFunc;
-    m_funcItems[index]._init2Check = false;
-    m_funcItems[index]._pShKey = sk;
-
-    return true;
+	setCommand(TEXT("Open File"),       fun_open,   NULL);
+    setCommand(TEXT("Set search dirs"), fun_setDirs, NULL);
 }
 
 void OpenFilePlugin::open()
@@ -126,12 +64,12 @@ void OpenFilePlugin::open()
 
 void OpenFilePlugin::openFile()
 {
-    WinApi::OpenFileDialog dialog(m_hModule, m_npp.npp);
+    WinApi::OpenFileDialog dialog(hModule, npp.npp);
     dialog.setSearchDirs(getSerachDirs());
     int result = dialog.show();
     if(result == WinApi::Dialog::RESULT_OK)
     {
-        m_npp.setFile(dialog.getSelectedFile());
+        npp.setFile(dialog.getSelectedFile());
     }
 }
 
@@ -146,8 +84,8 @@ std::vector<std::string> OpenFilePlugin::getSerachDirs()
 
 void OpenFilePlugin::setDirs()
 {
-	PathsSelector<SelectorType::Directory> dirs(m_npp.npp, m_hModule);
-	m_searchDirs = dirs.select(m_searchDirs, getFileDir(m_npp.getFile()));
+	PathsSelector<SelectorType::Directory> dirs(npp.npp, hModule);
+	m_searchDirs = dirs.select(m_searchDirs, getFileDir(npp.getFile()));
 }
 
 void OpenFilePlugin::setDirsSafe()

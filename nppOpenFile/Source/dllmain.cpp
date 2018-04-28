@@ -10,16 +10,16 @@ BOOL APIENTRY DllMain(HINSTANCE hModule,
                       LPVOID lpReserved)
 {
     if(reasonForCall == DLL_PROCESS_ATTACH)
-        g_plugin.init(hModule);
+        g_plugin.attach(hModule);
     if(reasonForCall == DLL_PROCESS_DETACH)
-        g_plugin.cleanup();
+        g_plugin.detach();
     return TRUE;
 }
 
 
 extern "C" __declspec(dllexport) void setInfo(NppData notpadPlusData)
 {
-	g_plugin.commandMenuInit(notpadPlusData);
+	g_plugin.setInfo(notpadPlusData);
 }
 
 extern "C" __declspec(dllexport) const TCHAR * getName()
@@ -29,35 +29,20 @@ extern "C" __declspec(dllexport) const TCHAR * getName()
 
 extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *nbF)
 {
-	*nbF = NppPlugin::OpenFilePlugin::s_funcNum;
-	return g_plugin.m_funcItems;
+	*nbF = g_plugin.getFuncNumber();
+	return g_plugin.getFunc();
 }
 
 
 extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 {
-	switch (notifyCode->nmhdr.code) 
-	{
-		case NPPN_SHUTDOWN:
-		{
-			g_plugin.commandMenuCleanUp();
-		}
-		break;
-
-		default:
-			return;
-	}
+	g_plugin.notify(notifyCode->nmhdr.code);
 }
 
 // http://sourceforge.net/forum/forum.php?forum_id=482781
 extern "C" __declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	if (Message == NPPM_MSGTOPLUGIN)
-	{
-		CommunicationInfo* message = (CommunicationInfo*)(lParam);
-		g_plugin.handleMsgToPlugin(*message);
-	}
-	return TRUE;
+	return g_plugin.handleMessage(Message, wParam, lParam);
 }
 
 #ifdef UNICODE
