@@ -22,6 +22,10 @@ public:
 			init();
 		}
 	}
+
+	/**
+	* Notepad++ authores advise to cleanup plugin data here. Called when plugin is unloaded.
+	*/
 	virtual void detach() {}
 
 	void setInfo(NppData p_nppData)
@@ -61,11 +65,37 @@ public:
 	}
 
 protected:
+	/**
+	* Notepad++ authores advise to initialize plugin data here. Called when plugin is loaded.
+	* Note:
+	*   - hModule already has valid value set;
+	*   - npp does not have valid handle to Noptepad++ and Scitilla set yet. Those will be valid since onNppHandleSet is called;
+	*/
 	virtual void init() {}
+	
+	/**
+	* Called after handle to Noptepad++ and Scitilla are set to valid value in npp.
+	*/
 	virtual void onNppHandleSet() {}
+
+	/**
+	* Called when plugin receives NPPN_SHUTDOWN notification.
+	*/
 	virtual void onShoutdown() {}
+
+	/**
+	* Initialize plugin commands(funcItems). Use setCommand, setSeparator functions.
+	*/
 	virtual void initMenu() {}
+
+	/**
+	* Cleanup plugin commands allocation (if any)
+	*/
 	virtual void cleanupMenu() {}
+
+	/**
+	* hadle message NPPM_MSGTOPLUGIN
+	*/
 	virtual void handleMsgToPlugin(CommunicationInfo& p_message) {}
 
 	bool setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
