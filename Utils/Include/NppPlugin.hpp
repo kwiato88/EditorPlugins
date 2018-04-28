@@ -8,6 +8,9 @@
 namespace NppPlugin
 {
 
+/**
+* funCount - number of plugin commands
+*/
 template<unsigned int funCount>
 class BasePlugin
 {
