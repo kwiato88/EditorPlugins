@@ -1,4 +1,5 @@
 #include <cstdlib>
+
 #include "Plugin.hpp"
 #include "CTags.hpp"
 #include "NppIncludes.hpp"
@@ -26,32 +27,18 @@ void fun_refresh()
 }
 
 ProjectPlugin::ProjectPlugin()
-	: m_numberOfAddedFunctions(0), m_isInitialized(false), ui(m_npp.npp, m_hModule),
-	workspace(std::make_unique<ProjectMgmt::SwitchableWorkspace>(ui))
+	: BasePluginWithUI(), workspace(std::make_unique<ProjectMgmt::SwitchableWorkspace>(ui))
 {}
 
-void ProjectPlugin::init(HINSTANCE p_hModule)
+void ProjectPlugin::onNppHandleSet()
 {
-	if (!m_isInitialized)
-	{
-		m_hModule = p_hModule;
-		m_isInitialized = true;
-	}
-}
-
-void ProjectPlugin::commandMenuInit(NppData p_nppData)
-{
-	m_npp.npp = WinApi::Handle(p_nppData._nppHandle);
-	m_npp.scintillaMain = WinApi::Handle(p_nppData._scintillaMainHandle);
-	m_npp.scintillaSecond = WinApi::Handle(p_nppData._scintillaSecondHandle);
 	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
 	workspace->enable(workspacePath,
-		std::make_unique<CTags>(m_npp.npp, "nppProjectPlugin.dll", ui),
-		std::make_unique<Includes>(m_npp.npp, "nppProjectPlugin.dll", ui));
-	initFunctionsTable();
+		std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
+		std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui));
 }
 
-void ProjectPlugin::initFunctionsTable()
+void ProjectPlugin::initMenu()
 {
 	setCommand(TEXT("New project"), fun_new, NULL);
 	setCommand(TEXT("Open project"), fun_open, NULL);
@@ -59,31 +46,9 @@ void ProjectPlugin::initFunctionsTable()
 	setCommand(TEXT("Refresh project"), fun_refresh, NULL);
 }
 
-void ProjectPlugin::commandMenuCleanUp()
-{
-}
-
 void ProjectPlugin::onShoutdown()
 {
 	workspace->disable();
-}
-
-void ProjectPlugin::cleanup()
-{
-}
-
-bool ProjectPlugin::setCommand(TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey *sk)
-{
-	if (m_numberOfAddedFunctions >= ProjectPlugin::s_funcNum)
-		return false;
-
-	lstrcpy(m_funcItems[m_numberOfAddedFunctions]._itemName, cmdName);
-	m_funcItems[m_numberOfAddedFunctions]._pFunc = pFunc;
-	m_funcItems[m_numberOfAddedFunctions]._init2Check = false;
-	m_funcItems[m_numberOfAddedFunctions]._pShKey = sk;
-	m_numberOfAddedFunctions++;
-
-	return true;
 }
 
 void ProjectPlugin::newPr()
