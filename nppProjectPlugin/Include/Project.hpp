@@ -52,6 +52,7 @@ public:
 
 	void refresh();
 	void appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const;
+	void appendFileSearchDir(std::vector<std::string>& p_dirs) const;
 	void refreshIncludesNavigation();
 
 private:
@@ -89,6 +90,7 @@ public:
 private:
 	void refreshTagsNavigation();
 	void refreshIncludesNavigation();
+	void refreshFileSearching();
 
 	std::string name;
 	std::vector<Elem> items;

@@ -75,6 +75,12 @@ void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
 		p_tagFiles.push_back(ctagsFilePath);
 }
 
+void Elem::appendFileSearchDir(std::vector<std::string>& p_dirs) const
+{
+	if(shouldSearchForFiles)
+		p_dirs.push_back(sourcePath);
+}
+
 void Elem::refreshIncludesNavigation()
 {
 	currentInc->parse(sourcePath);
@@ -152,10 +158,19 @@ void Project::refreshIncludesNavigation()
 		item.refreshIncludesNavigation();
 }
 
+void Project::refreshFileSearching()
+{
+	std::vector<std::string> searchDirs;
+	for (const auto& item : items)
+		item.appendFileSearchDir(searchDirs);
+	searchFiles.setSearchDirs(searchDirs);
+}
+
 void Project::refershCodeNavigation()
 {
 	refreshTagsNavigation();
 	refreshIncludesNavigation();
+	refreshFileSearching();
 }
 
 std::string Project::getName() const

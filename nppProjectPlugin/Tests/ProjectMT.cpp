@@ -252,6 +252,42 @@ TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledIncludesNavigationWhenRefreshCode
 	project.refershCodeNavigation();
 }
 
+TEST_F(ProjectMT, shouldSetSearchDirsPathsWhenRefreshCodeNavigation)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incNiceMock }
+		},
+		tagsNiceMock,
+		incNiceMock,
+		filesMock
+	};
+
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir1\\dir", "d:\\dir2\\dir" })));
+	project.refershCodeNavigation();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledFileSearchingDuringRefreshCodeNavigation)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock, true, true, true, false },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incNiceMock }
+		},
+		tagsNiceMock,
+		incNiceMock,
+		filesMock
+	};
+
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir2\\dir" })));
+	project.refershCodeNavigation();
+}
+
 TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 {
 	Project project
@@ -513,6 +549,7 @@ TEST_F(WorkspaceMT, shouldSetTagFilesPathsWhenOpenProject)
 		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 }
@@ -532,6 +569,7 @@ TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseProject)
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
@@ -554,6 +592,7 @@ TEST_F(WorkspaceMT, shouldParseIncludesWhenOpenProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 }
@@ -574,6 +613,7 @@ TEST_F(WorkspaceMT, shouldClearIncludesWhenCloseProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 	sut.closeProject();
@@ -632,6 +672,7 @@ TEST_F(WorkspaceMT, shouldClearTagFilesPathsAndParsedIncludesWhenCreateNewProjec
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({}))).Times(2);
 	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
@@ -651,6 +692,7 @@ TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseNewProje
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	
@@ -674,6 +716,7 @@ TEST_F(WorkspaceMT, shouldGenerateTagsDuringRefreshProject)
 		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(incMock, clear()).Times(3);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
@@ -700,6 +743,7 @@ TEST_F(WorkspaceMT, shouldParseIncludesDuringRefreshProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
