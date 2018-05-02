@@ -44,6 +44,8 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
 		throw std::runtime_error("Tag file for elem with tags navigation can not be empty");
 	if(p_genTags && (ctagsFilePath.empty() || sourcePath.empty()))
 		throw std::runtime_error("Tag file and source for elem with tags generation can not be empty");
+	if (p_findFiles && sourcePath.empty())
+		throw std::runtime_error("Source for elem with files searching can not be empty");
 }
 
 Elem::Elem(const boost::property_tree::ptree& p_data)
