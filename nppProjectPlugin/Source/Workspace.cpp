@@ -33,13 +33,15 @@ public:
 	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items,
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
 		: Project(p_name, p_items, p_tags, p_includes, p_searchFiles),
-		  tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
+		  tags(p_tags), inc(p_includes), files(p_searchFiles),
+		originalTagFiles(p_tags.getTagFiles()), originalSerachDirs(p_searchFiles.getSearchDirs())
 	{
 		refershCodeNavigation();
 	}
 	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data,
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
-		: Project(p_data, p_tags, p_includes, p_searchFiles), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
+		: Project(p_data, p_tags, p_includes, p_searchFiles), tags(p_tags), inc(p_includes), files(p_searchFiles),
+		originalTagFiles(p_tags.getTagFiles()), originalSerachDirs(p_searchFiles.getSearchDirs())
 	{
 		refershCodeNavigation();
 	}
@@ -47,11 +49,14 @@ public:
 	{
 		tags.setTagFiles(originalTagFiles);
 		inc.clear();
+		files.setSearchDirs(originalSerachDirs);
 	}
 private:
 	ITags& tags;
 	IIncludes& inc;
+	IFiles& files;
 	std::vector<std::string> originalTagFiles;
+	std::vector<std::string> originalSerachDirs;
 };
 
 }

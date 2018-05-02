@@ -78,6 +78,7 @@ struct ProjectMgmyMT : public Test
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
 		projectsDirPath = testsRootPath + "Projects\\";
 		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(Strings()));
+		EXPECT_CALL(filesNiceMock, getSearchDirs()).WillRepeatedly(Return(Strings()));
 	}
 
 	std::string rootPath;
@@ -452,6 +453,7 @@ TEST_F(WorkspaceMT, shouldOpenSelectedProject)
 		{
 			Plugin::UI::Row({"FirstProject", testsRootPath + "Workspace\\FirstProject"}),
 			Plugin::UI::Row({ "ProjectWithIncBrowser", testsRootPath + "Workspace\\ProjectWithIncBrowser" }),
+			Plugin::UI::Row({ "ProjectWithSearchFiles", testsRootPath + "Workspace\\ProjectWithSearchFiles" }),
 			Plugin::UI::Row({"SecondProject", testsRootPath + "Workspace\\SecondProject" })
 		}),
 		Plugin::UI::Row({ "", "" })))
@@ -549,12 +551,13 @@ TEST_F(WorkspaceMT, shouldSetTagFilesPathsWhenOpenProject)
 		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 }
 
-TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseProject)
+TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsClearIncludesClearSearchDirsAfterCloseProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	Workspace sut(buildWorkspace("Workspace"));
@@ -569,7 +572,8 @@ TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseProject)
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
@@ -592,7 +596,8 @@ TEST_F(WorkspaceMT, shouldParseIncludesWhenOpenProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.openProject();
 }
@@ -613,8 +618,52 @@ TEST_F(WorkspaceMT, shouldClearIncludesWhenCloseProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+	sut.openProject();
+	sut.closeProject();
+}
+
+TEST_F(WorkspaceMT, shouldSetSearchDirsPathsWhenOpenProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(buildWorkspace("Workspace"));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "ProjectWithSearchFiles", testsRootPath + "Workspace\\ProjectWithSearchFiles" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings({"d:\\dir12", "d:\\dir44\\dir"})));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings()));
+	}
+	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+	sut.openProject();
+}
+
+TEST_F(WorkspaceMT, shouldRestoreSearchDirsPathsAfterCloseProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(buildWorkspace("Workspace"));
+
+	Strings originalSearchDirsPaths{ "D:\\dir", "D:\\dir2\\dir3", "D:\\dir44" };
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "ProjectWithSearchFiles", testsRootPath + "Workspace\\ProjectWithSearchFiles" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(originalSearchDirsPaths));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir12", "d:\\dir44\\dir" })));
+		EXPECT_CALL(filesMock, setSearchDirs(originalSearchDirsPaths));
+	}
+	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(incMock, clear()).Times(2);
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
 	sut.openProject();
 	sut.closeProject();
 }
@@ -663,7 +712,7 @@ TEST_F(WorkspaceMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace\\NewProject"));
 }
 
-TEST_F(WorkspaceMT, shouldClearTagFilesPathsAndParsedIncludesWhenCreateNewProject)
+TEST_F(WorkspaceMT, shouldClearTagFilesPathsParsedIncludesClearSearchDirsWhenCreateNewProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	Workspace sut(buildWorkspace("Workspace"));
@@ -672,13 +721,14 @@ TEST_F(WorkspaceMT, shouldClearTagFilesPathsAndParsedIncludesWhenCreateNewProjec
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({}))).Times(2);
 	EXPECT_CALL(incMock, clear()).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();
 }
 
-TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseNewProject)
+TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsClearIncludesClearSearchDirsAfterCloseNewProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	Workspace sut(buildWorkspace("Workspace"));
@@ -692,7 +742,8 @@ TEST_F(WorkspaceMT, shouldRestoreTagFilesPathsAndClearIncludesAfterCloseNewProje
 		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
 	}
 	EXPECT_CALL(incMock, clear()).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 	
@@ -716,7 +767,8 @@ TEST_F(WorkspaceMT, shouldGenerateTagsDuringRefreshProject)
 		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(incMock, clear()).Times(3);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
@@ -743,7 +795,8 @@ TEST_F(WorkspaceMT, shouldParseIncludesDuringRefreshProject)
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
 	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({})));
+	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
