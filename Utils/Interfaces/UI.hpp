@@ -29,19 +29,6 @@ public:
         const std::vector<std::string>& p_columnsTitles,
         const std::vector<Row>& p_table,
         const Row& p_default) = 0;
-
-/* TODO: should this be in this IF ???
-    virtual std::string getFilePath(std::string p_comment) = 0;
-    virtual std::string getFilePath(std::string p_comment, std::string p_initialDir) = 0;
-    virtual std::string getDirPath(std::string p_comment) = 0;
-    virtual std::string getDirPath(std::string p_comment, std::string p_initialDir) = 0;
-    virtual std::vector<std::string> selectFilePaths(
-        const std::vector<std::string>& p_initialPaths,
-        const std::string& p_startingPath) = 0
-    virtual std::vector<std::string> selectDirPaths(
-        const std::vector<std::string>& p_initialPaths,
-        const std::string& p_startingPath) = 0
-*/
 };
 
 }
