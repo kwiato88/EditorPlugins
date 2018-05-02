@@ -15,8 +15,9 @@ namespace ProjectMgmt
 class Workspace
 {
 public:
-	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, Plugin::UI& p_ui);
-	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc,
+	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
+		Plugin::UI& p_ui);
+	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
 		Plugin::UI& p_ui,
 		const std::string& p_dir);
 	virtual void openProject();
@@ -38,6 +39,7 @@ private:
 	Plugin::UI& ui;
 	std::unique_ptr<ITags> tags;
 	std::unique_ptr<IIncludes> inc;
+	std::unique_ptr<IFiles> files;
 
 	const std::string projectFileName;
 	std::string projectsDir;

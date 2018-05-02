@@ -31,10 +31,10 @@ Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath)
 
 Elem::Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
 	ITags& p_tags, IIncludes& p_includes,
-	bool p_genTags, bool p_tagsNavigation, bool p_parseInc)
+	bool p_genTags, bool p_tagsNavigation, bool p_parseInc, bool p_findFiles)
  : sourcePath(p_sourcePath), ctagsFilePath(p_ctagsFilePath),
 	tags(p_tags), includes(p_includes), currentInc(&g_noIncludes),
-	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation)
+	shouldGenerateTags(p_genTags), shouldIncludeTagsInNavigation(p_tagsNavigation), shouldSearchForFiles(p_findFiles)
 {
 	if (p_parseInc)
 		currentInc = &includes;
@@ -57,7 +57,8 @@ Elem::Elem(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& 
 		p_includes,
 		enbleStateToBool(p_data.get<std::string>("tagsGeneration", "enabled")),
 		enbleStateToBool(p_data.get<std::string>("tagsNavigation", "enabled")),
-		enbleStateToBool(p_data.get<std::string>("includesBrowsing", "enabled")))
+		enbleStateToBool(p_data.get<std::string>("includesBrowsing", "enabled")),
+		enbleStateToBool(p_data.get<std::string>("fileSearching", "enabled")))
 {}
 
 void Elem::refresh()
@@ -85,7 +86,7 @@ boost::property_tree::ptree Elem::exportData() const
 	data.put("tagsGeneration", toEnbleState(shouldGenerateTags));
 	data.put("tagsNavigation", toEnbleState(shouldIncludeTagsInNavigation));
 	data.put("includesBrowsing", toEnbleState(isIncludesParsingEnabled()));
-	//data.put("fileSearching", "enabled");
+	data.put("fileSearching", toEnbleState(shouldSearchForFiles));
     return data;
 }
 
@@ -94,7 +95,8 @@ bool Elem::operator==(const Elem& p_other) const
 	return sourcePath == p_other.sourcePath && ctagsFilePath == p_other.ctagsFilePath
 		&& shouldGenerateTags == p_other.shouldGenerateTags
 		&& shouldIncludeTagsInNavigation == p_other.shouldIncludeTagsInNavigation
-		&& isIncludesParsingEnabled() == p_other.isIncludesParsingEnabled();
+		&& isIncludesParsingEnabled() == p_other.isIncludesParsingEnabled()
+		&& shouldSearchForFiles == p_other.shouldSearchForFiles;
 }
 
 bool Elem::isIncludesParsingEnabled() const
@@ -106,24 +108,24 @@ Project::~Project()
 {}
 
 Project::Project(const std::string& p_name, const std::vector<Elem>& p_items)
-	: Project(p_name, p_items, g_noTags, g_noIncludes)
+	: Project(p_name, p_items, g_noTags, g_noIncludes, g_noSearchFiles)
 {}
 
 Project::Project(const std::string& p_name, const std::vector<Elem>& p_items,
-	ITags& p_tags, IIncludes& p_includes)
- : name(p_name), items(p_items), tags(p_tags), includes(p_includes)
+	ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
+ : name(p_name), items(p_items), tags(p_tags), includes(p_includes), searchFiles(p_searchFiles)
 {
 	if (name.empty())
 		throw std::runtime_error("Given project name is empty");
 }
 
 Project::Project(const boost::property_tree::ptree& p_data)
-	: Project(p_data, g_noTags, g_noIncludes)
+	: Project(p_data, g_noTags, g_noIncludes, g_noSearchFiles)
 {}
 
 Project::Project(const boost::property_tree::ptree& p_data,
-	ITags& p_tags, IIncludes& p_includes)
-	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data, p_tags, p_includes), p_tags, p_includes)
+	ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
+	: Project(p_data.get<std::string>("name", ""), getProjcetItems(p_data, p_tags, p_includes), p_tags, p_includes, p_searchFiles)
 {}
 
 void Project::refresh()

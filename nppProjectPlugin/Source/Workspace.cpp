@@ -30,13 +30,16 @@ std::string getLastComponentName(const std::string& p_filePath)
 class ProjectWithTagsNavigation : public Project
 {
 public:
-	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags, IIncludes& p_includes)
-		: Project(p_name, p_items, p_tags, p_includes), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
+	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items,
+		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
+		: Project(p_name, p_items, p_tags, p_includes, p_searchFiles),
+		  tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
 	{
 		refershCodeNavigation();
 	}
-	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes)
-		: Project(p_data, p_tags, p_includes), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
+	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data,
+		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
+		: Project(p_data, p_tags, p_includes, p_searchFiles), tags(p_tags), inc(p_includes), originalTagFiles(p_tags.getTagFiles())
 	{
 		refershCodeNavigation();
 	}
@@ -52,14 +55,15 @@ private:
 };
 
 }
-Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, Plugin::UI& p_ui)
-	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), inc(std::move(p_inc)), ui(p_ui)
+Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
+	Plugin::UI& p_ui)
+	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)), ui(p_ui)
 {}
 
-Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc,
+Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
 	Plugin::UI& p_ui,
 	const std::string& p_dir)
- : projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), inc(std::move(p_inc)), ui(p_ui)
+	: projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)), ui(p_ui)
 {}
 
 std::string Workspace::projectDir(const std::string& p_projectName) const
@@ -108,7 +112,8 @@ std::unique_ptr<Project> Workspace::open(const std::string& p_projectDirPath) co
 {
     boost::property_tree::ptree projectData;
     boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
-    auto project = std::make_unique<ProjectWithTagsNavigation>(projectData, *tags, *inc);
+	//TODO: if name is incosistent, there is no name to create project with naviagtion; consider refactoring
+    auto project = std::make_unique<ProjectWithTagsNavigation>(projectData, *tags, *inc, *files);
 	if (getLastComponentName(p_projectDirPath) != project->getName())
 		throw std::runtime_error("Loaded Project name is inconsistent");
 	return std::move(project);
@@ -170,7 +175,7 @@ std::unique_ptr<Project> Workspace::newPr(const std::string& p_projectName) cons
 	if (exists(projectDir(p_projectName)))
 		throw std::runtime_error(std::string("Project ") + p_projectName + " already exists");
 	create_directory(projectDir(p_projectName));
-	return std::make_unique<ProjectWithTagsNavigation>(p_projectName, std::vector<Elem>(), *tags, *inc);
+	return std::make_unique<ProjectWithTagsNavigation>(p_projectName, std::vector<Elem>(), *tags, *inc, *files);
 }
 
 void Workspace::newProject()

@@ -6,7 +6,8 @@ namespace ProjectMgmt
 {
 
 NotLoadedWorkspace::NotLoadedWorkspace(Plugin::UI& p_ui)
-	: ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), p_ui, ""), ui(p_ui)
+	: ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), std::make_unique<DisabledFiles>(),
+		p_ui, ""), ui(p_ui)
 {}
 void NotLoadedWorkspace::openProject()
 {
@@ -26,7 +27,8 @@ void NotLoadedWorkspace::refreshProject()
 }
 
 SwitchableWorkspace::SwitchableWorkspace(Plugin::UI& p_ui)
- : ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), p_ui, ""),
+ : ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), std::make_unique<DisabledFiles>(),
+	 p_ui, ""),
 	ui(p_ui), invalidWorkspace(ui), validWorkspace(), currentWorkspace(&invalidWorkspace)
 {}
 
@@ -60,6 +62,7 @@ void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
 			validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
 				std::move(p_tags),
 				std::move(p_inc),
+				std::move(std::make_unique<DisabledFiles>()),//TODO: user real dependancy
 				ui,
 				p_workspaceDirPath);
 		}

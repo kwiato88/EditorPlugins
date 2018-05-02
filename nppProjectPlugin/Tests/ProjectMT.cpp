@@ -10,6 +10,7 @@
 #include "UiMock.hpp"
 #include "ITagsMock.hpp"
 #include "IIncludesMock.hpp"
+#include "IFilesMock.hpp"
 
 namespace ProjectMgmt
 {
@@ -53,6 +54,22 @@ private:
 	IIncludes& inc;
 };
 
+class FilesProxy : public IFiles
+{
+public:
+	FilesProxy(IFiles& p_files) : files(p_files) {}
+	void setSearchDirs(const std::vector<std::string>& p_dirs)
+	{
+		files.setSearchDirs(p_dirs);
+	}
+	std::vector<std::string> getSearchDirs()
+	{
+		return files.getSearchDirs();
+	}
+private:
+	IFiles& files;
+};
+
 struct ProjectMgmyMT : public Test
 {
 	ProjectMgmyMT()
@@ -71,6 +88,8 @@ struct ProjectMgmyMT : public Test
 	NiceMock<ITagsMock> tagsNiceMock;
 	StrictMock<IIncludesMock> incMock;
 	NiceMock<IIncludesMock> incNiceMock;
+	StrictMock<IFilesMock> filesMock;
+	NiceMock<IFilesMock> filesNiceMock;
 	StrictMock<Plugin::UiMock> uiMock;
 };
 
@@ -81,7 +100,7 @@ struct ProjectMT : public ProjectMgmyMT
 		boost::property_tree::ptree projectData;
 		boost::property_tree::json_parser::read_json(projectsDirPath + p_projectFile, projectData);
 		
-		return Project(projectData, tagsNiceMock, incNiceMock);
+		return Project(projectData, tagsNiceMock, incNiceMock, filesNiceMock);
 	}
 	void saveProject(const Project& p_project, const std::string& p_projectFile)
 	{
@@ -106,8 +125,8 @@ TEST_F(ProjectMT, loadedProjectShouldBeTheSameAsSaved)
 	{
 		"ProjectName",
 		{
-			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock, false, true, true },
-			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", tagsNiceMock, incNiceMock, true, false, false }
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock, false, true, true, false },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\file2.txt", tagsNiceMock, incNiceMock, true, false, false, true }
 		}
 	};
 	
@@ -163,7 +182,8 @@ TEST_F(ProjectMT, shouldSetTagFilesPathsWhenRefreshCodeNavigation)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
 		tagsMock,
-		incNiceMock
+		incNiceMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
@@ -180,7 +200,8 @@ TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledTagsNavigationDuringRefreshCodeNa
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
 		tagsMock,
-		incNiceMock
+		incNiceMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir2\\dir3\\file2.txt" })));
@@ -197,7 +218,8 @@ TEST_F(ProjectMT, shouldParseIncludesWhenRefreshCodeNavigation)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incMock }
 		},
 		tagsNiceMock,
-		incMock
+		incMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(incMock, clear());
@@ -216,7 +238,8 @@ TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledIncludesNavigationWhenRefreshCode
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incMock }
 		},
 		tagsNiceMock,
-		incMock
+		incMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(incMock, clear());
@@ -234,7 +257,8 @@ TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock }
 		},
 		tagsMock,
-		incNiceMock
+		incNiceMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
@@ -251,7 +275,8 @@ TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
 			Elem{ "d:\\dir1 q\\dir w", "d:\\dir 2\\file 1.txt", tagsMock, incNiceMock },
 		},
 		tagsMock,
-		incNiceMock
+		incNiceMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir 2\\file 1.txt", Strings({ "d:\\dir1 q\\dir w" })));
@@ -268,7 +293,8 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledTagsGenerationDuringRefresh)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsMock, incNiceMock, false }
 		},
 		tagsMock,
-		incNiceMock
+		incNiceMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\file1.txt", Strings({ "d:\\dir1\\dir" })));
@@ -285,7 +311,8 @@ TEST_F(ProjectMT, shouldParseIncludesDuringRefresh)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incMock }
 		},
 		tagsNiceMock,
-		incMock
+		incMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(incMock, clear());
@@ -304,7 +331,8 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledIncludesNavigationDuringRefresh)
 			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incMock }
 		},
 		tagsNiceMock,
-		incMock
+		incMock,
+		filesNiceMock
 	};
 
 	EXPECT_CALL(incMock, clear());
@@ -340,12 +368,16 @@ struct WorkspaceMT : public ProjectMgmyMT
 	}
 	Workspace buildWorkspace(const std::string& p_workspaceDir)
 	{
-		return Workspace(std::make_unique<TagsProxy>(tagsMock), std::make_unique<IncludesProxy>(incMock),
+		return Workspace(std::make_unique<TagsProxy>(tagsMock),
+			std::make_unique<IncludesProxy>(incMock),
+			std::make_unique<FilesProxy>(filesMock),
 			uiMock, testsRootPath + p_workspaceDir);
 	}
 	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
 	{
-		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock), std::make_unique<IncludesProxy>(incNiceMock),
+		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock),
+			std::make_unique<IncludesProxy>(incNiceMock),
+			std::make_unique<FilesProxy>(filesNiceMock),
 			uiMock, testsRootPath + p_workspaceDir);
 	}
 

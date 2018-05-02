@@ -6,14 +6,16 @@
             "tagFilePath": "d:\\dir12\\file12.txt",
             "tagsGeneration": "enabled",
             "tagsNavigation": "enabled",
-            "includesBrowsing": "disabled"
+            "includesBrowsing": "disabled",
+            "fileSearching": "disabled"
         },
         {
             "sourcePath": "d:\\dir44\\dir",
             "tagFilePath": "d:\\dir43\\file2.txt",
             "tagsGeneration": "enabled",
             "tagsNavigation": "enabled",
-            "includesBrowsing": "disabled"
+            "includesBrowsing": "disabled",
+            "fileSearching": "disabled"
         }
     ]
 }

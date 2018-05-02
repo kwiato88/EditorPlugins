@@ -6,6 +6,7 @@
 
 #include "ITags.hpp"
 #include "IIncludes.hpp"
+#include "IFiles.hpp"
 
 namespace ProjectMgmt
 {
@@ -25,8 +26,16 @@ public:
 	void clear() {}
 };
 
+class DisabledFiles : public IFiles
+{
+public:
+	void setSearchDirs(const std::vector<std::string>&) {}
+	std::vector<std::string> getSearchDirs() { return std::vector<std::string>(); }
+};
+
 static DisabledTags g_noTags;
 static DisabledIncludes g_noIncludes;
+static DisabledFiles g_noSearchFiles;
 
 class Elem
 {
@@ -34,7 +43,7 @@ public:
     Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath);
 	Elem(const std::string& p_sourcePath, const std::string& p_ctagsFilePath,
 		ITags& p_tags, IIncludes& p_includes,
-		bool p_genTags = true, bool p_tagsNavigation = true, bool p_parseInc = true);
+		bool p_genTags = true, bool p_tagsNavigation = true, bool p_parseInc = true, bool p_findFiles = true);
 	Elem(const boost::property_tree::ptree& p_data);
 	Elem(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes);
 
@@ -56,6 +65,7 @@ private:
 	std::string ctagsFilePath;
 	bool shouldGenerateTags;
 	bool shouldIncludeTagsInNavigation;
+	bool shouldSearchForFiles;
 };
 
 class Project
@@ -63,9 +73,11 @@ class Project
 public:
 	virtual ~Project();
 	Project(const std::string& p_name, const std::vector<Elem>& p_items);
-	Project(const std::string& p_name, const std::vector<Elem>& p_items, ITags& p_tags, IIncludes& p_includes);
+	Project(const std::string& p_name, const std::vector<Elem>& p_items,
+		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles);
 	Project(const boost::property_tree::ptree& p_data);
-	Project(const boost::property_tree::ptree& p_data, ITags& p_tags, IIncludes& p_includes);
+	Project(const boost::property_tree::ptree& p_data,
+		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles);
 
 	boost::property_tree::ptree exportData() const;
 	bool operator==(const Project& p_other) const;
@@ -82,6 +94,7 @@ private:
 	std::vector<Elem> items;
 	ITags& tags;
 	IIncludes& includes;
+	IFiles& searchFiles;
 };
 
 }
