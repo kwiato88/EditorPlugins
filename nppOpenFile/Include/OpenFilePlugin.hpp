@@ -8,6 +8,7 @@
 
 #include "NppPlugin.hpp"
 
+#include "WinApiUIFileSystem.hpp"
 #include "MessageHandler.hpp"
 #include "Commands.hpp"
 #include "Results.hpp"
@@ -20,6 +21,8 @@ const TCHAR NPP_PLUGIN_NAME[] = TEXT("Open File");
 class OpenFilePlugin : public BasePluginWithUI<2>
 {
 public:
+	OpenFilePlugin();
+
 	void open();
 	void setDirsSafe();
 
@@ -36,6 +39,7 @@ private:
 	OpenFileResult::SearchDirs  handleGetSearchDirs(const OpenFileCommand::GetSearchDirs&);
 	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
 
+	WinApi::UIFileSystem files;
     std::vector<std::string> m_searchDirs;
 	Messaging::Handlers handlers;
 };

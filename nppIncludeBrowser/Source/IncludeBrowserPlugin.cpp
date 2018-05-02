@@ -2,7 +2,6 @@
 #include <fstream>
 
 #include "IncludeBrowserPlugin.hpp"
-#include "NppPathGetter.hpp"
 #include "TreeViewFileHierarchySelector.hpp"
 #include "Transaction.hpp"
 
@@ -31,12 +30,16 @@ void fun_clear()
     g_plugin.clear();
 }
 
+IncludeBrowserPlugin::IncludeBrowserPlugin()
+	: files(npp.npp, hModule)
+{}
+
 void IncludeBrowserPlugin::init()
 {
     includeBrowser.reset(new IncludeBrowser::Controller(
 		npp,
 		ui,
-        std::make_shared<NppPlugin::NppPathGetter>(npp.npp, hModule),
+		files,
         std::make_shared<IncludeBrowser::TreeViewFileHierarchySelector>(hModule, npp.npp)));
 }
 

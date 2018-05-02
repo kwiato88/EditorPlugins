@@ -10,6 +10,7 @@
 #include "ITagsReader.hpp"
 #include "CTagsController.hpp"
 #include "ConfigGetter.hpp"
+#include "WinApiUIFileSystem.hpp"
 
 namespace NppPlugin
 {
@@ -37,6 +38,8 @@ const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 class TagsPlugin : public BasePluginWithUI<13>
 {
 public:
+	TagsPlugin();
+
 	void handleMsgToPlugin(CommunicationInfo& p_message) override;
 	void detach() override;
 
@@ -81,6 +84,7 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
 
+	WinApi::UIFileSystem files;
 	std::shared_ptr<CTagsPlugin::ITagsSelector> m_selector;
 	CTagsPlugin::ConfigGetter m_config;
 	std::string m_configFilePath;

@@ -70,7 +70,7 @@ void CTagsController::next()
     {
         m_locationsNavigator.goToNextLocation();
     }
-    catch (Plugin::LocationSetterException& e)
+    catch (Plugin::LocationSettetException& e)
     {
         m_messagePrinter->printErrorMessage("Next Tag", e.what());
     }
@@ -82,7 +82,7 @@ void CTagsController::previous()
     {
         m_locationsNavigator.goToPreviousLocaton();
     }
-    catch (Plugin::LocationSetterException& e)
+    catch (Plugin::LocationSettetException& e)
     {
         m_messagePrinter->printErrorMessage("Previous Tag", e.what());
     }
@@ -110,9 +110,9 @@ void CTagsController::find()
 	{
 	    m_messagePrinter->printInfoMessage("Find Tag", e.what());
 	}
-	catch(Plugin::LocationSetterException& e)
+	catch(Plugin::LocationSettetException& e)
 	{
-	    m_messagePrinter->printErrorMessage("Find Tag", e.what());
+		m_messagePrinter->printErrorMessage("Find Tag", e.what());
 	}
 }
 
@@ -144,9 +144,9 @@ void CTagsController::showTagInfo()
 	{
 	    m_messagePrinter->printInfoMessage("Tag Info", e.what());
 	}
-	catch(Plugin::LocationSetterException& e)
+	catch(Plugin::LocationSettetException& e)
 	{
-	    m_messagePrinter->printErrorMessage("Tag Info", e.what());
+		m_messagePrinter->printErrorMessage("Find Tag", e.what());
 	}
 }
 

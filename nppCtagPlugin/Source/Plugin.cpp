@@ -3,8 +3,6 @@
 
 #include "Plugin.hpp"
 
-#include "NppPathGetter.hpp"
-#include "NppPathsSelector.hpp"
 #include "ReadTagsProxy.hpp"
 #include "TagFileReader.hpp"
 #include "CachedTagsReader.hpp"
@@ -89,6 +87,10 @@ static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
 
 
+TagsPlugin::TagsPlugin()
+	: files(npp.npp, hModule)
+{}
+
 void TagsPlugin::init()
 {
     createTagsController();
@@ -159,11 +161,9 @@ void TagsPlugin::createTagsController()
     m_tagsController.reset(new CTagsPlugin::CTagsController(
 		npp,
 		ui,
-        std::make_shared<NppPlugin::NppPathGetter>(npp.npp, hModule),
+		files,
 		std::bind(&TagsPlugin::getTagsSelector, this),
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
-		std::make_shared<NppPlugin::PathsSelector<SelectorType::Directory>>(npp.npp, hModule),
-		std::make_shared<NppPlugin::PathsSelector<SelectorType::File>>(npp.npp, hModule),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
         m_config,
 		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));

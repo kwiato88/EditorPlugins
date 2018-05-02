@@ -6,6 +6,7 @@
 #include "NppPlugin.hpp"
 
 #include "IncludeBrowserController.hpp"
+#include "WinApiUIFileSystem.hpp"
 
 namespace NppPlugin
 {
@@ -15,6 +16,8 @@ const TCHAR NPP_PLUGIN_NAME[] = TEXT("Include Browser");
 class IncludeBrowserPlugin : public BasePluginWithUI<4>
 {
 public:
+	IncludeBrowserPlugin();
+
 	void parse();
     void showIncluded();
     void showIncluders();
@@ -26,6 +29,7 @@ protected:
 	void handleMsgToPlugin(CommunicationInfo& p_message) override;
 
 private:
+	WinApi::UIFileSystem files;
     std::shared_ptr<IncludeBrowser::Controller> includeBrowser;
 };
 

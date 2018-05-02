@@ -6,7 +6,7 @@
 
 #include "Editor.hpp"
 #include "UI.hpp"
-#include "IPathGetter.hpp"
+#include "WinApiUIFileSystem.hpp"
 #include "IFileHierarchySelector.hpp"
 #include "IncludeBrowser.hpp"
 #include "MutilpeFilesIncludeBrowser.hpp"
@@ -23,7 +23,7 @@ class Controller
 public:
     Controller(Plugin::Editor& p_editor,
 			   Plugin::UI& p_ui,
-               std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
+			   Plugin::UIFileSystem& p_files,
 			   std::shared_ptr<IFileHierarchySelector> p_fileSelector);
 
     void parse();
@@ -54,9 +54,9 @@ private:
 
 	Plugin::Editor& m_editor;
 	Plugin::UI& m_ui;
+	Plugin::UIFileSystem& m_files;
     MultipleFilesBrowser m_browser;
     std::set<std::string> m_sourceDirs;
-    std::shared_ptr<Plugin::IPathGetter> m_pathGetter;
 	std::shared_ptr<IFileHierarchySelector> m_fileSelector;
 	Messaging::Handlers m_handlers;
 };

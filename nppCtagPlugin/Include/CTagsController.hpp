@@ -8,11 +8,10 @@
 #include "Navigator.hpp"
 #include "Editor.hpp"
 #include "UI.hpp"
-#include "IPathGetter.hpp"
+#include "UIFileSystem.hpp"
 #include "ITagsSelector.hpp"
 #include "ITagsReader.hpp"
 #include "IConfiguration.hpp"
-#include "IPathsSelector.hpp"
 #include "CTagsNavigator.hpp"
 #include "Transaction.hpp"
 #include "MessageHandler.hpp"
@@ -30,11 +29,9 @@ public:
     CTagsController(
 		Plugin::Editor& p_editor,
 		Plugin::UI& p_ui,
-		std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
+		Plugin::UIFileSystem& p_files,
         SelectorFactory p_selectorFactory,
 		std::unique_ptr<ITagHierarchySelector> p_hierSelector,
-		std::shared_ptr<Plugin::IPathsSelector> p_dirsSelector,
-		std::shared_ptr<Plugin::IPathsSelector> p_filesSelector,
 		std::shared_ptr<ITagsReader> p_tagsReader,
         IConfiguration& p_config,
 		GetTagSearchMatcher p_tagSearchMatcherFactory);
@@ -54,9 +51,7 @@ public:
 private:
 	Plugin::Editor& m_editor;
 	Plugin::UI& m_ui;
-	std::shared_ptr<Plugin::IPathGetter> m_pathGetter;
-	std::shared_ptr<Plugin::IPathsSelector> m_dirsSelector;
-	std::shared_ptr<Plugin::IPathsSelector> m_filesSelector;
+	Plugin::UIFileSystem& m_files;
 	IConfiguration& m_config;
 
 	GetTagSearchMatcher m_tagSearchMatcherFactory;

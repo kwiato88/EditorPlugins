@@ -1,5 +1,5 @@
 #include "SwitcherFunction.hpp"
-#include "LocationSettetException.hpp"
+#include "OpenFileException.hpp"
 #include "SwitchFile.hpp"
 
 namespace HeaderSourceSwitcher
@@ -43,7 +43,7 @@ void setLocation(const std::string& p_file, Plugin::Editor& p_editor)
 	{
 		p_editor.setFile(p_file);
 	}
-	catch(Plugin::LocationSetterException&)
+	catch(Plugin::OpenFileException&)
 	{
 	}
 }

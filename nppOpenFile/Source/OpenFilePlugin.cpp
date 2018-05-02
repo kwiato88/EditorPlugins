@@ -3,7 +3,6 @@
 
 #include "OpenFilePlugin.hpp"
 #include "OpenFileDialog.hpp"
-#include "NppPathsSelector.hpp"
 #include "findFile.hpp"
 
 extern NppPlugin::OpenFilePlugin g_plugin;
@@ -30,6 +29,10 @@ std::string getFileDir(std::string p_filePath)
     return p_filePath.substr(0, p_filePath.find_last_of("\\"));
 }
 }
+
+OpenFilePlugin::OpenFilePlugin()
+	: files(npp.npp, hModule)
+{}
 
 void OpenFilePlugin::init()
 {
@@ -84,8 +87,7 @@ std::vector<std::string> OpenFilePlugin::getSerachDirs()
 
 void OpenFilePlugin::setDirs()
 {
-	PathsSelector<SelectorType::Directory> dirs(npp.npp, hModule);
-	m_searchDirs = dirs.select(m_searchDirs, getFileDir(npp.getFile()));
+	m_searchDirs = files.selectDirsPaths(m_searchDirs, getFileDir(npp.getFile()));
 }
 
 void OpenFilePlugin::setDirsSafe()

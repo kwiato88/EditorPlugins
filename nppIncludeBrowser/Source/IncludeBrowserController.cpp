@@ -6,7 +6,7 @@
 #include "IncludeBrowserController.hpp"
 #include "FindCppInclude.hpp"
 #include "FindTtcnInclude.hpp"
-#include "LocationSettetException.hpp"
+#include "OpenFileException.hpp"
 
 namespace IncludeBrowser
 {
@@ -35,12 +35,12 @@ std::string findFile(const std::string& p_dir, const std::string& p_fileName)
 
 Controller::Controller(Plugin::Editor& p_editor,
 					   Plugin::UI& p_ui,
-					   std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
+					   Plugin::UIFileSystem& p_files,
                        std::shared_ptr<IFileHierarchySelector> p_fileSelector)
  : m_editor(p_editor),
    m_ui(p_ui),
+   m_files(p_files),
    m_browser(&Controller::buildBrowser),
-   m_pathGetter(p_pathGetter),
    m_fileSelector(p_fileSelector)
 {
 	addHandler<Command::Clear, Result::Basic>(&Controller::handleClear);
@@ -98,7 +98,7 @@ Result::Basic Controller::handleParse(const Command::Parse& p_cmd)
 
 std::string Controller::getSourceDir() const
 {
-    std::string dir = m_pathGetter->getDirPath("Select source directory", getFileDir(m_editor.getFile()));
+    std::string dir = m_files.getDirPath("Select source directory", getFileDir(m_editor.getFile()));
     if(dir.empty())
         throw std::runtime_error("Source directory not selected");
     return dir;
@@ -114,7 +114,7 @@ void Controller::showIncluders()
     {
         m_ui.infoMessage("Show Includers", "No file to show");
     }
-    catch(Plugin::LocationSetterException& e)
+    catch(Plugin::OpenFileException& e)
     {
         m_ui.infoMessage("Show Includers", e.what());
     }
@@ -182,7 +182,7 @@ void Controller::showIncluded()
     {
         m_ui.infoMessage("Show Included", "No file to show");
     }
-    catch(Plugin::LocationSetterException& e)
+    catch(Plugin::OpenFileException& e)
     {
         m_ui.infoMessage("Show Included", e.what());
     }

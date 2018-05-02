@@ -1,7 +1,6 @@
 #include <functional>
 #include "CTagsController.hpp"
 #include "CTagsGenerator.hpp"
-#include "LocationSettetException.hpp"
 #include "OpenFileException.hpp"
 #include "TagsReaderException.hpp"
 #include "TagNotFoundException.hpp"
@@ -22,19 +21,15 @@ std::string getFileDir(std::string p_filePath)
 CTagsController::CTagsController(
 	Plugin::Editor& p_editor,
 	Plugin::UI& p_ui,
-	std::shared_ptr<Plugin::IPathGetter> p_pathGetter,
+	Plugin::UIFileSystem& p_files,
     SelectorFactory p_selectorFactory,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
-	std::shared_ptr<Plugin::IPathsSelector> p_dirsSelector,
-	std::shared_ptr<Plugin::IPathsSelector> p_filesSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader,
     IConfiguration& p_config,
 	GetTagSearchMatcher p_tagSearchMatcherFactory)
  : m_editor(p_editor),
    m_ui(p_ui),
-   m_pathGetter(p_pathGetter),
-   m_dirsSelector(p_dirsSelector),
-   m_filesSelector(p_filesSelector),
+   m_files(p_files),
    m_config(p_config),
    m_tagSearchMatcherFactory(p_tagSearchMatcherFactory),
    m_locationsNavigator(m_editor),
@@ -62,7 +57,7 @@ void CTagsController::next()
     {
         m_locationsNavigator.goToNextLocation();
     }
-    catch (Plugin::LocationSetterException& e)
+    catch (Plugin::OpenFileException& e)
     {
 		LOG_WARN << "Error during go to next tag: " << typeid(e).name() << ". Details: " << e.what();
 		m_ui.errorMessage("Next Tag", e.what());
@@ -75,7 +70,7 @@ void CTagsController::previous()
     {
         m_locationsNavigator.goToPreviousLocaton();
     }
-    catch (Plugin::LocationSetterException& e)
+    catch (Plugin::OpenFileException& e)
     {
 		LOG_WARN << "Error during go to previous tag: " << typeid(e).name() << ". Details: " << e.what();
 		m_ui.errorMessage("Previous Tag", e.what());
@@ -156,8 +151,8 @@ std::string CTagsController::getCurrentWord() const
 
 void CTagsController::setTagFiles()
 {
-    std::vector<std::string> l_tagFiles = 
-        m_filesSelector->select(m_config.getTagsFilesPaths(), m_config.getTagsFilesPaths().front());
+	std::vector<std::string> l_tagFiles =
+		m_files.selectFilesPaths(m_config.getTagsFilesPaths(), m_config.getTagsFilesPaths().front());
     if(!l_tagFiles.empty())
         m_config.setTagsFilesPaths(l_tagFiles);
     else
@@ -190,8 +185,8 @@ void CTagsController::clear()
 
 std::vector<std::string> CTagsController::getSourceDirs() const
 {
-    std::vector<std::string> l_projectDirs = m_dirsSelector->select(std::vector<std::string>(),
-                                                                    getFileDir(m_editor.getFile()));
+    std::vector<std::string> l_projectDirs = m_files.selectDirsPaths(std::vector<std::string>(),
+                                                                     getFileDir(m_editor.getFile()));
 	if(l_projectDirs.empty())
 		throw Plugin::UserInputError("Source folders not specified");
     return l_projectDirs;
@@ -199,7 +194,7 @@ std::vector<std::string> CTagsController::getSourceDirs() const
 
 std::string CTagsController::getTargetFile() const
 {
-    std::string l_tagsFilePath = m_pathGetter->getFilePath("Output file");
+    std::string l_tagsFilePath = m_files.getFilePath("Output file");
     if(l_tagsFilePath.empty())
         throw Plugin::UserInputError("Target tags file not specified");
     return l_tagsFilePath;

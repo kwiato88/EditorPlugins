@@ -1,5 +1,5 @@
 #include "NppEditor.hpp"
-#include "LocationSettetException.hpp"
+#include "OpenFileException.hpp"
 #include "Notepad_plus_msgs.h"
 #include "Scintilla.h"
 
@@ -61,10 +61,7 @@ void Editor::setFile(const std::string& p_filePath)
 	TCHAR filePath[_MAX_PATH];
 	mbstowcs(filePath, p_filePath.c_str(), _MAX_PATH - 1);
 	if (!::SendMessage(npp, NPPM_DOOPEN, 0, (LPARAM)filePath))
-	{
-		//TODO: rename this exception
-		throw Plugin::LocationSetterException("Can't open file: " + p_filePath);
-	}
+		throw Plugin::OpenFileException("Editor can't open file: " + p_filePath);
 }
 
 void Editor::setLine(int p_line)

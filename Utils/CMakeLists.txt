@@ -10,11 +10,10 @@ add_library(
     Source/ShellCommand.cpp
     Source/NppEditor.cpp
     Source/WinApiUI.cpp
+    Source/WinApiUIFileSystem.cpp
     Source/Logger.cpp
     Source/Log.cpp
     Source/NppPlugin.cpp
-    Source/NppPathGetter.cpp
-    Source/NppPathsSelector.cpp
     Source/MessageHandler.cpp
 )
 
