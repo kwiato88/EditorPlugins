@@ -28,6 +28,7 @@ add_library(
     Source/Plugin.cpp
     Source/CTags.cpp
     Source/NppIncludes.cpp
+    Source/NppFiles.cpp
     Resource/ProjectPluginDetail.rc
     ../WinApi/Resource/GridDialog.rc
     ../WinApi/Resource/QueryDialog.rc
@@ -42,6 +43,7 @@ target_include_directories(
     ../WinApi/Include
     ../nppCtagPlugin/Include/ExternalInterface
     ../nppIncludeBrowser/Include/ExternalInterface
+    ../nppOpenFile/Include/ExternalInterface
     Include
     D:/boost_1_61_0
 )
@@ -53,6 +55,7 @@ add_dependencies(
     winApiUtils
     nppCTagsExternalIf
     nppIncludeBrowserExternalIf
+    nppOpenFileExternalIf
 )
 
 target_link_libraries(
@@ -62,6 +65,7 @@ target_link_libraries(
     winApiUtils
     nppCTagsExternalIf
     nppIncludeBrowserExternalIf
+    nppOpenFileExternalIf
     comctl32
 )
 

@@ -3,6 +3,7 @@
 #include "Plugin.hpp"
 #include "CTags.hpp"
 #include "NppIncludes.hpp"
+#include "NppFiles.hpp"
 
 extern NppPlugin::ProjectPlugin g_plugin;
 
@@ -35,7 +36,8 @@ void ProjectPlugin::onNppHandleSet()
 	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
 	workspace->enable(workspacePath,
 		std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
-		std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui));
+		std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui),
+        std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui));
 }
 
 void ProjectPlugin::initMenu()

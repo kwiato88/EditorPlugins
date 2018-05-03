@@ -51,7 +51,8 @@ void SwitchableWorkspace::refreshProject()
 
 void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
 	std::unique_ptr<ITags> p_tags,
-	std::unique_ptr<IIncludes> p_inc)
+	std::unique_ptr<IIncludes> p_inc,
+    std::unique_ptr<IFiles> p_files)
 {
 	try
 	{
@@ -62,7 +63,7 @@ void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
 			validWorkspace = std::make_unique<ProjectMgmt::Workspace>(
 				std::move(p_tags),
 				std::move(p_inc),
-				std::move(std::make_unique<DisabledFiles>()),//TODO: user real dependancy
+				std::move(p_files),
 				ui,
 				p_workspaceDirPath);
 		}

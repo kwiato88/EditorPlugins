@@ -6,6 +6,7 @@
 #include "Workspace.hpp"
 #include "ITags.hpp"
 #include "IIncludes.hpp"
+#include "IFiles.hpp"
 #include "UI.hpp"
 
 namespace ProjectMgmt
@@ -35,7 +36,8 @@ public:
 
     void enable(const std::string& p_workspaceDirPath,
 		std::unique_ptr<ITags> p_tags,
-		std::unique_ptr<IIncludes> p_inc);
+		std::unique_ptr<IIncludes> p_inc,
+        std::unique_ptr<IFiles> p_files);
     void disable();
 
 private:
