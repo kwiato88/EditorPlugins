@@ -5,6 +5,24 @@
 
 namespace WinApi
 {
+namespace
+{
+template <SelectorType selector>
+std::vector<std::string> selectPaths(
+	const std::vector<std::string>& p_initialPaths,
+	const std::string& p_startingPath,
+	WinApi::Handle& p_parrent,
+	WinApi::InstanceHandle& p_hModule)
+{
+	WinApi::SelectPathsDialog<selector> dialog(p_hModule, p_parrent);
+	dialog.setInitalPath(p_startingPath);
+	dialog.setPaths(p_initialPaths);
+	if (dialog.show() == WinApi::Dialog::RESULT_OK)
+		return dialog.getPaths();
+	else
+		return p_initialPaths;
+}
+}
 
 UIFileSystem::UIFileSystem(WinApi::Handle& p_parrent, WinApi::InstanceHandle& p_hModule)
  : parrent(p_parrent), hModule(p_hModule)
@@ -36,26 +54,14 @@ std::vector<std::string> UIFileSystem::selectFilesPaths(
     const std::vector<std::string>& p_initialPaths,
     const std::string& p_startingPath)
 {
-    WinApi::SelectPathsDialog<WinApi::SelectorType::Directory> dialog(hModule, parrent);
-    dialog.setInitalPath(p_startingPath);
-    dialog.setPaths(p_initialPaths);
-    if(dialog.show() == WinApi::Dialog::RESULT_OK)
-        return dialog.getPaths();
-    else
-        return p_initialPaths;
+	return selectPaths<WinApi::SelectorType::File>(p_initialPaths, p_startingPath, parrent, hModule);
 }
 
 std::vector<std::string> UIFileSystem::selectDirsPaths(
     const std::vector<std::string>& p_initialPaths,
     const std::string& p_startingPath)
 {
-    WinApi::SelectPathsDialog<WinApi::SelectorType::File> dialog(hModule, parrent);
-    dialog.setInitalPath(p_startingPath);
-    dialog.setPaths(p_initialPaths);
-    if(dialog.show() == WinApi::Dialog::RESULT_OK)
-        return dialog.getPaths();
-    else
-        return p_initialPaths;
+	return selectPaths<WinApi::SelectorType::Directory>(p_initialPaths, p_startingPath, parrent, hModule);
 }
 
 }

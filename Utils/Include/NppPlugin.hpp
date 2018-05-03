@@ -77,7 +77,7 @@ protected:
 	virtual void init() {}
 	
 	/**
-	* Called after handle to Noptepad++ and Scitilla are set to valid value in npp.
+	* Called after handle to Noptepad++ and Scitilla are set to valid value in npp. Both hModule and npp are valid
 	*/
 	virtual void onNppHandleSet() {}
 
@@ -88,6 +88,7 @@ protected:
 
 	/**
 	* Initialize plugin commands(funcItems). Use setCommand, setSeparator functions.
+	* hModule and npp has already valid values of handles set
 	*/
 	virtual void initMenu() {}
 
