@@ -8,7 +8,15 @@ Page: https://kwiato88.github.io/EditorPlugins/
 
 Recursively search for file by regex in specified directories.  
 Functions:
- * list and jump to file with name matching given regex.
+ * list and jump to file with name matching given regex;
+ * provides interface for other plugins.
+
+
+## Open file plugin client
+
+Includes static library that should be used to send commands 
+to open file plugin from other plugin. Library uses boost libraries 
+in version 1.61.0. Client plugin needs to link required boost libraries.
 
 
 ## Include browser plugin
@@ -80,7 +88,7 @@ ctagsPath=D:\ctags\ctags.exe
 ### Configuration:
 Plugin has a configuration file (nppCTagPlugin.ini) in Notepad++ plugins
 configuration directory. __Do not modify configuration file while Notepad++
-is running__. All you changes will be overridden by plugin on exit.
+is running__. All your changes will be overridden by plugin on exit.
 
 __Example configuration file:__
 ```
@@ -156,3 +164,21 @@ Includes static library that should be used to send commands to CTags plugin
 from other plugin. Library uses boost libraries in version 1.61.0. 
 Includes also example plugin using provided library. Client plugin needs 
 to link required boost libraries.
+
+
+ ## Project plugin
+
+Adds project management functionality to Notepad++.
+
+### Functions:
+ * open/close project;
+ * new project;
+ * refresh project;
+
+Synchronise other plugins work. Configures plugins in this repositry
+to parse directories configured in project. Plugin uses messsages interface
+of other plugins.
+Requires installed plugins:
+ * Open file plugin;
+ * Include browser plugin;
+ * CTags plugin.

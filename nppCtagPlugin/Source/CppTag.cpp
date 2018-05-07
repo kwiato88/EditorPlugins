@@ -73,6 +73,10 @@ class CppTag::Name
 {
 public:
 	Name(const std::string& p_name) : name(p_name) {}
+	std::string string() const
+	{
+		return name;
+	}
 	Name parent() const
 	{
 		std::size_t lastSeparatorPosition = name.rfind(separator);
