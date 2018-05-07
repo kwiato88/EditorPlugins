@@ -174,9 +174,9 @@ TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameWithinNamespaceNotMatch
 
 TEST(CppTagTS, isDerivedShouldReturnTrueWhanBaseIsDefinedInParentNamespace)
 {
-	ASSERT_FALSE(buildTag("N1::N2::C1", { "C2" }).isDerived(buildTag("N1::C2")));
-	ASSERT_FALSE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::N2::C2")));
-	ASSERT_FALSE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::C2")));
+	ASSERT_TRUE(buildTag("N1::N2::C1", { "C2" }).isDerived(buildTag("N1::C2")));
+	ASSERT_TRUE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::N2::C2")));
+	ASSERT_TRUE(buildTag("N1::N2::N3::C1", { "C2" }).isDerived(buildTag("N1::C2")));
 }
 
 TEST(CppTagTS, isDerivedShouldReturnFaleWhenBaseClassNameCaseNotMatched)

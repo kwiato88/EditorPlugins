@@ -103,12 +103,21 @@ public:
 	}
 	bool endsWith(const Name& p_other) const
 	{
-		std::string expectedEnding = separator + p_other.name;
+		const std::string& expectedEnding = separator + p_other.name;
 		return (expectedEnding.length() <= name.length()) &&
 			name.compare(
 				name.length() - expectedEnding.length(),
 				expectedEnding.length(),
 				expectedEnding) == 0;
+	}
+	bool beginsWith(const Name& p_other) const
+	{
+		const std::string& expectedBegining = p_other.name + separator;
+		return (expectedBegining.length() <= name.length()) &&
+			name.compare(
+				0,
+				expectedBegining.length(),
+				expectedBegining) == 0;
 	}
 	bool isEmpty() const
 	{
@@ -193,6 +202,7 @@ bool CppTag::isBaseClass(const Name& p_baseClass, const Name& p_otherClass) cons
 		|| (p_otherClass.endsWith(p_baseClass)
 		    && (p_otherClass.parent() == own.parent()
 				|| (own.parent() + p_baseClass.parent()) == p_otherClass.parent()
+				|| (own.beginsWith(p_otherClass.parent()))
 				)
 			);
 }
