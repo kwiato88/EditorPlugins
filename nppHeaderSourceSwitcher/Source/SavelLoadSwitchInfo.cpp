@@ -44,38 +44,43 @@ FileSwitchInfo buildSwitchInfo(const boost::property_tree::ptree& p_config)
 	return info;
 }
 
-void addInfo(std::vector<FileSwitchInfo>& p_out, const boost::property_tree::ptree& p_config, int p_idx)
+class SwitchInfoLoader
 {
-	try
+public:
+	std::vector<FileSwitchInfo> result;
+	std::vector<std::string> errors;
+
+	void parse(const boost::property_tree::ptree& p_config)
 	{
-		auto config = buildSwitchInfo(p_config);
-		assertInfoIsValid(config);
-		p_out.push_back(config);
+		try
+		{
+			auto config = buildSwitchInfo(p_config);
+			assertInfoIsValid(config);
+			result.push_back(config);
+		}
+		catch (std::exception& e)
+		{
+			errors.push_back(std::string("Ignoring config ") + std::to_string(configCount) + ". " + e.what());
+		}
+		configCount++;
 	}
-	catch (std::exception& e)
-	{
-		//TODO: print error
-	}
-}
+
+private:
+	int configCount = 0;
+};
+
 std::vector<FileSwitchInfo> load(const Path& p_file)
 {
 	boost::property_tree::ptree config;
 	boost::property_tree::json_parser::read_json(p_file, config);
-	std::vector<FileSwitchInfo> switchInfo;
-	int configIndex = 0;
+	SwitchInfoLoader loader;
 	for (const auto& item : config.get_child("items"))
-		addInfo(switchInfo, item.second, configIndex++);
-	return switchInfo;
+		loader.parse(item.second);
+	return loader.result;
 }
 
-boost::property_tree::ptree toPtree(const std::string& p_str)
-{
-	boost::property_tree::ptree tree;
-	tree.put("", p_str);
-	return tree;
-}
-
-boost::property_tree::ptree toPtree(const std::vector<std::string>& p_vec)
+template<typename Container>
+boost::property_tree::ptree toPtree(const Container& p_vec)
 {
 	boost::property_tree::ptree tree;
 	for (const auto& item : p_vec)
@@ -83,7 +88,16 @@ boost::property_tree::ptree toPtree(const std::vector<std::string>& p_vec)
 	return tree;
 }
 
-boost::property_tree::ptree toPtree(const ExtensionConvMap::value_type& p_conv)
+template<>
+boost::property_tree::ptree toPtree<std::string>(const std::string& p_str)
+{
+	boost::property_tree::ptree tree;
+	tree.put("", p_str);
+	return tree;
+}
+
+template<>
+boost::property_tree::ptree toPtree<ExtensionConvMap::value_type>(const ExtensionConvMap::value_type& p_conv)
 {
 	boost::property_tree::ptree tree;
 	tree.put("sourceExtension", p_conv.first);
@@ -91,15 +105,8 @@ boost::property_tree::ptree toPtree(const ExtensionConvMap::value_type& p_conv)
 	return tree;
 }
 
-boost::property_tree::ptree toPtree(const ExtensionConvMap& p_conv)
-{
-	boost::property_tree::ptree tree;
-	for (const auto& item : p_conv)
-		tree.push_back(std::make_pair("", toPtree(item)));
-	return tree;
-}
-
-boost::property_tree::ptree toPtree(const DirConvVector::value_type& p_dirConv)
+template<>
+boost::property_tree::ptree toPtree<DirConvVector::value_type>(const DirConvVector::value_type& p_dirConv)
 {
 	boost::property_tree::ptree tree;
 	tree.put("name1", p_dirConv.first);
@@ -107,15 +114,8 @@ boost::property_tree::ptree toPtree(const DirConvVector::value_type& p_dirConv)
 	return tree;
 }
 
-boost::property_tree::ptree toPtree(const DirConvVector& p_conv)
-{
-	boost::property_tree::ptree tree;
-	for (const auto& item : p_conv)
-		tree.push_back(std::make_pair("", toPtree(item)));
-	return tree;
-}
-
-boost::property_tree::ptree toPtree(const FileSwitchInfo& p_info)
+template<>
+boost::property_tree::ptree toPtree<FileSwitchInfo>(const FileSwitchInfo& p_info)
 {
 	boost::property_tree::ptree tree;
 	tree.add_child("sourceExtensions", toPtree(p_info.soureExtensions));
@@ -124,14 +124,6 @@ boost::property_tree::ptree toPtree(const FileSwitchInfo& p_info)
 	tree.add_child("headerToSourceExt", toPtree(p_info.headerToSourceExt));
 	tree.add_child("sourceToHeaderDir", toPtree(p_info.sourceToHeaderDir));
 	tree.add_child("headerToSourceDir", toPtree(p_info.headerToSourceDir));
-	return tree;
-}
-
-boost::property_tree::ptree toPtree(const std::vector<FileSwitchInfo>& p_info)
-{
-	boost::property_tree::ptree tree;
-	for (const auto& item : p_info)
-		tree.push_back(std::make_pair("", toPtree(item)));
 	return tree;
 }
 
