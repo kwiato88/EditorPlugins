@@ -72,7 +72,6 @@ private:
 	void createTagsController();
 	void loadConfigFile();
 	void setLoggerParams();
-	std::string getPluginsConfigDir();
 	std::shared_ptr<CTagsPlugin::ITagsSelector> buildListViewSelector();
 	std::shared_ptr<CTagsPlugin::ITagsSelector> buildGridViewSelector();
 	std::shared_ptr<CTagsPlugin::ITagsSelector> buildTagsSelector();

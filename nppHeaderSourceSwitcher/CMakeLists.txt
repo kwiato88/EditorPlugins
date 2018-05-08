@@ -14,6 +14,8 @@ add_library(
     Source/SavelLoadSwitchInfo.cpp
     # RESOURCES
     Resource/HeaderSourcePluginDetail.rc
+    ../WinApi/Resource/GridDialog.rc
+    ../WinApi/Resource/QueryDialog.rc
 )
 
 target_include_directories(
@@ -37,6 +39,7 @@ target_link_libraries(
     nppHeaderSourceSwitcher
     nppUtils
     winApiUtils
+    comctl32
 )
 
 add_executable(

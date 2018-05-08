@@ -72,12 +72,12 @@ protected:
 	* Notepad++ authores advise to initialize plugin data here. Called when plugin is loaded.
 	* Note:
 	*   - hModule already has valid value set;
-	*   - npp does not have valid handle to Noptepad++ and Scitilla set yet. Those will be valid since onNppHandleSet is called;
+	*   - npp does not have valid handle to Noptepad++ and Scitilla set yet. Those will be valid since onNppHandleSet is called.
 	*/
 	virtual void init() {}
 	
 	/**
-	* Called after handle to Noptepad++ and Scitilla are set to valid value in npp. Both hModule and npp are valid
+	* Called after handle to Noptepad++ and Scitilla are set to valid value in npp. Both hModule and npp are valid.
 	*/
 	virtual void onNppHandleSet() {}
 
@@ -88,7 +88,7 @@ protected:
 
 	/**
 	* Initialize plugin commands(funcItems). Use setCommand, setSeparator functions.
-	* hModule and npp has already valid values of handles set
+	* hModule and npp has already valid values of handles set.
 	*/
 	virtual void initMenu() {}
 
@@ -118,6 +118,19 @@ protected:
 	void setSeparator()
 	{
 		setCommand(TEXT("-----"), NULL, NULL);
+	}
+
+	/**
+	* Returns string with absolute path to plugins config dir (privided by npp message NPPM_GETPLUGINSCONFIGDIR).
+	* Does not include '\' at end.
+	*/
+	std::string getPluginsConfigDir()
+	{
+		TCHAR configDirPath[_MAX_PATH];
+		::SendMessage(npp.npp, NPPM_GETPLUGINSCONFIGDIR, (WPARAM)_MAX_PATH, (LPARAM)configDirPath);
+		char configDirPathBuff[_MAX_PATH];
+		wcstombs(configDirPathBuff, configDirPath, _MAX_PATH - 1);
+		return configDirPathBuff;
 	}
 
 private:

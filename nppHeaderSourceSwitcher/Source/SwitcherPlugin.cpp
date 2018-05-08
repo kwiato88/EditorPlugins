@@ -17,6 +17,10 @@ void fun_switchFile()
 
 static ShortcutKey switchFileSk = {false, false, false, VK_F9};
 
+SwitcherPlugin::SwitcherPlugin()
+	: switcher(npp, ui)
+{}
+
 void SwitcherPlugin::initMenu()
 {
 	setCommand(TEXT("Header <-> Source"), fun_switchFile, &switchFileSk);
@@ -24,7 +28,18 @@ void SwitcherPlugin::initMenu()
 
 void SwitcherPlugin::switchFile()
 {
-	HeaderSourceSwitcher::switchFile(npp);
+	switcher.switchFile();
+}
+
+void SwitcherPlugin::onShoutdown()
+{
+	switcher.saveConfig(configFilePath);
+}
+
+void SwitcherPlugin::onNppHandleSet()
+{
+	configFilePath = getPluginsConfigDir() + "\\nppHeaderSourceSwitcher.json";
+	switcher.loadConfig(configFilePath);
 }
 
 } // namespace NppPlugin

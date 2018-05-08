@@ -147,15 +147,6 @@ void TagsPlugin::loadConfigFile()
     m_config.loadConfigFile(m_configFilePath);
 }
 
-std::string TagsPlugin::getPluginsConfigDir()
-{
-    TCHAR l_configDirPath[_MAX_PATH];
-    ::SendMessage(npp.npp, NPPM_GETPLUGINSCONFIGDIR , (WPARAM)_MAX_PATH, (LPARAM)l_configDirPath);
-    char l_configDirPathBuff[_MAX_PATH];
-    wcstombs(l_configDirPathBuff, l_configDirPath, _MAX_PATH - 1);
-    return l_configDirPathBuff;
-}
-
 void TagsPlugin::createTagsController()
 {
     m_tagsController.reset(new CTagsPlugin::CTagsController(
