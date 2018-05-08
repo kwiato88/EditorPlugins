@@ -28,6 +28,7 @@ struct FileSwitchInfo
 
 bool operator==(const FileSwitchInfo& p_lhs, const FileSwitchInfo& p_rhs);
 bool exists(const Path& p_file);
+std::string getExtension(const Path& p_file);
 std::string switchFile(Path p_file, const FileSwitchInfo& p_info, Exists p_fileExists = exists);
 
 bool validate(const FileSwitchInfo& info);

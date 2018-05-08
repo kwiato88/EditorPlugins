@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "SwitcherFunction.hpp"
 #include "OpenFileException.hpp"
 #include "SwitchFile.hpp"
@@ -43,12 +44,28 @@ Switcher::Switcher(Plugin::Editor& p_editor, Plugin::UI& p_ui)
 	: editor(p_editor), ui(p_ui), config({ buildCCppSwitchInfo() })
 {}
 
+FileSwitchInfo Switcher::getConfig(const std::string& p_fileExtension)
+{
+	auto relevantConfig = std::find_if(config.begin(), config.end(),
+		[&](const auto& c)
+		{
+			auto sourceExtFound = 
+				std::find(c.soureExtensions.begin(), c.soureExtensions.end(), p_fileExtension) != c.soureExtensions.end();
+			auto headerExtFound =
+				std::find(c.headerExtensions.begin(), c.headerExtensions.end(), p_fileExtension) != c.headerExtensions.end();
+			return sourceExtFound || headerExtFound;
+		});
+	if (relevantConfig != config.end())
+		return *relevantConfig;
+	return config.at(0);
+}
+
 void Switcher::switchFile()
 {
 	try
 	{
-		//TODO: allow to use multiple config items
-		std::string fileToSet = HeaderSourceSwitcher::switchFile(editor.getFile(), config.at(0));
+		auto file = editor.getFile();
+		std::string fileToSet = HeaderSourceSwitcher::switchFile(file, getConfig(getExtension(file)));
 		editor.setFile(fileToSet);
 	}
 	catch (Plugin::OpenFileException&)
