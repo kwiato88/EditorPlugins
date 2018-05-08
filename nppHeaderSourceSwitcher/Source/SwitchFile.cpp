@@ -90,7 +90,7 @@ std::list<Switcher> buildHeaderToSourceSwitchers(const FileSwitchInfo& p_info)
 std::string switchFile(Path p_file, const FileSwitchInfo& p_info, Exists p_fileExists)
 {
     fileExists = p_fileExists;
-    if(isFileWithExtension(p_file, p_info.soureExtensions))
+    if(isFileWithExtension(p_file, p_info.sourceExtensions))
         return switchPath(p_file, buildSourceToHeaderSwitchers(p_info));
     if(isFileWithExtension(p_file, p_info.headerExtensions))
         return switchPath(p_file, buildHeaderToSourceSwitchers(p_info));
@@ -133,7 +133,7 @@ boost::optional<std::string> switchExtension(const Path& p_file, const Extension
 
 bool operator==(const FileSwitchInfo& p_lhs, const FileSwitchInfo& p_rhs)
 {
-	return p_lhs.soureExtensions == p_rhs.soureExtensions
+	return p_lhs.sourceExtensions == p_rhs.sourceExtensions
 		&& p_lhs.headerExtensions == p_rhs.headerExtensions
 		&& p_lhs.sourceToHeaderDir == p_rhs.sourceToHeaderDir
 		&& p_lhs.headerToSourceDir == p_rhs.headerToSourceDir
@@ -195,7 +195,7 @@ std::list<Validator> buildValidators()
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            if(!isConversionDefinedForExtensions(info.soureExtensions, info.sourceToHeaderExt))
+            if(!isConversionDefinedForExtensions(info.sourceExtensions, info.sourceToHeaderExt))
 				throw std::runtime_error("All source extensions given in soureExtensions must have conversion to header extension defined in sourceToHeaderExt");
         });
     validators.push_back(

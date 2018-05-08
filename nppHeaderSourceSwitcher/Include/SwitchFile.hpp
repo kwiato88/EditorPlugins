@@ -18,7 +18,7 @@ typedef std::function<bool(const Path&)> Exists;
 
 struct FileSwitchInfo
 {
-    std::vector<std::string> soureExtensions;
+    std::vector<std::string> sourceExtensions;
     std::vector<std::string> headerExtensions;
     ExtensionConvMap sourceToHeaderExt;
     ExtensionConvMap headerToSourceExt;

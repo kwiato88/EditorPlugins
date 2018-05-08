@@ -35,7 +35,7 @@ DirConvVector toDirConv(const boost::property_tree::ptree& p_config)
 FileSwitchInfo buildSwitchInfo(const boost::property_tree::ptree& p_config)
 {
 	FileSwitchInfo info;
-	info.soureExtensions = toStrVec(p_config.get_child("sourceExtensions"));
+	info.sourceExtensions = toStrVec(p_config.get_child("sourceExtensions"));
 	info.headerExtensions = toStrVec(p_config.get_child("headerExtensions"));
 	info.sourceToHeaderExt = toExtConv(p_config.get_child("sourceToHeaderExt"));
 	info.headerToSourceExt = toExtConv(p_config.get_child("headerToSourceExt"));
@@ -118,7 +118,7 @@ template<>
 boost::property_tree::ptree toPtree<FileSwitchInfo>(const FileSwitchInfo& p_info)
 {
 	boost::property_tree::ptree tree;
-	tree.add_child("sourceExtensions", toPtree(p_info.soureExtensions));
+	tree.add_child("sourceExtensions", toPtree(p_info.sourceExtensions));
 	tree.add_child("headerExtensions", toPtree(p_info.headerExtensions));
 	tree.add_child("sourceToHeaderExt", toPtree(p_info.sourceToHeaderExt));
 	tree.add_child("headerToSourceExt", toPtree(p_info.headerToSourceExt));

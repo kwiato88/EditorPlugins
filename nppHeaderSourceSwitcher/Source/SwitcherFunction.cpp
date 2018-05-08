@@ -16,7 +16,7 @@ FileSwitchInfo buildCCppSwitchInfo()
 	std::vector<std::string> cppHeaderEx = { "hpp", "hh" };
 	std::vector<std::string> cHeaderEx = { "h" };
 	
-	c_cpp_switch_info.soureExtensions = { "cpp", "cc", "c" };
+	c_cpp_switch_info.sourceExtensions = { "cpp", "cc", "c" };
 	c_cpp_switch_info.headerExtensions = {"hpp", "hh", "h"};
 
 	c_cpp_switch_info.sourceToHeaderExt = {
@@ -50,7 +50,7 @@ FileSwitchInfo Switcher::getConfig(const std::string& p_fileExtension)
 		[&](const auto& c)
 		{
 			auto sourceExtFound = 
-				std::find(c.soureExtensions.begin(), c.soureExtensions.end(), p_fileExtension) != c.soureExtensions.end();
+				std::find(c.sourceExtensions.begin(), c.sourceExtensions.end(), p_fileExtension) != c.sourceExtensions.end();
 			auto headerExtFound =
 				std::find(c.headerExtensions.begin(), c.headerExtensions.end(), p_fileExtension) != c.headerExtensions.end();
 			return sourceExtFound || headerExtFound;

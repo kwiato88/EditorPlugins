@@ -20,7 +20,7 @@ struct ValidateTS: public Test
     static FileSwitchInfo buildValidSwitchInfo()
     {
         FileSwitchInfo switchInfo;
-		switchInfo.soureExtensions = { "s1", "s2", "s3" };
+		switchInfo.sourceExtensions = { "s1", "s2", "s3" };
 		switchInfo.headerExtensions = { "h1", "h2", "h3" };
 		std::vector<std::string> h1h2{ "h1", "h2" };
 		std::vector<std::string> h3{ "h3" };
