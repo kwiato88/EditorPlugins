@@ -130,7 +130,19 @@ boost::optional<std::string> switchExtension(const Path& p_file, const Extension
     return replaceExtension(p_file, p_convMap.find(getExtension(p_file))->second);
 }
 
-typedef std::function<bool(const FileSwitchInfo&)> Validator;
+
+bool operator==(const FileSwitchInfo& p_lhs, const FileSwitchInfo& p_rhs)
+{
+	return p_lhs.soureExtensions == p_rhs.soureExtensions
+		&& p_lhs.headerExtensions == p_rhs.headerExtensions
+		&& p_lhs.sourceToHeaderDir == p_rhs.sourceToHeaderDir
+		&& p_lhs.headerToSourceDir == p_rhs.headerToSourceDir
+		&& p_lhs.sourceToHeaderExt == p_rhs.sourceToHeaderExt
+		&& p_lhs.headerToSourceExt == p_rhs.headerToSourceExt;
+}
+
+
+typedef std::function<void(const FileSwitchInfo&)> Validator;
 
 bool isConversionDefinedForExtensions(const std::vector<std::string>& p_extensions, const ExtensionConvMap& p_conversions)
 {
@@ -171,42 +183,59 @@ std::list<Validator> buildValidators()
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return areConversionsNonEmpty(info.sourceToHeaderExt);
+			if (!areConversionsNonEmpty(info.sourceToHeaderExt))
+				throw std::runtime_error("sourceToHeaderExt is invalid. Target extension can't be empty.");
         });
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return areConversionsNonEmpty(info.headerToSourceExt);
+            if(!areConversionsNonEmpty(info.headerToSourceExt))
+				throw std::runtime_error("headerToSourceExt is invalid. Target extension can't be empty.");
         });
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return isConversionDefinedForExtensions(info.soureExtensions, info.sourceToHeaderExt);
+            if(!isConversionDefinedForExtensions(info.soureExtensions, info.sourceToHeaderExt))
+				throw std::runtime_error("All source extensions given in soureExtensions must have conversion to header extension defined in sourceToHeaderExt");
         });
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return isConversionDefinedForExtensions(info.headerExtensions, info.headerToSourceExt);
+			if (!isConversionDefinedForExtensions(info.headerExtensions, info.headerToSourceExt))
+				throw std::runtime_error("All header extensions given in headerExtensions must have conversion to source extension defined in headerToSourceExt");
         });
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return areConversionsNonEmpty(info.sourceToHeaderDir);
+			if (!areConversionsNonEmpty(info.sourceToHeaderDir))
+				throw std::runtime_error("sourceToHeaderDir is invalid. All given conversions must have source and target defined");
         });
     validators.push_back(
         [&](const FileSwitchInfo& info)
         {
-            return areConversionsNonEmpty(info.headerToSourceDir);
+            if(!areConversionsNonEmpty(info.headerToSourceDir))
+				throw std::runtime_error("headerToSourceDir is invalid. All given conversions must have source and target defined");
         });
     return validators;
 }
 
+void assertInfoIsValid(const FileSwitchInfo& info)
+{
+	for (const auto& validator : buildValidators())
+		validator(info);
+}
+
 bool validate(const FileSwitchInfo& info)
 {
-    for(const auto& validator : buildValidators())
-        if(!validator(info))
-            return false;
-    return true;
+	try
+	{
+		assertInfoIsValid(info);
+		return true;
+	}
+	catch (std::exception&)
+	{
+		return false;
+	}
 }
 
 } // namespace HeaderSourceSwitcher

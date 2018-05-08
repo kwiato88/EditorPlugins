@@ -11,6 +11,7 @@ add_library(
     Source/SwitcherPlugin.cpp
     Source/SwitcherFunction.cpp
     Source/SwitchFile.cpp
+    Source/SavelLoadSwitchInfo.cpp
     # RESOURCES
     Resource/HeaderSourcePluginDetail.rc
 )
@@ -41,8 +42,10 @@ target_link_libraries(
 add_executable(
     HeaderSourceSwitchTests
     Source/SwitchFile.cpp
+    Source/SavelLoadSwitchInfo.cpp
     Tests/SwitchFileTS.cpp
     Tests/ValidateTS.cpp
+    Tests/SaveLoadTS.cpp
 )
 
 target_include_directories(

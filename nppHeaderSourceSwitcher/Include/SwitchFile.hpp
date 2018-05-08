@@ -26,10 +26,16 @@ struct FileSwitchInfo
     DirConvVector headerToSourceDir;
 };
 
+bool operator==(const FileSwitchInfo& p_lhs, const FileSwitchInfo& p_rhs);
 bool exists(const Path& p_file);
 std::string switchFile(Path p_file, const FileSwitchInfo& p_info, Exists p_fileExists = exists);
 
 bool validate(const FileSwitchInfo& info);
+
+/**
+* @throws std::runtime_error
+*/
+void assertInfoIsValid(const FileSwitchInfo& info);
 
 } // namespace HeaderSourceSwitcher
 
