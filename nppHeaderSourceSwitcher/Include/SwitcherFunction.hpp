@@ -19,6 +19,9 @@ public:
 
 private:
 
+	void processErrors(const std::vector<std::string>& p_errors);
+	void applyConfig(const std::vector<FileSwitchInfo>& p_config);
+
 	Plugin::Editor& editor;
 	Plugin::UI& ui;
 	std::vector<FileSwitchInfo> config;

@@ -47,6 +47,7 @@ void Switcher::switchFile()
 {
 	try
 	{
+		//TODO: allow to use multiple config items
 		std::string fileToSet = HeaderSourceSwitcher::switchFile(editor.getFile(), config.at(0));
 		editor.setFile(fileToSet);
 	}
@@ -59,14 +60,30 @@ void Switcher::switchFile()
 	}
 }
 
+void Switcher::processErrors(const std::vector<std::string>& p_errors)
+{
+	if(!p_errors.empty())
+		ui.infoMessage("H<->S",
+			std::string("Config file loaded with errors. Number of ignored items ") + std::to_string(p_errors.size()));
+	for (const auto& error : p_errors)
+		ui.infoMessage("H<->S", error);
+}
+
+void Switcher::applyConfig(const std::vector<FileSwitchInfo>& p_config)
+{
+	if (p_config.empty())
+		ui.infoMessage("H<->S", "Loaded config is empty. Using default config.");
+	else
+		config = p_config;
+}
+
 void Switcher::loadConfig(const std::string& p_filePath)
 {
 	try
 	{
-		//TODO: dispaly errors about ignored config items
 		auto loaded = load(p_filePath);
-		if (!loaded.empty())
-			config = loaded;
+		processErrors(loaded.second);
+		applyConfig(loaded.first);
 	}
 	catch (std::exception& e)
 	{
@@ -80,7 +97,7 @@ void Switcher::saveConfig(const std::string& p_filePath)
 	{
 		save(config, p_filePath);
 	}
-	catch (std::exception& e)
+	catch (std::exception&)
 	{
 	}
 }

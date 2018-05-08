@@ -55,7 +55,7 @@ TEST_F(SaveLoadTS, shouldSavelAndLoadConfigWithEmptyDirConversions)
 	config.at(0).headerToSourceDir.clear();
 
 	save(config, tmpConfigFile);
-	auto loaded = load(tmpConfigFile);
+	auto loaded = load(tmpConfigFile).first;
 	ASSERT_EQ(config.size(), loaded.size());
 	ASSERT_EQ(config.at(0), loaded.at(0));
 }
@@ -64,7 +64,7 @@ TEST_F(SaveLoadTS, shouldSavelAndLoadConfig)
 {
 	std::vector<FileSwitchInfo> config = { buildValidSwitchInfo() };
 	save(config, tmpConfigFile);
-	auto loaded = load(tmpConfigFile);
+	auto loaded = load(tmpConfigFile).first;
 	ASSERT_EQ(config.size(), loaded.size());
 	ASSERT_EQ(config.at(0), loaded.at(0));
 }
@@ -73,7 +73,7 @@ TEST_F(SaveLoadTS, shouldSavelAndLoadManyConfigs)
 {
 	std::vector<FileSwitchInfo> config = { buildValidSwitchInfo(), buildValidSwitchInfo() };
 	save(config, tmpConfigFile);
-	auto loaded = load(tmpConfigFile);
+	auto loaded = load(tmpConfigFile).first;
 	ASSERT_EQ(config.size(), loaded.size());
 	ASSERT_EQ(config.at(0), loaded.at(0));
 	ASSERT_EQ(config.at(1), loaded.at(1));
@@ -84,10 +84,15 @@ TEST_F(SaveLoadTS, shouldNotLoadInvalidConfig)
 	auto invalidConfig = buildValidSwitchInfo();
 	invalidConfig.headerToSourceExt.clear();
 	std::vector<FileSwitchInfo> config = { buildValidSwitchInfo(), invalidConfig };
+
 	save(config, tmpConfigFile);
 	auto loaded = load(tmpConfigFile);
-	ASSERT_EQ(1, loaded.size());
-	ASSERT_EQ(config.at(0), loaded.at(0));
+
+	ASSERT_EQ(1, loaded.first.size());
+	ASSERT_EQ(config.at(0), loaded.first.at(0));
+
+	auto errors = loaded.second;
+	ASSERT_FALSE(errors.empty());
 }
 
 }

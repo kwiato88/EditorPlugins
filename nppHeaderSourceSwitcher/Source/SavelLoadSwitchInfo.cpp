@@ -69,14 +69,14 @@ private:
 	int configCount = 0;
 };
 
-std::vector<FileSwitchInfo> load(const Path& p_file)
+std::pair<std::vector<FileSwitchInfo>, std::vector<std::string>> load(const Path& p_file)
 {
 	boost::property_tree::ptree config;
 	boost::property_tree::json_parser::read_json(p_file, config);
 	SwitchInfoLoader loader;
 	for (const auto& item : config.get_child("items"))
 		loader.parse(item.second);
-	return loader.result;
+	return std::make_pair(loader.result, loader.errors);
 }
 
 template<typename Container>

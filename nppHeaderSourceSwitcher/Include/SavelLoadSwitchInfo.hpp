@@ -5,7 +5,7 @@
 namespace HeaderSourceSwitcher
 {
 
-std::vector<FileSwitchInfo> load(const Path& p_file);
+std::pair<std::vector<FileSwitchInfo>, std::vector<std::string>> load(const Path& p_file);
 void save(const std::vector<FileSwitchInfo>& p_info, const Path& p_file);
 
 }
