@@ -34,15 +34,25 @@ public:
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
 		: Project(p_name, p_items, p_tags, p_includes, p_searchFiles),
 		  tags(p_tags), inc(p_includes), files(p_searchFiles),
-		originalTagFiles(p_tags.getTagFiles()), originalSerachDirs(p_searchFiles.getSearchDirs())
+		originalTagFiles(), originalSerachDirs()
 	{
+		if (p_name != getName())
+			throw std::runtime_error(
+				std::string("Loaded Project name is inconsistent. Expected ") + p_name + ". Actual " + getName());
+		originalTagFiles = p_tags.getTagFiles();
+		originalSerachDirs = p_searchFiles.getSearchDirs();
 		refershCodeNavigation();
 	}
-	ProjectWithTagsNavigation(const boost::property_tree::ptree& p_data,
+	ProjectWithTagsNavigation(const std::string& p_name, const boost::property_tree::ptree& p_data,
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
 		: Project(p_data, p_tags, p_includes, p_searchFiles), tags(p_tags), inc(p_includes), files(p_searchFiles),
-		originalTagFiles(p_tags.getTagFiles()), originalSerachDirs(p_searchFiles.getSearchDirs())
+		originalTagFiles(), originalSerachDirs()
 	{
+		if(p_name != getName())
+			throw std::runtime_error(
+				std::string("Loaded Project name is inconsistent. Expected ") + p_name + ". Actual " + getName());
+		originalTagFiles = p_tags.getTagFiles();
+		originalSerachDirs = p_searchFiles.getSearchDirs();
 		refershCodeNavigation();
 	}
 	~ProjectWithTagsNavigation()
@@ -117,11 +127,8 @@ std::unique_ptr<Project> Workspace::open(const std::string& p_projectDirPath) co
 {
     boost::property_tree::ptree projectData;
     boost::property_tree::json_parser::read_json(p_projectDirPath + "\\" + projectFileName, projectData);
-	//TODO: if name is incosistent, there is no name to create project with naviagtion; consider refactoring
-    auto project = std::make_unique<ProjectWithTagsNavigation>(projectData, *tags, *inc, *files);
-	if (getLastComponentName(p_projectDirPath) != project->getName())
-		throw std::runtime_error("Loaded Project name is inconsistent");
-	return std::move(project);
+	return std::move(std::make_unique<ProjectWithTagsNavigation>(
+		getLastComponentName(p_projectDirPath), projectData, *tags, *inc, *files));
 }
 
 void Workspace::openProject()
