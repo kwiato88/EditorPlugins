@@ -169,3 +169,22 @@ Includes static library that should be used to send commands to CTags plugin
 from other plugin. Library uses boost libraries in version 1.61.0. 
 Includes also example plugin using provided library. Client plugin needs 
 to link required boost libraries.
+
+
+ ## Project plugin
+
+Adds project management functionality to Notepad++.
+
+### Functions:
+ * open/close project;
+ * new project;
+ * refresh project;
+
+Synchronises other plugins work. Configures plugins in this repositry
+to parse directories configured in project. Projects are stored
+in workspace dir 'nppProjectMgmtWorkspace'. Path to worksapce dir
+is '%APPDATA%\nppProjectMgmtWorkspace'. Plugin uses messsages interface
+of other plugins. Requires installed plugins:
+ * Open file plugin;
+ * Include browser plugin;
+ * CTags plugin.

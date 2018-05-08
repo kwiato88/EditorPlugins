@@ -33,11 +33,15 @@ ProjectPlugin::ProjectPlugin()
 
 void ProjectPlugin::onNppHandleSet()
 {
-	std::string workspacePath = std::string(std::getenv("APPDATA")) + "\\nppProjectMgmtWorkspace";
-	workspace->enable(workspacePath,
-		std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
-		std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui),
-        std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui));
+	std::string appDataDir(std::getenv("APPDATA"));
+	if (!appDataDir.empty())
+	{
+		std::string workspacePath = appDataDir + "\\nppProjectMgmtWorkspace";
+		workspace->enable(workspacePath,
+			std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
+			std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui),
+			std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui));
+	}
 }
 
 void ProjectPlugin::initMenu()

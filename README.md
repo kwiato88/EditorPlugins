@@ -180,10 +180,11 @@ Adds project management functionality to Notepad++.
  * new project;
  * refresh project;
 
-Synchronise other plugins work. Configures plugins in this repositry
-to parse directories configured in project. Plugin uses messsages interface
-of other plugins.
-Requires installed plugins:
+Synchronises other plugins work. Configures plugins in this repositry
+to parse directories configured in project. Projects are stored
+in workspace dir 'nppProjectMgmtWorkspace'. Path to worksapce dir
+is '%APPDATA%\nppProjectMgmtWorkspace'. Plugin uses messsages interface
+of other plugins. Requires installed plugins:
  * Open file plugin;
  * Include browser plugin;
  * CTags plugin.
