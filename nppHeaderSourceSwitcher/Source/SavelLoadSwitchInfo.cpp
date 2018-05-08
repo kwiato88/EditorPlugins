@@ -27,8 +27,8 @@ DirConvVector toDirConv(const boost::property_tree::ptree& p_config)
 	DirConvVector dirConv = {};
 	for (const auto& item : p_config)
 		dirConv.push_back(std::make_pair(
-			item.second.get<std::string>("name1"),
-			item.second.get<std::string>("name2")));
+			item.second.get<std::string>("source"),
+			item.second.get<std::string>("target")));
 	return dirConv;
 }
 
@@ -109,8 +109,8 @@ template<>
 boost::property_tree::ptree toPtree<DirConvVector::value_type>(const DirConvVector::value_type& p_dirConv)
 {
 	boost::property_tree::ptree tree;
-	tree.put("name1", p_dirConv.first);
-	tree.put("name2", p_dirConv.second);
+	tree.put("source", p_dirConv.first);
+	tree.put("target", p_dirConv.second);
 	return tree;
 }
 
