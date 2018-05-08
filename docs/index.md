@@ -41,15 +41,20 @@ Client plugin needs to link required boost libraries.
 
 ## Header/Source switcher plugin
 
-Switch between header and source file. Supported languages: C/C++.  
-Allowed file extensions mapping:
+Switch between header and source file. Allowed switching is defined
+in configuration file (nppHeaderSourceSwitcher.json in plugins configration dir).
+On first open and close of Notepad++ with plugin configuration file with
+default config will be generated. Allowes seting several extensions mapping
+and optinal several dir mapping  
+Default Supported languages: C/C++.  
+Allowed file extensions mapping for default config:
 
  * .cpp, .cc -> .hpp, .hh
  * .hpp, .hh -> .cpp, .cc
  * .c -> .h
  * .h -> .c
 
-Allowed directories mapping:
+Allowed directories mapping for default config:
 
  * Source -> Include
  * Include -> Source
