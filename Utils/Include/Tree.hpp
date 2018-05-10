@@ -12,6 +12,7 @@ template<typename T>
 class Tree
 {
 public:
+	typedef typename T ValueType;
 	typedef std::function<std::vector<T>(const T&)> Children;
 
 	Tree() : value(), children(), parent(nullptr) {}
