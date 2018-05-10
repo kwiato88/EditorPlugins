@@ -120,7 +120,7 @@ OpenFileResult::Files OpenFilePlugin::handleFindFiles(const OpenFileCommand::Fin
 
 		for (const auto& dir : searchDirs)
 		{
-			auto files = findFiles(p_cmd.fileNamePattern, dir, p_cmd.caseSensitiveSearch);
+			auto files = findFiles(p_cmd.fileNamePattern, dir, p_cmd.caseSensitiveSearch, true);
 			std::transform(files.begin(), files.end(), std::back_inserter(foundFiles),
 				[&](const auto& f) { return f.string(); });
 		}

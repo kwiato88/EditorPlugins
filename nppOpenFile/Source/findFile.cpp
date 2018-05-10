@@ -3,21 +3,16 @@
 #include <regex>
 #include <exception>
 #include <boost/range/algorithm/transform.hpp>
-#include <boost/assign/list_of.hpp>
+#include<boost/tokenizer.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #include "findFile.hpp"
 
 namespace
 {
 
-std::regex buildRegex(const std::string& p_matchString, bool p_isCaseSensitive)
-{
-    if(p_isCaseSensitive)
-        return std::regex(p_matchString);
-    return std::regex(p_matchString, std::regex::icase);
-}
-
-std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_pattern, const std::string& p_dir, bool p_performCaseSensitiveSearch)
+template<typename Condition>
+std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_dir, const Condition& p_cond)
 {
     using namespace boost::filesystem;
     std::vector<path> foundFiles;
@@ -27,18 +22,86 @@ std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_pattern,
     std::copy_if(recursive_directory_iterator(l_sourtceDir),
                  recursive_directory_iterator(),
                  std::back_inserter(foundFiles),
-                 [&](const directory_entry& e){ return is_regular_file(e.path()) && std::regex_match(e.path().filename().string(), buildRegex(p_pattern, p_performCaseSensitiveSearch)); });
+                 [&](const directory_entry& e)
+			     {
+					 return is_regular_file(e.path()) && p_cond.isTrue(e.path().filename().string());
+				 });
 
     return foundFiles;
 }
 
+std::regex buildRegex(const std::string& p_matchString, bool p_isCaseSensitive)
+{
+	if (p_isCaseSensitive)
+		return std::regex(p_matchString);
+	return std::regex(p_matchString, std::regex::icase);
 }
 
-std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir, bool p_performCaseSensitiveSearch)
+struct NameMatchedByRegex
+{
+	NameMatchedByRegex(const std::string& p_pattern, bool p_isCaseSensitive)
+		: reg(std::move(buildRegex(p_pattern, p_isCaseSensitive)))
+	{}
+	std::regex reg;
+
+	bool isTrue(const std::string& p_name) const
+	{
+		return std::regex_match(p_name, reg);
+	}
+};
+
+struct SimpleNameMatchedCaseSensitive
+{
+	SimpleNameMatchedCaseSensitive(const std::string& p_patterns)
+		: patterns(p_patterns)
+	{}
+	std::string patterns;
+
+	bool isTrue(const std::string& p_name) const
+	{
+		boost::tokenizer<> searchItems(patterns);
+		return std::all_of(searchItems.begin(), searchItems.end(),
+			[&](const auto& token)
+			{
+				return p_name.find(token);
+			});
+	}
+};
+
+struct SimpleNameMatched
+{
+	SimpleNameMatched(const std::string& p_patterns)
+		: patterns(p_patterns)
+	{
+		boost::to_lower(patterns);
+	}
+	std::string patterns;
+
+	bool isTrue(const std::string& p_name) const
+	{
+		boost::tokenizer<> searchItems(patterns);
+		auto lowerCaseName = boost::to_lower_copy<std::string>(p_name);
+		return std::all_of(searchItems.begin(), searchItems.end(),
+			[&](const auto& token)
+		{
+			return lowerCaseName.find(token);
+		});
+	}
+};
+
+}
+
+std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir,
+	bool p_performCaseSensitiveSearch,
+	bool p_regualExpresionSearch)
 {
     try
     {
-        return findFilesImpl(p_pattern, p_dir, p_performCaseSensitiveSearch);
+		if(p_regualExpresionSearch)
+			return findFilesImpl(p_dir, NameMatchedByRegex(p_pattern, p_performCaseSensitiveSearch));
+		if(p_performCaseSensitiveSearch)
+			return findFilesImpl(p_dir, SimpleNameMatchedCaseSensitive(p_pattern));
+		return findFilesImpl(p_dir, SimpleNameMatched(p_pattern));
     }
     catch(std::exception&)
     {
@@ -52,8 +115,7 @@ std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::fil
     boost::range::transform(p_files, std::back_inserter(selectionItems),
         [](const boost::filesystem::path& p)
         {
-            std::vector<std::string> elems = boost::assign::list_of(p.filename().string())(p.string());
-            return elems;
+			return std::vector<std::string>{ p.filename().string(), p.string() };
         });
     std::sort(selectionItems.begin(), selectionItems.end(),
         [](const std::vector<std::string>& lhs, const std::vector<std::string>& rhs) { return lhs.at(1) < rhs.at(1); } );

@@ -5,7 +5,9 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir, bool p_performCaseSensitiveSearch);
+std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir,
+	bool p_performCaseSensitiveSearch,
+	bool p_regualExpresionSearch);
 
 std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files);
 

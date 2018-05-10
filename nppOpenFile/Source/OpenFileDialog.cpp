@@ -67,7 +67,7 @@ void OpenFileDialog::onSearchClick()
 	m_gridRows.clear();
 	for (const auto& dir : m_searchDirs)
 		boost::range::copy(
-			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked())),
+			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked(), true)),
 			std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
 }
