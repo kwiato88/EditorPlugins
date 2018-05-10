@@ -32,6 +32,7 @@ private:
     Control::RcFileGrid m_gridControl;
 	Control::Edit m_fileNamePattern;
 	Control::CheckBox m_isCaseSensitiveSearch;
+	Control::CheckBox m_useRegeq;
 
     std::vector<std::string> m_gridLabels;
     std::vector<std::vector<std::string> > m_gridRows;

@@ -37,9 +37,9 @@ std::regex buildRegex(const std::string& p_matchString, bool p_isCaseSensitive)
 	return std::regex(p_matchString, std::regex::icase);
 }
 
-struct NameMatchedByRegex
+struct NameMatchingRegex
 {
-	NameMatchedByRegex(const std::string& p_pattern, bool p_isCaseSensitive)
+	NameMatchingRegex(const std::string& p_pattern, bool p_isCaseSensitive)
 		: reg(std::move(buildRegex(p_pattern, p_isCaseSensitive)))
 	{}
 	std::regex reg;
@@ -50,9 +50,19 @@ struct NameMatchedByRegex
 	}
 };
 
-struct SimpleNameMatchedCaseSensitive
+template<typename T>
+bool contains(const std::string& p_name, const T& p_tokens)
 {
-	SimpleNameMatchedCaseSensitive(const std::string& p_patterns)
+	return std::all_of(p_tokens.begin(), p_tokens.end(),
+		[&](const auto& token)
+		{
+			return p_name.find(token) != std::string::npos;
+		});
+}
+
+struct NameMatchingPatternCaseSensitive
+{
+	NameMatchingPatternCaseSensitive(const std::string& p_patterns)
 		: patterns(p_patterns)
 	{}
 	std::string patterns;
@@ -60,17 +70,13 @@ struct SimpleNameMatchedCaseSensitive
 	bool isTrue(const std::string& p_name) const
 	{
 		boost::tokenizer<> searchItems(patterns);
-		return std::all_of(searchItems.begin(), searchItems.end(),
-			[&](const auto& token)
-			{
-				return p_name.find(token);
-			});
+		return contains(p_name, searchItems);
 	}
 };
 
-struct SimpleNameMatched
+struct NameMatchingPattern
 {
-	SimpleNameMatched(const std::string& p_patterns)
+	NameMatchingPattern(const std::string& p_patterns)
 		: patterns(p_patterns)
 	{
 		boost::to_lower(patterns);
@@ -81,11 +87,7 @@ struct SimpleNameMatched
 	{
 		boost::tokenizer<> searchItems(patterns);
 		auto lowerCaseName = boost::to_lower_copy<std::string>(p_name);
-		return std::all_of(searchItems.begin(), searchItems.end(),
-			[&](const auto& token)
-		{
-			return lowerCaseName.find(token);
-		});
+		return contains(lowerCaseName, searchItems);
 	}
 };
 
@@ -98,10 +100,10 @@ std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, con
     try
     {
 		if(p_regualExpresionSearch)
-			return findFilesImpl(p_dir, NameMatchedByRegex(p_pattern, p_performCaseSensitiveSearch));
+			return findFilesImpl(p_dir, NameMatchingRegex(p_pattern, p_performCaseSensitiveSearch));
 		if(p_performCaseSensitiveSearch)
-			return findFilesImpl(p_dir, SimpleNameMatchedCaseSensitive(p_pattern));
-		return findFilesImpl(p_dir, SimpleNameMatched(p_pattern));
+			return findFilesImpl(p_dir, NameMatchingPatternCaseSensitive(p_pattern));
+		return findFilesImpl(p_dir, NameMatchingPattern(p_pattern));
     }
     catch(std::exception&)
     {

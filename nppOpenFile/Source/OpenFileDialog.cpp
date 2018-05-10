@@ -36,6 +36,7 @@ void OpenFileDialog::onInit()
 	m_fileNamePattern.setFocus();
 	m_fileNamePattern.setSelection(0, m_fileNamePattern.getLineLength(0));
 	m_isCaseSensitiveSearch.init(getItem(ResourceId(ID_OPEN_FILE_IS_CASE_SENSITIVE)));
+	m_useRegeq.init(getItem(ResourceId(ID_OPEN_FILE_IS_REGEQ)));
 }
 
 void OpenFileDialog::onOkClick()
@@ -67,7 +68,7 @@ void OpenFileDialog::onSearchClick()
 	m_gridRows.clear();
 	for (const auto& dir : m_searchDirs)
 		boost::range::copy(
-			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked(), true)),
+			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked())),
 			std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
 }
