@@ -55,27 +55,27 @@ TEST(FindIncludeTS, shouldFindCppIncludeInLineWithSpaces)
 
 TEST(FindIncludeTS, shouldNotFindCppInclude)
 {
-    ASSERT_TRUE(findCppIncludes("").empty());
+	ASSERT_THAT(findCppIncludes(""), ElementsAre());
     
-    ASSERT_TRUE(findCppIncludes("#include<iostream>").empty());
-    ASSERT_TRUE(findCppIncludes("#includ\"iostream\"").empty());
+	ASSERT_THAT(findCppIncludes("#include<iostream>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#includ\"iostream\""), ElementsAre());
 
-    ASSERT_TRUE(findCppIncludes("#include <iostream").empty());
-    ASSERT_TRUE(findCppIncludes("#include iostream>").empty());
+	ASSERT_THAT(findCppIncludes("#include <iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include iostream>"), ElementsAre());
     
-    ASSERT_TRUE(findCppIncludes("#include \"iostream").empty());
-    ASSERT_TRUE(findCppIncludes("#include iostream\"").empty());
+	ASSERT_THAT(findCppIncludes("#include \"iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include iostream\""), ElementsAre());
     
-    ASSERT_TRUE(findCppIncludes("#includeiostream").empty());
-    ASSERT_TRUE(findCppIncludes("#include iostream").empty());
+	ASSERT_THAT(findCppIncludes("#includeiostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include iostream"), ElementsAre());
 
-    ASSERT_TRUE(findCppIncludes("include <iostream>").empty());
-    ASSERT_TRUE(findCppIncludes("#inclide iostream").empty());
+	ASSERT_THAT(findCppIncludes("include <iostream>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#inclide iostream"), ElementsAre());
 
-    ASSERT_TRUE(findCppIncludes("//#inclide iostream").empty());
-    ASSERT_TRUE(findCppIncludes(" // #inclide iostream").empty());
-    ASSERT_TRUE(findCppIncludes("/*#inclide iostream").empty());
-    ASSERT_TRUE(findCppIncludes(" /* #inclide iostream").empty());
+	ASSERT_THAT(findCppIncludes("//#inclide iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes(" // #inclide iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("/*#inclide iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes(" /* #inclide iostream"), ElementsAre());
 }
 
 TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)

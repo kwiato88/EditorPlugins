@@ -6,11 +6,13 @@ namespace IncludeBrowser
 namespace
 {
 
-bool tokenIsDifferent(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token, boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
+bool tokenIsDifferent(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token,
+	boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
 {
 	return p_token == p_end || *p_token != p_value;
 }
-bool tokenIs(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token, boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
+bool tokenIs(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token,
+	boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
 {
 	return p_token == p_end || *p_token == p_value;
 }
