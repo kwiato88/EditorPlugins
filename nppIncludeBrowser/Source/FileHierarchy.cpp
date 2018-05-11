@@ -28,13 +28,13 @@ private:
 
 FileHierarchy buildIncludedHierarchy(const std::string& p_file, const IBrowser& p_files)
 {
-	LimitedCallCount withLimit(1000, [&](const std::string& f) { return p_files.getIncluded(f); });
+	LimitedCallCount withLimit(2000, [&](const std::string& f) { return p_files.getIncluded(f); });
 	return FileHierarchy::buildWithoutCycles(p_file, withLimit, "SKIPPED: cycle in branch");
 }
 
 FileHierarchy buildIncludersHierarchy(const std::string& p_file, const IBrowser& p_files)
 {
-	LimitedCallCount withLimit(1000, [&](const std::string& f) { return p_files.getIncluders(f); });
+	LimitedCallCount withLimit(2000, [&](const std::string& f) { return p_files.getIncluders(f); });
 	return FileHierarchy::buildWithoutCycles(p_file, withLimit, "SKIPPED cycle in branch");
 }
 
