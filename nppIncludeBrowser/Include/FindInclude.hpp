@@ -12,6 +12,7 @@ class FindInclude
 {
 public:
     void operator()(const std::string& p_line);
+	virtual void parse(const std::string& p_line);
 
     std::list<std::string> m_includedFiles;
 

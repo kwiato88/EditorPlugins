@@ -1,5 +1,6 @@
 #include <memory>
 #include <fstream>
+#include <chrono>
 
 #include "IncludeBrowserPlugin.hpp"
 #include "TreeViewFileHierarchySelector.hpp"
@@ -67,7 +68,11 @@ void IncludeBrowserPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void IncludeBrowserPlugin::parse()
 {
+	auto start = std::chrono::steady_clock::now();
     includeBrowser->parse();
+	auto end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> diff = end - start;
+	ui.infoMessage("parse", std::string("parse took ") + std::to_string(diff.count()) + "s");
 }
 
 void IncludeBrowserPlugin::showIncluded()

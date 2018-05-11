@@ -98,17 +98,21 @@ TEST(FindIncludeTS, shouldFindTtcnIncludeInLineWithSpaces)
 {
     ASSERT_THAT(findTtcnIncludes("  import  from    moduleName   all  ;  "), ElementsAre("moduleName.ttcn3"));
     ASSERT_THAT(findTtcnIncludes(" import  from    moduleName  {  function  f_executeAaShellCommand   } ;  "),  ElementsAre("moduleName.ttcn3"));
+	ASSERT_THAT(findTtcnIncludes("  import  from\tmoduleName   all  ;  "), ElementsAre("moduleName.ttcn3"));
 }
 
 TEST(FindIncludeTS, shouldNotFindTtcnInclude)
 {
-    ASSERT_TRUE(findTtcnIncludes("").empty());
-    ASSERT_TRUE(findTtcnIncludes("from module all;").empty());
-    ASSERT_TRUE(findTtcnIncludes("import  module all;").empty());
-    ASSERT_TRUE(findTtcnIncludes("import from all;").empty());
-    ASSERT_TRUE(findTtcnIncludes("import from module;").empty());
-    ASSERT_TRUE(findTtcnIncludes("import frommodule all;").empty());
-    ASSERT_TRUE(findTtcnIncludes("impot from module all;").empty());
+	ASSERT_THAT(findTtcnIncludes(""), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("from module all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("import  module all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("import from all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("import from module;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("import frommodule all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("impot from module all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("//import from moduleName all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("// import from moduleName all;"), ElementsAre());
+	ASSERT_THAT(findTtcnIncludes("/* import from moduleName all;"), ElementsAre());
 }
 
 TEST(FindIncludeTS, shouldFindTtcnIncludeInLineWithInlineComment)
