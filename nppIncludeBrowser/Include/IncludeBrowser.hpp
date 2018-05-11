@@ -29,10 +29,9 @@ private:
 
     std::vector<std::string> findEntry(const std::string& p_key, const FileToFilesMap& p_map) const;
 
-    std::vector<boost::filesystem::path> getSourceFiles(const boost::filesystem::path& p_sourceDir);
     std::vector<std::string> getSelectedExtensions();
     bool hasSelectedExtension(const boost::filesystem::path& p_path, const std::vector<std::string>& p_extensions);
-
+	void parseDir(const boost::filesystem::path& p_sourceDir);
     void parseFile(const boost::filesystem::path& p_filePath);
     void parseLines(const boost::filesystem::path& p_filePath);
     void updateIncludedMap(const boost::filesystem::path& p_filePath);

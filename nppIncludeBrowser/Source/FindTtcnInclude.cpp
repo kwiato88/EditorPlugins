@@ -19,10 +19,6 @@ bool tokenIs(boost::tokenizer<boost::char_separator<char>>::const_iterator p_tok
 
 }
 
-FindTtcnInclude::FindTtcnInclude()
-    : FindInclude(boost::regex("\\s{0,}import\\s{1,}from\\s{1,}(.*?)\\s{1,}(.*?)"))
-{}
-
 void FindTtcnInclude::parse(const std::string& p_line)
 {
 	boost::char_separator<char> sep{ " \t" };
@@ -38,11 +34,6 @@ void FindTtcnInclude::parse(const std::string& p_line)
 	if (++tokenAfterModuleName == tokens.end())
 		return;
 	m_includedFiles.push_back(*token + ".ttcn3");
-}
-
-std::string FindTtcnInclude::toString(const boost::smatch& p_matchedInclude)
-{
-    return p_matchedInclude[1] + ".ttcn3";
 }
 
 } // namespace IncludeBrowser

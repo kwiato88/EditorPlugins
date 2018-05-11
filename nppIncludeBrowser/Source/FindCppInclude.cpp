@@ -24,10 +24,6 @@ std::string extractFile(const std::string& p_token)
 }
 }
 
-FindCppInclude::FindCppInclude()
-    : FindInclude(boost::regex("\\s{0,}#include\\s{1,}(<|\")(.*?)(>|\")(.*?)"))
-{}
-
 void FindCppInclude::parse(const std::string& p_line)
 {
 	if (p_line.find("#include") == std::string::npos)
@@ -42,11 +38,6 @@ void FindCppInclude::parse(const std::string& p_line)
 	auto file = extractFile(*token);
 	if (!file.empty())
 		m_includedFiles.push_back(file);
-}
-
-std::string FindCppInclude::toString(const boost::smatch& p_matchedInclude)
-{
-    return p_matchedInclude[2];
 }
 
 } // namespace IncludeBrowser

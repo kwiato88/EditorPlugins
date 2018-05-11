@@ -9,11 +9,7 @@ namespace IncludeBrowser
 class FindCppInclude : public FindInclude
 {
 public:
-    FindCppInclude();
 	void parse(const std::string& p_line) override;
-
-protected:
-    std::string toString(const boost::smatch& p_matchedInclude);
 };
 
 } // namespace IncludeBrowser

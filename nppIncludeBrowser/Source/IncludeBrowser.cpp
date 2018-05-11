@@ -24,10 +24,24 @@ void Browser::parse(const std::string& p_sourceDir)
     using namespace boost::filesystem;
     m_includers.clear();
     m_included.clear();
-    std::vector<path> l_filteredFiles = getSourceFiles(p_sourceDir);
-    for(const auto& f : l_filteredFiles)
-        parseFile(f);
+
+	if (!exists(p_sourceDir))
+		return ;
+	parseDir(p_sourceDir);
     generateIncludersMap();
+}
+
+void Browser::parseDir(const boost::filesystem::path& p_sourceDir)
+{
+	using namespace boost::filesystem;
+	std::vector<std::string> ext = getSelectedExtensions();
+	for (auto file = recursive_directory_iterator(p_sourceDir); file != recursive_directory_iterator(); ++file)
+	{
+		if (is_regular_file(*file) && hasSelectedExtension(*file, ext))
+		{
+			parseFile(*file);
+		}
+	}
 }
 
 void Browser::parseFile(const boost::filesystem::path& p_filePath)
@@ -44,7 +58,8 @@ void Browser::parseLines(const boost::filesystem::path& p_filePath)
         return;
 
     std::string l_line;
-    for(std::getline(l_file, l_line); !l_file.eof(); std::getline(l_file, l_line))
+	int lineNo = 0;
+    for(std::getline(l_file, l_line); !l_file.eof() && ++lineNo < 500; std::getline(l_file, l_line))
         getParser(p_filePath)(l_line);
 }
 
@@ -81,22 +96,6 @@ void Browser::addIncluder(const std::string& p_includer , const std::string& p_i
     bool l_includeFound = boost::range::find(m_includers[p_included], p_includer) != m_includers[p_included].end();
     if(!l_includeFound)
         m_includers[p_included].push_back(p_includer);
-}
-
-std::vector<boost::filesystem::path> Browser::getSourceFiles(const boost::filesystem::path& p_sourceDir)
-{
-    using namespace boost::filesystem;
-
-    if(!exists(p_sourceDir))
-        return std::vector<path>();
-    std::vector<path> l_sourceFiles;
-    std::vector<std::string> l_ext = getSelectedExtensions();
-    boost::function<bool(const path&)> l_pathPredicate = [&](const path& p){ return is_regular_file(p) && hasSelectedExtension(p, l_ext); };
-    boost::range::copy(
-        boost::make_iterator_range(recursive_directory_iterator(p_sourceDir), recursive_directory_iterator())
-            |  boost::adaptors::filtered(l_pathPredicate),
-        std::back_inserter(l_sourceFiles));
-    return l_sourceFiles;
 }
 
 std::vector<std::string> Browser::getSelectedExtensions()

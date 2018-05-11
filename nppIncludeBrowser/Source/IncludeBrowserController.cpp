@@ -8,6 +8,8 @@
 #include "FindTtcnInclude.hpp"
 #include "OpenFileException.hpp"
 
+#include <chrono>
+
 namespace IncludeBrowser
 {
 
@@ -68,8 +70,12 @@ void Controller::parse()
 	try
 	{
 		std::string sourceDir = getSourceDir();
+		auto start = std::chrono::steady_clock::now();
 		parseIncludes(sourceDir);
-		m_ui.infoMessage("Parse", "Parsing directory " + sourceDir + " finished");
+		auto end = std::chrono::steady_clock::now();
+		std::chrono::duration<double> diff = end - start;
+		m_ui.infoMessage("parse", std::string("parse took ") + std::to_string(diff.count()) + "s");
+		//m_ui.infoMessage("Parse", "Parsing directory " + sourceDir + " finished");
 	}
 	catch (std::runtime_error& e)
 	{

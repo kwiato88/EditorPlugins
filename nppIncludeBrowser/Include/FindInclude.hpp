@@ -3,7 +3,6 @@
 
 #include <list>
 #include <string>
-#include <boost/regex.hpp>
 
 namespace IncludeBrowser
 {
@@ -12,16 +11,9 @@ class FindInclude
 {
 public:
     void operator()(const std::string& p_line);
-	virtual void parse(const std::string& p_line);
+	virtual void parse(const std::string& p_line) = 0;
 
     std::list<std::string> m_includedFiles;
-
-protected:
-    FindInclude(const boost::regex& r);
-    virtual std::string toString(const boost::smatch& p_match) = 0;
-
-private:
-    const boost::regex m_include;
 };
 
 } // namespace IncludeBrowser
