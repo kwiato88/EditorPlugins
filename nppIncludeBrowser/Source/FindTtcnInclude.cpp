@@ -1,39 +1,38 @@
-#include <boost/tokenizer.hpp>
 #include "FindTtcnInclude.hpp"
 
 namespace IncludeBrowser
 {
 namespace
 {
-
-bool tokenIsDifferent(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token,
-	boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
+bool areAllWhiteChars(const std::string& p_str, std::string::size_type p_begin, std::string::size_type p_end)
 {
-	return p_token == p_end || *p_token != p_value;
+	for (auto i = p_begin; i < p_end; ++i)
+		if (p_str[i] != ' ' && p_str[i] != '\t')
+			return false;
+	return true;
 }
-bool tokenIs(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token,
-	boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
-{
-	return p_token == p_end || *p_token == p_value;
-}
-
 }
 
 void FindTtcnInclude::parse(const std::string& p_line)
 {
-	boost::char_separator<char> sep{ " \t" };
-	boost::tokenizer<boost::char_separator<char>> tokens(p_line, sep);
-	auto token = tokens.begin();
-	if (tokenIsDifferent(token, tokens.end(), "import"))
+	auto tokenBegin = p_line.find("import");
+	if (tokenBegin == std::string::npos)
 		return;
-	if (tokenIsDifferent(++token, tokens.end(), "from"))
+	if (!areAllWhiteChars(p_line, 0, tokenBegin))
 		return;
-	if (tokenIs(++token, tokens.end(), "all"))
+	tokenBegin = p_line.find_first_not_of(" \t", tokenBegin + 6);
+	if (tokenBegin == std::string::npos || p_line.compare(tokenBegin, 4, "from") != 0)
 		return;
-	auto tokenAfterModuleName = token;
-	if (++tokenAfterModuleName == tokens.end())
+	auto moduleNameBegin = p_line.find_first_not_of(" \t", tokenBegin + 4);
+	if (moduleNameBegin == std::string::npos || moduleNameBegin == tokenBegin + 4)
 		return;
-	m_includedFiles.push_back(*token + ".ttcn3");
+	auto moduleNameEnd = p_line.find_first_of(" \t", moduleNameBegin);
+	if (moduleNameEnd == std::string::npos)
+		return;
+	tokenBegin = p_line.find_first_not_of(" \t", moduleNameEnd);
+	if (tokenBegin == std::string::npos)
+		return;
+	m_includedFiles.push_back(p_line.substr(moduleNameBegin, moduleNameEnd - moduleNameBegin) + ".ttcn3");
 }
 
 } // namespace IncludeBrowser
