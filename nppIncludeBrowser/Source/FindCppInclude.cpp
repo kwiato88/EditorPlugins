@@ -1,43 +1,32 @@
-#include <boost/tokenizer.hpp>
 #include "FindCppInclude.hpp"
 
 namespace IncludeBrowser
 {
 namespace
 {
-
-bool tokenIsDifferent(boost::tokenizer<boost::char_separator<char>>::const_iterator p_token,
-	boost::tokenizer<boost::char_separator<char>>::const_iterator p_end, const std::string& p_value)
+bool areAllWhiteChars(const std::string& p_str, std::string::size_type p_begin, std::string::size_type p_end)
 {
-	return p_token == p_end || *p_token != p_value;
-}
-
-std::string extractFile(const std::string& p_token)
-{
-	auto beginMarker = p_token.find_first_of("<\"", 0);
-	if (beginMarker == std::string::npos)
-		return "";
-	auto endMarker = p_token.find_first_of(">\"", beginMarker + 1);
-	if (endMarker == std::string::npos)
-		return "";
-	return p_token.substr(beginMarker + 1, endMarker - beginMarker - 1);
+	for (auto i = p_begin; i < p_end; ++i)
+		if (p_str[i] != ' ' && p_str[i] != '\t')
+			return false;
+	return true;
 }
 }
 
 void FindCppInclude::parse(const std::string& p_line)
 {
-	if (p_line.find("#include") == std::string::npos)
+	auto includeToken = p_line.find("#include");
+	if (includeToken == std::string::npos)
 		return;
-	boost::char_separator<char> sep{ " \t" };
-	boost::tokenizer<boost::char_separator<char>> tokens(p_line, sep);
-	auto token = tokens.begin();
-	if (tokenIsDifferent(token, tokens.end(), "#include"))
+	if (!areAllWhiteChars(p_line, 0, includeToken))
 		return;
-	if (++token == tokens.end())
+	auto fileTokenBegin = p_line.find_first_of("<\"", includeToken + 8);
+	if (fileTokenBegin == std::string::npos || fileTokenBegin == includeToken + 8)
 		return;
-	auto file = extractFile(*token);
-	if (!file.empty())
-		m_includedFiles.push_back(file);
+	auto fileTokenEnd = p_line.find_first_of(">\"", fileTokenBegin + 1);
+	if (fileTokenEnd == std::string::npos)
+		return;
+	m_includedFiles.push_back(p_line.substr(fileTokenBegin + 1, fileTokenEnd - fileTokenBegin - 1));
 }
 
 } // namespace IncludeBrowser

@@ -72,10 +72,10 @@ TEST(FindIncludeTS, shouldNotFindCppInclude)
 	ASSERT_THAT(findCppIncludes("include <iostream>"), ElementsAre());
 	ASSERT_THAT(findCppIncludes("#inclide iostream"), ElementsAre());
 
-	ASSERT_THAT(findCppIncludes("//#inclide iostream"), ElementsAre());
-	ASSERT_THAT(findCppIncludes(" // #inclide iostream"), ElementsAre());
-	ASSERT_THAT(findCppIncludes("/*#inclide iostream"), ElementsAre());
-	ASSERT_THAT(findCppIncludes(" /* #inclide iostream"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("//#include <iostream>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes(" // #include <iostream>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("/*#include <iostream>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes(" /* #include <iostream>"), ElementsAre());
 }
 
 TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)
