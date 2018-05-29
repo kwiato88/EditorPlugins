@@ -74,6 +74,7 @@ void OpenFileDialog::onSearchClick()
 			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked())),
 			std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
+	redraw();
 }
 
 void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_dirs)
