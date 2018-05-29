@@ -56,9 +56,9 @@ void TagHierarchyDialog::setDerivedTagsAsCurrent()
 	m_currentTags = &m_derivedTags;
 }
 
-void TagHierarchyDialog::showContextMenu(int p_xPos, int p_yPos)
+bool TagHierarchyDialog::showContextMenu(int p_xPos, int p_yPos)
 {
-	return;
+	return false;
 	//TODO: select one from below
 	{//derived tags context menu
 		ContextMenu menu(m_self);
