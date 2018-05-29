@@ -1,11 +1,8 @@
-#include <windows.h>
-#include <commdlg.h>
-#include <cstdio>
-
 #include "WinApiUI.hpp"
 #include "ListBoxDialog.hpp"
 #include "GridDialog.hpp"
 #include "QueryDialog.hpp"
+#include "MessageDialog.hpp"
 
 namespace WinApi
 {
@@ -14,36 +11,24 @@ UI::UI(Handle& p_parrent, InstanceHandle& p_hModule)
 	: parrent(p_parrent), hModule(p_hModule)
 {}
 
-std::string UI::cutString(std::string p_string, size_t p_length)
-{
-	if (p_string.size() < p_length)
-		return p_string;
-	else
-		return p_string.substr(0, p_length);
-}
-
-int UI::printMessge(
-	std::string p_title,
-	std::string p_content,
-	unsigned int  p_style)
-{
-	static const size_t MAX_CONTENT_LENGTH = 256;
-	static const size_t MAX_TITLE_LENGTH = 64;
-	TCHAR messageUString[MAX_CONTENT_LENGTH];
-	mbstowcs(messageUString, cutString(p_content, MAX_CONTENT_LENGTH).c_str(), MAX_CONTENT_LENGTH - 1);
-	TCHAR titleUString[MAX_TITLE_LENGTH];
-	mbstowcs(titleUString, cutString(p_title, MAX_TITLE_LENGTH).c_str(), MAX_TITLE_LENGTH - 1);
-	return MessageBox(parrent, messageUString, titleUString, p_style);
-}
-
 void UI::infoMessage(const std::string& p_title, const std::string& p_content)
 {
-	printMessge(p_title, p_content, MB_OK | MB_ICONINFORMATION);
+	MessageDialog dlg(parrent);
+	dlg.withTitle(p_title);
+	dlg.withContent(p_content);
+	dlg.with(MessageDialog::Icon::Info);
+	dlg.with(MessageDialog::Buttons::Ok);
+	dlg.show();
 }
 
 void UI::errorMessage(const std::string& p_title, const std::string& p_content)
 {
-	printMessge(p_title, p_content, MB_OK | MB_ICONERROR);
+	MessageDialog dlg(parrent);
+	dlg.withTitle(p_title);
+	dlg.withContent(p_content);
+	dlg.with(MessageDialog::Icon::Error);
+	dlg.with(MessageDialog::Buttons::Ok);
+	dlg.show();
 }
 
 std::string UI::query(
@@ -59,7 +44,12 @@ std::string UI::query(
 
 bool UI::binQuery(const std::string& p_question)
 {
-	return printMessge("Answer question", p_question, MB_YESNO | MB_ICONQUESTION) == IDYES;
+	MessageDialog dlg(parrent);
+	dlg.withTitle("Answer question");
+	dlg.withContent(p_question);
+	dlg.with(MessageDialog::Icon::Question);
+	dlg.with(MessageDialog::Buttons::YesNo);
+	return dlg.show() == MessageDialog::Button::Yes;
 }
 
 int UI::select(const std::vector<std::string>& p_list)

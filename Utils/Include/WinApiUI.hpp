@@ -31,12 +31,6 @@ public:
 		const Row& p_default);
 
 private:
-	int printMessge(
-		std::string p_title,
-		std::string p_content,
-		unsigned int p_style);
-	std::string cutString(std::string p_string, size_t p_length);
-
 	Handle& parrent;
 	InstanceHandle& hModule;
 };
