@@ -58,22 +58,25 @@ void TagHierarchyDialog::setDerivedTagsAsCurrent()
 
 bool TagHierarchyDialog::showContextMenu(int p_xPos, int p_yPos)
 {
-	return false;
-	//TODO: select one from below
-	{//derived tags context menu
+	if(m_derivedTags.isWithin(p_xPos, p_yPos))
+	{
 		ContextMenu menu(m_self);
 		menu.add(ContextMenu::Item{ "Copy tree", std::bind(&TagHierarchyDialog::copyDerivedTags, this) });
 		menu.add(ContextMenu::Item{ "Copy selected sub-tree", std::bind(&TagHierarchyDialog::copySelectedDerivedSubtree, this) });
 		menu.add(ContextMenu::Item{ "Copy selected tag name", std::bind(&TagHierarchyDialog::copySelectedDerivedTagName, this) });
 		menu.show(p_xPos, p_yPos);
+		return true;
 	}
-	{//base tags context menu
+	if(m_baseTags.isWithin(p_xPos, p_yPos))
+	{
 		ContextMenu menu(m_self);
 		menu.add(ContextMenu::Item{ "Copy tree", std::bind(&TagHierarchyDialog::copyBaseTags, this) });
 		menu.add(ContextMenu::Item{ "Copy selected sub-tree", std::bind(&TagHierarchyDialog::copySelectedBaseSubtree, this) });
 		menu.add(ContextMenu::Item{ "Copy selected tag name", std::bind(&TagHierarchyDialog::copySelectedBaseTagName, this) });
 		menu.show(p_xPos, p_yPos);
+		return true;
 	}
+	return false;
 }
 void TagHierarchyDialog::copyDerivedTags()
 {
@@ -95,9 +98,11 @@ void TagHierarchyDialog::copySelectedBaseSubtree()
 	if (selected != nullptr)
 		copyNode(*selected);
 }
-void TagHierarchyDialog::copyNode(const Node&)
+void TagHierarchyDialog::copyNode(const Node& p_node)
 {
-	//TODO:
+	NodeExport toCopy;
+	toCopy.append(p_node);
+	Clipboard::set(Clipboard::String(toCopy.result()));
 }
 void TagHierarchyDialog::copySelectedDerivedTagName()
 {
