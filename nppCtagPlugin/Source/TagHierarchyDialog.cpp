@@ -1,6 +1,8 @@
 #include "TagHierarchyDialogDef.h"
 #include "TagHierarchyDialog.hpp"
 #include "DialogMsgMatchers.hpp"
+#include "ContextMenu.hpp"
+#include "Clipboard.hpp"
 
 namespace WinApi
 {
@@ -22,7 +24,6 @@ void TagHierarchyDialog::onInit()
 	m_baseTags.addRoot(m_baseTagsData);
 	setTitle("Tag hierarchy");
 	redraw();
-    //TODO: consider adding context menu
 }
 
 void TagHierarchyDialog::setDerivedTags(const Node& p_tagsTree)
@@ -53,6 +54,62 @@ void TagHierarchyDialog::setBaseTagsAsCurrent()
 void TagHierarchyDialog::setDerivedTagsAsCurrent()
 {
 	m_currentTags = &m_derivedTags;
+}
+
+void TagHierarchyDialog::showContextMenu(int p_xPos, int p_yPos)
+{
+	return;
+	//TODO: select one from below
+	{//derived tags context menu
+		ContextMenu menu(m_self);
+		menu.add(ContextMenu::Item{ "Copy tree", std::bind(&TagHierarchyDialog::copyDerivedTags, this) });
+		menu.add(ContextMenu::Item{ "Copy selected sub-tree", std::bind(&TagHierarchyDialog::copySelectedDerivedSubtree, this) });
+		menu.add(ContextMenu::Item{ "Copy selected tag name", std::bind(&TagHierarchyDialog::copySelectedDerivedTagName, this) });
+		menu.show(p_xPos, p_yPos);
+	}
+	{//base tags context menu
+		ContextMenu menu(m_self);
+		menu.add(ContextMenu::Item{ "Copy tree", std::bind(&TagHierarchyDialog::copyBaseTags, this) });
+		menu.add(ContextMenu::Item{ "Copy selected sub-tree", std::bind(&TagHierarchyDialog::copySelectedBaseSubtree, this) });
+		menu.add(ContextMenu::Item{ "Copy selected tag name", std::bind(&TagHierarchyDialog::copySelectedBaseTagName, this) });
+		menu.show(p_xPos, p_yPos);
+	}
+}
+void TagHierarchyDialog::copyDerivedTags()
+{
+	copyNode(m_derivedTagsData);
+}
+void TagHierarchyDialog::copyBaseTags()
+{
+	copyNode(m_baseTagsData);
+}
+void TagHierarchyDialog::copySelectedDerivedSubtree()
+{
+	const Node* selected = m_derivedTags.getSelectedNode();
+	if (selected != nullptr)
+		copyNode(*selected);
+}
+void TagHierarchyDialog::copySelectedBaseSubtree()
+{
+	const Node* selected = m_baseTags.getSelectedNode();
+	if (selected != nullptr)
+		copyNode(*selected);
+}
+void TagHierarchyDialog::copyNode(const Node&)
+{
+	//TODO:
+}
+void TagHierarchyDialog::copySelectedDerivedTagName()
+{
+	const Node* selected = m_derivedTags.getSelectedNode();
+	if (selected != nullptr)
+		Clipboard::set(Clipboard::String(selected->m_value));
+}
+void TagHierarchyDialog::copySelectedBaseTagName()
+{
+	const Node* selected = m_baseTags.getSelectedNode();
+	if (selected != nullptr)
+		Clipboard::set(Clipboard::String(selected->m_value));
 }
 
 }

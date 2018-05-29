@@ -19,10 +19,18 @@ public:
 
 private:
 	void onInit() override;
+	void showContextMenu(int p_xPos, int p_yPos) override;
 	void onOkClick();
 	void onCancelClick();
 	void setBaseTagsAsCurrent();
 	void setDerivedTagsAsCurrent();
+	void copyDerivedTags();
+	void copyBaseTags();
+	void copySelectedDerivedSubtree();
+	void copySelectedBaseSubtree();
+	void copyNode(const Node& p_node);
+	void copySelectedDerivedTagName();
+	void copySelectedBaseTagName();
 
 	Control::Tree m_derivedTags;
 	Control::Tree m_baseTags;
