@@ -86,14 +86,19 @@ std::string OpenFileDialog::getSelectedFile() const
     return m_selectedFile;
 }
 
-void OpenFileDialog::showContextMenu(int p_xPos, int p_yPos)
+bool OpenFileDialog::showContextMenu(int p_xPos, int p_yPos)
 {
-	ContextMenu menu(m_self);
-	menu.add(ContextMenu::Item{ "Copy selected file name", std::bind(&OpenFileDialog::copySelectedFileName, this) });
-	menu.add(ContextMenu::Item{ "Copy selected file path", std::bind(&OpenFileDialog::copySelectedFilePath, this) });
-	menu.add(ContextMenu::Item{ "Copy all files names", std::bind(&OpenFileDialog::copyAllFilesNames, this) });
-	menu.add(ContextMenu::Item{ "Copy all files paths", std::bind(&OpenFileDialog::copyAllFilesPaths, this) });
-	menu.show(p_xPos, p_yPos);
+	if (m_gridControl.isWithin(p_xPos, p_yPos))
+	{
+		ContextMenu menu(m_self);
+		menu.add(ContextMenu::Item{ "Copy selected file name", std::bind(&OpenFileDialog::copySelectedFileName, this) });
+		menu.add(ContextMenu::Item{ "Copy selected file path", std::bind(&OpenFileDialog::copySelectedFilePath, this) });
+		menu.add(ContextMenu::Item{ "Copy all files names", std::bind(&OpenFileDialog::copyAllFilesNames, this) });
+		menu.add(ContextMenu::Item{ "Copy all files paths", std::bind(&OpenFileDialog::copyAllFilesPaths, this) });
+		menu.show(p_xPos, p_yPos);
+		return true;
+	}
+	return false;
 }
 void OpenFileDialog::copySelectedFileName()
 {
