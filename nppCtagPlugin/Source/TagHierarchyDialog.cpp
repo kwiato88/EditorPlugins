@@ -22,6 +22,7 @@ void TagHierarchyDialog::onInit()
 	m_baseTags.addRoot(m_baseTagsData);
 	setTitle("Tag hierarchy");
 	redraw();
+    //TODO: consider adding context menu
 }
 
 void TagHierarchyDialog::setDerivedTags(const Node& p_tagsTree)

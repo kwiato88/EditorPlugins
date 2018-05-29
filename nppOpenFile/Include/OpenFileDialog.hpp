@@ -22,12 +22,17 @@ public:
     std::string getSelectedFile() const;
 
 private:
-    void onInit();
+    void onInit() override;
+	void showContextMenu(int p_xPos, int p_yPos) override;
 
     void onOkClick();
     void onCancleClick();
     void onGridDoubleClick();
     void onSearchClick();
+	void copySelectedFileName();
+	void copySelectedFilePath();
+	void copyAllFilesNames();
+	void copyAllFilesPaths();
 
     Control::RcFileGrid m_gridControl;
 	Control::Edit m_fileNamePattern;

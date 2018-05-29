@@ -9,6 +9,8 @@
 #include "OpenFileDialogDef.h"
 #include "DialogMsgMatchers.hpp"
 #include "findFile.hpp"
+#include "ContextMenu.hpp"
+#include "Clipboard.hpp"
 
 #include <iostream>
 
@@ -38,7 +40,6 @@ void OpenFileDialog::onInit()
 	m_isCaseSensitiveSearch.init(getItem(ResourceId(ID_OPEN_FILE_IS_CASE_SENSITIVE)));
 	m_useRegeq.init(getItem(ResourceId(ID_OPEN_FILE_IS_REGEQ)));
 	setTitle("Open file");
-	//TODO: consider adding context menu to copy found files
 }
 
 void OpenFileDialog::onOkClick()
@@ -83,6 +84,42 @@ void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_dirs)
 std::string OpenFileDialog::getSelectedFile() const
 {
     return m_selectedFile;
+}
+
+void OpenFileDialog::showContextMenu(int p_xPos, int p_yPos)
+{
+	ContextMenu menu(m_self);
+	menu.add(ContextMenu::Item{ "Copy selected file name", std::bind(&OpenFileDialog::copySelectedFileName, this) });
+	menu.add(ContextMenu::Item{ "Copy selected file path", std::bind(&OpenFileDialog::copySelectedFilePath, this) });
+	menu.add(ContextMenu::Item{ "Copy all files names", std::bind(&OpenFileDialog::copyAllFilesNames, this) });
+	menu.add(ContextMenu::Item{ "Copy all files paths", std::bind(&OpenFileDialog::copyAllFilesPaths, this) });
+	menu.show(p_xPos, p_yPos);
+}
+void OpenFileDialog::copySelectedFileName()
+{
+	auto selectedIdx = m_gridControl.getSelectedRowIndex();
+	if (selectedIdx != -1)
+		Clipboard::set(Clipboard::String(m_gridRows.at(selectedIdx).at(0)));
+}
+void OpenFileDialog::copySelectedFilePath()
+{
+	auto selectedIdx = m_gridControl.getSelectedRowIndex();
+	if (selectedIdx != -1)
+		Clipboard::set(Clipboard::String(m_gridRows.at(selectedIdx).at(1)));
+}
+void OpenFileDialog::copyAllFilesNames()
+{
+	std::string toCopy;
+	for (const auto& item : m_gridRows)
+		toCopy += item.at(0) + '\n';
+	Clipboard::set(Clipboard::String(toCopy));
+}
+void OpenFileDialog::copyAllFilesPaths()
+{
+	std::string toCopy;
+	for (const auto& item : m_gridRows)
+		toCopy += item.at(1) + '\n';
+	Clipboard::set(Clipboard::String(toCopy));
 }
 
 std::string OpenFileDialog::s_lastUsedNamePattern = ".*";
