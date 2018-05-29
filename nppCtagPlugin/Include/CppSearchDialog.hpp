@@ -21,7 +21,7 @@ public:
 	CTagsPlugin::TagMatcher getTagMatcher();
 
 private:
-	void onInit();
+	void onInit() override;
 	void onOkClick();
 	void onCancelClck();
 	void updateSelectedKinds();
