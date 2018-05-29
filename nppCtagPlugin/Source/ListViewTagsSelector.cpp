@@ -71,7 +71,7 @@ int ListViewTagsSelector::selectTag(const std::vector<TagHolder>& p_tags)
 		std::back_inserter(tagsStrings),
 		RowToString{ collumnWiths.maxLengths });
 	
-	WinApi::ListBoxDialog l_dialog(hInstance, parrent);
+	WinApi::ListBoxDialog l_dialog(hInstance, parrent, "Select tag");
 	l_dialog.setItems(tagsStrings);
 	l_dialog.show();
 	return l_dialog.getSelectedItemIndex();

@@ -27,7 +27,7 @@ int GridViewTagsSelector::selectTag(const std::vector<TagHolder>& p_tags)
         std::back_inserter(l_gridContent),
         [&](const Tag& t) { t.print(printer); return printer.get(); });
     
-	WinApi::GridDialog l_dialog(m_hModule, m_parrent);
+	WinApi::GridDialog l_dialog(m_hModule, m_parrent, "Select tag");
     l_dialog.setTitles(printer.titles());
     l_dialog.setContent(l_gridContent);
     l_dialog.show();

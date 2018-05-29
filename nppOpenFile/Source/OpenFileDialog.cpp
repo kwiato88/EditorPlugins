@@ -37,6 +37,8 @@ void OpenFileDialog::onInit()
 	m_fileNamePattern.setSelection(0, m_fileNamePattern.getLineLength(0));
 	m_isCaseSensitiveSearch.init(getItem(ResourceId(ID_OPEN_FILE_IS_CASE_SENSITIVE)));
 	m_useRegeq.init(getItem(ResourceId(ID_OPEN_FILE_IS_REGEQ)));
+	setTitle("Open file");
+	//TODO: consider adding context menu to copy found files
 }
 
 void OpenFileDialog::onOkClick()

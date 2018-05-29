@@ -20,6 +20,7 @@ void TagHierarchyDialog::onInit()
 	m_baseTags.init(getItem(ResourceId(ID_TREE_BASE_TAGS)));
 	m_derivedTags.addRoot(m_derivedTagsData);
 	m_baseTags.addRoot(m_baseTagsData);
+	setTitle("Tag hierarchy");
 	redraw();
 }
 

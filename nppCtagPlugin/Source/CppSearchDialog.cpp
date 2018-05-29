@@ -53,6 +53,8 @@ void CppSearchDialog::onInit()
 	m_namePattern.init(getItem(ResourceId(ID_NAME_PATTERN)));
 	m_namePattern.setFocus();
 	m_namePattern.setContent(s_lastUsedNamePattern);
+
+	setTitle("C/C++ tag search");
 }
 
 void CppSearchDialog::updateSelectedKinds()
