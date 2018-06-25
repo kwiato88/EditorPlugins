@@ -30,9 +30,9 @@ struct RowToString
 	std::vector<size_t> collumnsWidths;
 };
 
-struct CollumnMaxLengthGetter
+struct CollumnsMaxLength
 {
-	CollumnMaxLengthGetter(size_t p_numOfCollumns)
+	CollumnsMaxLength(size_t p_numOfCollumns)
 	 : maxLengths(p_numOfCollumns, size_t(0))
 	{}
 
@@ -44,6 +44,17 @@ struct CollumnMaxLengthGetter
 
 	std::vector<size_t> maxLengths;
 };
+
+std::vector<std::string> tableToStrings(const std::vector<std::vector<std::string>>& p_table)
+{
+	CollumnsMaxLength collumnsWidths = boost::range::for_each(p_table, CollumnsMaxLength(p_table.front().size()));
+	std::vector<std::string> simpleTable;
+	boost::range::transform(
+		p_table,
+		std::back_inserter(simpleTable),
+		RowToString{ collumnsWidths.maxLengths });
+	return simpleTable;
+}
 } // namespace
 
 ListViewTagsSelector::ListViewTagsSelector(WinApi::InstanceHandle& p_hInstance, WinApi::Handle& p_parrent)
@@ -57,22 +68,12 @@ int ListViewTagsSelector::selectTag(const std::vector<TagHolder>& p_tags)
 		return -1;
 
 	Fields noExtensionsFiledsSupported = {};
-	TagPrinter printer(noExtensionsFiledsSupported);
-	std::vector<std::vector<std::string>> tagsAttributes;
-	boost::range::transform(
-		p_tags,
-		std::back_inserter(tagsAttributes),
-		[&](const Tag& t) { t.print(printer);  return printer.get(); });
-	CollumnMaxLengthGetter collumnWiths = boost::range::for_each(tagsAttributes, CollumnMaxLengthGetter(tagsAttributes.front().size()));
-	
-	std::vector<std::string> tagsStrings;
-	boost::range::transform(
-		tagsAttributes,
-		std::back_inserter(tagsStrings),
-		RowToString{ collumnWiths.maxLengths });
+	TagsPrinter<TagPrinter, std::vector<std::string>> printer(TagPrinter{ noExtensionsFiledsSupported });
+	for (const Tag& tag : p_tags)
+		tag.print(printer);
 	
 	WinApi::ListBoxDialog l_dialog(hInstance, parrent, "Select tag");
-	l_dialog.setItems(tagsStrings);
+	l_dialog.setItems(tableToStrings(printer.get()));
 	l_dialog.show();
 	return l_dialog.getSelectedItemIndex();
 }

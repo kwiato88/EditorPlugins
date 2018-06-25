@@ -10,26 +10,6 @@
 namespace CTagsPlugin
 {
 
-template<typename Printer, typename Result>
-class TagsPrinter : public ITagPrinter
-{
-public:
-	TagsPrinter(const Printer& p_printer)
-		: printer(p_printer)
-	{}
-	void print(const TagAttributes& p_attributes) override
-	{
-		printer.print(p_attributes);
-		exportedTags.push_back(printer.get());
-	}
-	std::vector<Result> get() const
-	{
-		return exportedTags;
-	}
-private:
-	Printer printer;
-	std::vector<Result> exportedTags;
-};
 GridViewTagsSelector::GridViewTagsSelector(WinApi::Handle& p_parrent, WinApi::InstanceHandle& p_hModule, const IConfiguration& p_config)
     : m_parrent(p_parrent), m_hModule(p_hModule), m_config(p_config)
 {

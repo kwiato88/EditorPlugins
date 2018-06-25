@@ -1,5 +1,4 @@
-#ifndef TAGPRINTER_HPP
-#define TAGPRINTER_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -33,6 +32,25 @@ private:
 	std::string tagName;
 };
 
-} // namespace CTagsPlugin
+template<typename Printer, typename PrinterResult>
+class TagsPrinter : public ITagPrinter
+{
+public:
+	TagsPrinter(const Printer& p_printer)
+		: printer(p_printer)
+	{}
+	void print(const TagAttributes& p_attributes) override
+	{
+		printer.print(p_attributes);
+		exportedTags.push_back(printer.get());
+	}
+	std::vector<PrinterResult> get() const
+	{
+		return exportedTags;
+	}
+private:
+	Printer printer;
+	std::vector<PrinterResult> exportedTags;
+};
 
-#endif // TAGPRINTER_HPP
+}
