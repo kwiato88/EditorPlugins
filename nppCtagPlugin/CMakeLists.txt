@@ -21,6 +21,7 @@ add_library(
     Source/TagParser.cpp
     Source/ExtensionFields.cpp
     Source/TagPrinter.cpp
+    Source/LazyInitializedTagsSelector.cpp
 )
 
 target_include_directories(

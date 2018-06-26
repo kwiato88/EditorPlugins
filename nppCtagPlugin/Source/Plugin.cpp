@@ -11,6 +11,7 @@
 #include "CTagsController.hpp"
 #include "ListViewTagsSelector.hpp"
 #include "GridViewTagsSelector.hpp"
+#include "LazyInitializedTagsSelector.hpp"
 #include "TreeViewTagHierSelector.hpp"
 #include "GetCppTagSearchMatcher.hpp"
 
@@ -23,34 +24,6 @@
 
 extern NppPlugin::TagsPlugin g_plugin;
 
-namespace CTagsPlugin
-{
-
-typedef std::function<std::unique_ptr<ITagsSelector>()> SelectorFactory;
-
-class LazyInitializedTagsSelector : public ITagsSelector
-{
-public:
-	LazyInitializedTagsSelector(SelectorFactory p_factory);
-	int selectTag(const std::vector<TagHolder>& p_tags) override;
-
-private:
-	SelectorFactory factory;
-	std::unique_ptr<ITagsSelector> selector;
-};
-
-LazyInitializedTagsSelector::LazyInitializedTagsSelector(SelectorFactory p_factory)
-	: factory(p_factory)
-{}
-
-int LazyInitializedTagsSelector::selectTag(const std::vector<TagHolder>& p_tags)
-{
-	if (selector == nullptr)
-		selector = factory();
-	return selector->selectTag(p_tags);
-}
-
-}
 namespace NppPlugin
 {
 
