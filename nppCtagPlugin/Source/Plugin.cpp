@@ -188,7 +188,7 @@ void TagsPlugin::createTagsController()
 		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));
 }
 
-std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_taFilePath)
+std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
 {
     return std::make_unique<CTagsPlugin::ReadTagsProxy>(m_config,[=](){ return p_tagFilePath; });
 }
