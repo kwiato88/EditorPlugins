@@ -16,14 +16,12 @@
 namespace CTagsPlugin
 {
 
-typedef std::function<std::shared_ptr<ITagsSelector>()> SelectorFactory;
-
 class CTagsNavigator
 {
 public:
     CTagsNavigator(Navigator& p_navigator,
 				   Plugin::Editor& p_editor,
-                   SelectorFactory p_selectorFactory,
+				   std::unique_ptr<ITagsSelector> p_tagsSelector,
 		           std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 				   std::shared_ptr<ITagsReader> p_tagsReader);
 
@@ -54,7 +52,7 @@ private:
 
     Navigator& m_navigator;
 	Plugin::Editor& m_editor;
-    SelectorFactory m_selectorFactory;
+    std::unique_ptr<ITagsSelector> m_tagsSelector;
 	std::unique_ptr<ITagHierarchySelector> m_hierSelector;
 	std::shared_ptr<ITagsReader> m_tagsReader;
 };

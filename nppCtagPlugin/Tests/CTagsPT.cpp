@@ -49,13 +49,12 @@ struct CtagsPerformanceTests : public Test
 	EditorStub editor;
 	Navigator navigator{ editor };
 	std::shared_ptr<ITagsReader> tagsReader = std::make_shared<TagFileReader>([&]() {return bigTagsFilePath; });
-	std::shared_ptr<ITagsSelector> selector = std::make_shared<TagsSelectorStub>();
 
 	CTagsNavigator tagsNavigator
 	{
 		navigator,
 		editor,
-		[&]() {return selector; },
+		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReader
 	};
@@ -149,7 +148,7 @@ struct CachedCtagsPerformanceTests : public CtagsPerformanceTests
 	{
 		navigator,
 		editor,
-		[&]() {return selector; },
+		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReaderWithCache
 	};

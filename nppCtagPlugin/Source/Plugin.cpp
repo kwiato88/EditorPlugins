@@ -153,7 +153,7 @@ void TagsPlugin::createTagsController()
 		npp,
 		ui,
 		files,
-		std::bind(&TagsPlugin::getTagsSelector, this),
+		buildTagsSelector(),
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
         m_config,
@@ -204,31 +204,24 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagReader(const std::
 	return reader;
 }
 
-std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildListViewSelector()
+std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildListViewSelector()
 {
-	return std::make_shared<CTagsPlugin::ListViewTagsSelector>(hModule, npp.npp);
+	return std::make_unique<CTagsPlugin::ListViewTagsSelector>(hModule, npp.npp);
 }
 
-std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildGridViewSelector()
+std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildGridViewSelector()
 {
-    return std::make_shared<CTagsPlugin::GridViewTagsSelector>(
+    return std::make_unique<CTagsPlugin::GridViewTagsSelector>(
         npp.npp, hModule, m_config);
 }
 
-std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildTagsSelector()
+std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildTagsSelector()
 {
     switch(m_config.getSelectTagsViewType())
     {
         case CTagsPlugin::SelectTagsViewType::ListView : return buildListViewSelector();
         case CTagsPlugin::SelectTagsViewType::GridView : return buildGridViewSelector();
     }
-}
-
-std::shared_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::getTagsSelector()
-{
-    if(!m_selector)
-        m_selector = buildTagsSelector();
-    return m_selector;
 }
 
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)

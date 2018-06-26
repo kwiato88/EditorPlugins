@@ -22,7 +22,7 @@ CTagsController::CTagsController(
 	Plugin::Editor& p_editor,
 	Plugin::UI& p_ui,
 	Plugin::UIFileSystem& p_files,
-    SelectorFactory p_selectorFactory,
+	std::unique_ptr<ITagsSelector> p_tagsSelector,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader,
     IConfiguration& p_config,
@@ -33,7 +33,7 @@ CTagsController::CTagsController(
    m_config(p_config),
    m_tagSearchMatcherFactory(p_tagSearchMatcherFactory),
    m_locationsNavigator(m_editor),
-   m_tagsNavigator(m_locationsNavigator, m_editor, p_selectorFactory, std::move(p_hierSelector), p_tagsReader)
+   m_tagsNavigator(m_locationsNavigator, m_editor, std::move(p_tagsSelector), std::move(p_hierSelector), p_tagsReader)
 {
 	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
 		Command::GenerateTags::Id(), [&](const auto& p) { return handleGenerateTags(p); });

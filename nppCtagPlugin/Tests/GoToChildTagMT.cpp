@@ -91,7 +91,7 @@ TEST_F(GoToChildTagMT, shouldThrowWhenNoComplexParentTagFound)
 
 TEST_F(GoToChildTagMT, shouldThrowWhenNoParentTagSelected)
 {
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
+	EXPECT_CALL(selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
 	ASSERT_THROW(tagsNavigator.goToChildTag("TagPrinter"), TagNotFoundException);
 }
 
@@ -110,13 +110,13 @@ TEST_F(GoToChildTagMT, shouldThrowWhenNoChildTagFound)
 }
 TEST_F(GoToChildTagMT, shouldThrowWhenNoChildTagSelected)
 {
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
+	EXPECT_CALL(selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
 	ASSERT_THROW(tagsNavigator.goToChildTag("Field"), TagNotFoundException);
 }
 TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_OneParentTagFoundMultipleChildTagsFound)
 {
 	expectGetAnyLocation();
-	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_Field()))).WillOnce(Return(2));
+	EXPECT_CALL(selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_Field()))).WillOnce(Return(2));
 	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Include\\\\BuildTag.hpp")));
 	EXPECT_CALL(editor, setLine(20));
 	EXPECT_CALL(editor, setColumn(0));
@@ -125,8 +125,8 @@ TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_OneParentTagFoundMultipleChild
 TEST_F(GoToChildTagMT, shouldGoToSelectedChildTag_MultipleParentTagFoundMultipleChildTagsFound)
 {
 	InSequence dummy = {};
-	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedParentTagsForParent_TagPrinter()))).WillOnce(Return(0));
-	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_CppTagPrinter()))).WillOnce(Return(3));
+	EXPECT_CALL(selector, selectTag(CppTagsAre(buildExpectedParentTagsForParent_TagPrinter()))).WillOnce(Return(0));
+	EXPECT_CALL(selector, selectTag(CppTagsAre(buildExpectedChildTagsForPartent_CppTagPrinter()))).WillOnce(Return(3));
 	expectGetAnyLocation();
 	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Source\\\\CppTagPrinter.cpp")));
 	EXPECT_CALL(editor, setLine(54));

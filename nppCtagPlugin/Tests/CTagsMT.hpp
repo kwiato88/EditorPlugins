@@ -24,8 +24,18 @@ class TagHierarchySelectorProxy : public ITagHierarchySelector
 {
 public:
 	TagHierarchySelectorProxy(ITagHierarchySelector& p_selector);
-	boost::optional<TagHolder> select(const TagHierarchy& p_hier);
+	boost::optional<TagHolder> select(const TagHierarchy& p_hier) override;
+private:
 	ITagHierarchySelector& m_selector;
+};
+
+class TagsSelectorProxy : public ITagsSelector
+{
+public:
+	TagsSelectorProxy(ITagsSelector& p_selector);
+	int selectTag(const std::vector<TagHolder>& p_tags) override;
+private:
+	ITagsSelector& selector;
 };
 
 struct CTagsMT : public Test
@@ -34,7 +44,7 @@ struct CTagsMT : public Test
 	void setPathToFileWithInvalidTags();
 
 	StrictMock<Plugin::EditorMock> editor;
-	std::shared_ptr<StrictMock<TagsSelectorMock>> selector = std::make_shared<StrictMock<TagsSelectorMock>>();
+	StrictMock<TagsSelectorMock> selector;
 	StrictMock<TagHierarchySelectorMock> hierSelector;
 
 	Navigator navigator{ editor };
@@ -44,7 +54,7 @@ struct CTagsMT : public Test
 	{
 		navigator,
 		editor,
-		[&]() { return selector; },
+		std::make_unique<TagsSelectorProxy>(selector),
 		std::make_unique<TagHierarchySelectorProxy>(hierSelector),
 		tagsReader
 	};

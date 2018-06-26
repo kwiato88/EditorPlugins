@@ -12,6 +12,14 @@ boost::optional<TagHolder> TagHierarchySelectorProxy::select(const TagHierarchy&
 	return m_selector.select(p_hier);
 }
 
+TagsSelectorProxy::TagsSelectorProxy(ITagsSelector& p_selector)
+	: selector(p_selector)
+{}
+int TagsSelectorProxy::selectTag(const std::vector<TagHolder>& p_tags)
+{
+	return selector.selectTag(p_tags);
+}
+
 void CTagsMT::expectGetAnyLocation()
 {
 	EXPECT_CALL(editor, getFile()).WillRepeatedly(Return(""));

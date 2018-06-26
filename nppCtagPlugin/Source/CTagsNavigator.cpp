@@ -59,12 +59,12 @@ std::vector<TagHolder> findTag(std::shared_ptr<ITagsReader> p_tagsReader, const 
 CTagsNavigator::CTagsNavigator(
 	Navigator& p_navigator,
 	Plugin::Editor& p_editor,
-    SelectorFactory p_selectorFactory,
+	std::unique_ptr<ITagsSelector> p_tagsSelector,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader)
  : m_navigator(p_navigator),
    m_editor(p_editor),
-   m_selectorFactory(p_selectorFactory),
+   m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
    m_tagsReader(p_tagsReader)
 {
@@ -115,7 +115,7 @@ TagHolder CTagsNavigator::selectTag(const std::vector<TagHolder>& p_tags)
 {
 	if (p_tags.empty())
 		throw TagNotFoundException();
-    int l_selectedTagIndex = ( p_tags.size() == 1 ? 0 : m_selectorFactory()->selectTag(p_tags) );
+    int l_selectedTagIndex = ( p_tags.size() == 1 ? 0 : m_tagsSelector->selectTag(p_tags) );
     if(l_selectedTagIndex == -1)
         throw TagNotFoundException();
 	LOG_DEBUG << "Selected tag with index " << l_selectedTagIndex;

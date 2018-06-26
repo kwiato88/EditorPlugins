@@ -85,13 +85,13 @@ TEST_F(GoToTagInHierarchyMT, shouldThrowWhenNoComplextTagFound)
 
 TEST_F(GoToTagInHierarchyMT, shouldThrowWhenNoComplexTagSelected)
 {
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
+	EXPECT_CALL(selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
 	ASSERT_THROW(tagsNavigator.goToTagInHierarchy("TagPrinter"), TagNotFoundException);
 }
 
 TEST_F(GoToTagInHierarchyMT, shouldThrowWhenNoTagInHierSelected)
 {
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(0));
+	EXPECT_CALL(selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(0));
 	EXPECT_CALL(hierSelector, select(_)).WillOnce(Return(boost::none));
 
 	ASSERT_THROW(tagsNavigator.goToTagInHierarchy("TagPrinter"), TagNotFoundException);
@@ -99,7 +99,7 @@ TEST_F(GoToTagInHierarchyMT, shouldThrowWhenNoTagInHierSelected)
 
 TEST_F(GoToTagInHierarchyMT, shoudGoToSelectedBaseClass)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	TagHolder baseTag =
 		parseTag("Tag\t" + rootPathWith2Slash + "nppCtagPlugin\\\\Tests\\\\TestSourceCode\\\\Include\\\\Tag.hpp\t/^struct Tag$/;\"\ts\tlanguage:C++\tnamespace:CTagsPlugin");
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
@@ -116,7 +116,7 @@ TEST_F(GoToTagInHierarchyMT, shoudGoToSelectedBaseClass)
 
 TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClass)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
 	{ "CTagsPlugin::Tag" })))
 		.WillOnce(Return(boost::none));
@@ -126,7 +126,7 @@ TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClass)
 
 TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClass_BaseClassGivenWithNamespace)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
 	{ "CTagsPlugin::TagPrinter" })))
 		.WillOnce(Return(boost::none));
@@ -136,7 +136,7 @@ TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClass_BaseClassGivenWithNamespace)
 
 TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClassFromDifferentNamespace)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
 	{ "FirstNamespace::BaseClass" })))
 		.WillOnce(Return(boost::none));
@@ -146,7 +146,7 @@ TEST_F(GoToTagInHierarchyMT, shoudFindOneBaseClassFromDifferentNamespace)
 
 TEST_F(GoToTagInHierarchyMT, shoudFindMultipleBaseClasses)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(BaseTagsNamesAre(std::vector<std::string>
 	{ "SecondNamespace::DerivedClass", "SecondNamespace::NestedNamespace::SecondBaseClass" })))
 		.WillOnce(Return(boost::none));
@@ -157,7 +157,7 @@ TEST_F(GoToTagInHierarchyMT, shoudFindMultipleBaseClasses)
 
 TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClass)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(DerivedTagsNamesAre(std::vector<std::string>
 	{ "CTagsPlugin::TagPrinter" })))
 		.WillOnce(Return(boost::none));
@@ -167,7 +167,7 @@ TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClass)
 
 TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClassFromDifferentNamespace)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(DerivedTagsNamesAre(std::vector<std::string>
 	{ "SecondNamespace::DerivedClass" })))
 		.WillOnce(Return(boost::none));
@@ -177,7 +177,7 @@ TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClassFromDifferentNamespace)
 
 TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClassFromNestedNamespace)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(DerivedTagsNamesAre(std::vector<std::string>
 	{ "SecondNamespace::NestedNamespace::DervedFromBaseClass2" })))
 		.WillOnce(Return(boost::none));
@@ -187,7 +187,7 @@ TEST_F(GoToTagInHierarchyMT, shouldFindOneDerivedClassFromNestedNamespace)
 
 TEST_F(GoToTagInHierarchyMT, shouldFindMultipleDerivedClass)
 {
-	EXPECT_CALL(*selector, selectTag(_)).WillRepeatedly(Return(0));
+	EXPECT_CALL(selector, selectTag(_)).WillRepeatedly(Return(0));
 	EXPECT_CALL(hierSelector, select(DerivedTagsNamesAre(std::vector<std::string>
 	{
 		"CTagsPlugin::FileScopedTagFilteringReader",

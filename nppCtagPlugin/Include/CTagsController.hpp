@@ -30,7 +30,7 @@ public:
 		Plugin::Editor& p_editor,
 		Plugin::UI& p_ui,
 		Plugin::UIFileSystem& p_files,
-        SelectorFactory p_selectorFactory,
+		std::unique_ptr<ITagsSelector> p_tagsSelector,
 		std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 		std::shared_ptr<ITagsReader> p_tagsReader,
         IConfiguration& p_config,

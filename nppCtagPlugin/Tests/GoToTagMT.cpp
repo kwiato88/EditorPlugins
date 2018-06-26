@@ -91,13 +91,13 @@ TEST_F(GoToTagMT, shouldGoToFileBeginingWhenCantFindTagInFile)
 
 TEST_F(GoToTagMT, shouldThrowWhenMultipleTagsFoundButNoSelected)
 {
-	EXPECT_CALL(*selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
+	EXPECT_CALL(selector, selectTag(HasMoreThanOneElem())).WillOnce(Return(-1));
 	ASSERT_THROW(tagsNavigator.goTo("CompositeMatcher"), TagNotFoundException);
 }
 
 TEST_F(GoToTagMT, shouldSelectWhichTagToGoWhenMultipleTagsFound)
 {
-	EXPECT_CALL(*selector, selectTag(CppTagsAre(buildExpectedCppTags_IsTagWithName()))).WillOnce(Return(1));
+	EXPECT_CALL(selector, selectTag(CppTagsAre(buildExpectedCppTags_IsTagWithName()))).WillOnce(Return(1));
 	EXPECT_CALL(editor, setFile(EndsWith("TestSourceCode\\\\Source\\\\CppTagMatchers.cpp")));
 	EXPECT_CALL(editor, setLine(32));
 	EXPECT_CALL(editor, setColumn(0));

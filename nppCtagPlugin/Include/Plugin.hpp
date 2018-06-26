@@ -72,10 +72,9 @@ private:
 	void createTagsController();
 	void loadConfigFile();
 	void setLoggerParams();
-	std::shared_ptr<CTagsPlugin::ITagsSelector> buildListViewSelector();
-	std::shared_ptr<CTagsPlugin::ITagsSelector> buildGridViewSelector();
-	std::shared_ptr<CTagsPlugin::ITagsSelector> buildTagsSelector();
-	std::shared_ptr<CTagsPlugin::ITagsSelector> getTagsSelector();
+	std::unique_ptr<CTagsPlugin::ITagsSelector> buildListViewSelector();
+	std::unique_ptr<CTagsPlugin::ITagsSelector> buildGridViewSelector();
+	std::unique_ptr<CTagsPlugin::ITagsSelector> buildTagsSelector();
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildReadTagsProxy(const std::string& p_tagFilePath);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagFileReader(const std::string& p_tagFilePath);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildNativeTagReader(const std::string& p_tagFilePath);
@@ -84,7 +83,6 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
 
 	WinApi::UIFileSystem files;
-	std::shared_ptr<CTagsPlugin::ITagsSelector> m_selector;
 	CTagsPlugin::ConfigGetter m_config;
 	std::string m_configFilePath;
 	std::shared_ptr<CTagsPlugin::CTagsController> m_tagsController;
