@@ -23,6 +23,34 @@
 
 extern NppPlugin::TagsPlugin g_plugin;
 
+namespace CTagsPlugin
+{
+
+typedef std::function<std::unique_ptr<ITagsSelector>()> SelectorFactory;
+
+class LazyInitializedTagsSelector : public ITagsSelector
+{
+public:
+	LazyInitializedTagsSelector(SelectorFactory p_factory);
+	int selectTag(const std::vector<TagHolder>& p_tags) override;
+
+private:
+	SelectorFactory factory;
+	std::unique_ptr<ITagsSelector> selector;
+};
+
+LazyInitializedTagsSelector::LazyInitializedTagsSelector(SelectorFactory p_factory)
+	: factory(p_factory)
+{}
+
+int LazyInitializedTagsSelector::selectTag(const std::vector<TagHolder>& p_tags)
+{
+	if (selector == nullptr)
+		selector = factory();
+	return selector->selectTag(p_tags);
+}
+
+}
 namespace NppPlugin
 {
 
@@ -153,14 +181,14 @@ void TagsPlugin::createTagsController()
 		npp,
 		ui,
 		files,
-		buildTagsSelector(),
+		std::make_unique<CTagsPlugin::LazyInitializedTagsSelector>(std::bind(&TagsPlugin::buildTagsSelector, this)),
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
         m_config,
 		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));
 }
 
-std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
+std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_taFilePath)
 {
     return std::make_unique<CTagsPlugin::ReadTagsProxy>(m_config,[=](){ return p_tagFilePath; });
 }
