@@ -1,8 +1,7 @@
-#ifndef I_TAGS_SELECTOR_HPP
-#define I_TAGS_SELECTOR_HPP
+#pragma once
 
 #include <vector>
-#include "ITagsReader.hpp"
+#include "TagHolder.hpp"
 
 namespace CTagsPlugin
 {
@@ -15,5 +14,3 @@ struct ITagsSelector
 };
 
 } // namespace CTagsPlugin
-
-#endif // I_TAGS_SELECTOR_HPP
