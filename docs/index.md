@@ -6,9 +6,9 @@ Plugins binaries can be donwloaded [here]({{ "/assets/nppPluginsBin.zip" | absol
 
 ## Open file plugin
 
-Recursively search for file by regex in specified directories.  
+Recursively search for file by pattern/regex in specified directories.  
 Functions:
- * list and jump to file with name matching given regex;
+ * list and jump to file with name matching given pattern/regex;
  * provides interface for other plugins.
 
 
