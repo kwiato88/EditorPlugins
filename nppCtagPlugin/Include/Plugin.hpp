@@ -1,5 +1,4 @@
-#ifndef PLUGIN_HPP
-#define PLUGIN_HPP
+#pragma once
 
 #include <memory>
 #include <map>
@@ -15,7 +14,7 @@
 namespace NppPlugin
 {
 
-class MesgTraits
+class MsgTraits
 {
 public:
 	void add(long p_msgId, const std::string& p_msgName)
@@ -83,13 +82,11 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
 
 	WinApi::UIFileSystem files;
-	CTagsPlugin::ConfigGetter m_config;
-	std::string m_configFilePath;
-	std::shared_ptr<CTagsPlugin::CTagsController> m_tagsController;
-	MesgTraits messagesNames;
+	CTagsPlugin::ConfigGetter config;
+	std::string configFilePath;
+	std::shared_ptr<CTagsPlugin::CTagsController> tagsController;
+	MsgTraits messagesNames;
 
 };
 
 } // namespace NppPlugin
-
-#endif // PLUGIN

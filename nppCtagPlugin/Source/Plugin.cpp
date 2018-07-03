@@ -103,7 +103,7 @@ void TagsPlugin::init()
 
 void TagsPlugin::detach()
 {
-	m_config.saveConfigFile(m_configFilePath);
+	config.saveConfigFile(configFilePath);
 }
 
 void TagsPlugin::onNppHandleSet()
@@ -135,8 +135,8 @@ void TagsPlugin::initMenu()
 
 void TagsPlugin::setLoggerParams()
 {
-	Logger::setLogLevel(m_config.getLogSeverity());
-	if (m_config.isLoggerEnabled())
+	Logger::setLogLevel(config.getLogSeverity());
+	if (config.isLoggerEnabled())
 		Logger::enable();
 	else
 		Logger::disable();
@@ -144,26 +144,26 @@ void TagsPlugin::setLoggerParams()
 
 void TagsPlugin::loadConfigFile()
 {
-    m_configFilePath = getPluginsConfigDir() + "\\nppCTagPlugin.ini";
-    m_config.loadConfigFile(m_configFilePath);
+    configFilePath = getPluginsConfigDir() + "\\nppCTagPlugin.ini";
+    config.loadConfigFile(configFilePath);
 }
 
 void TagsPlugin::createTagsController()
 {
-    m_tagsController.reset(new CTagsPlugin::CTagsController(
+    tagsController.reset(new CTagsPlugin::CTagsController(
 		npp,
 		ui,
 		files,
 		std::make_unique<CTagsPlugin::LazyInitializedTagsSelector>(std::bind(&TagsPlugin::buildTagsSelector, this)),
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
-		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), m_config),
-        m_config,
+		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), config),
+        config,
 		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
 {
-    return std::make_unique<CTagsPlugin::ReadTagsProxy>(m_config,[=](){ return p_tagFilePath; });
+    return std::make_unique<CTagsPlugin::ReadTagsProxy>(config,[=](){ return p_tagFilePath; });
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagFileReader(const std::string& p_tagFilePath)
@@ -173,7 +173,7 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagFileReader(const s
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildNativeTagReader(const std::string& p_tagFilePath)
 {
-    switch (m_config.getTagsReaderType())
+    switch (config.getTagsReaderType())
     {
         case CTagsPlugin::TagReaderType::Internal   : return buildTagFileReader(p_tagFilePath);
         case CTagsPlugin::TagReaderType::ReadTagExe : return buildReadTagsProxy(p_tagFilePath);
@@ -198,9 +198,9 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagReader(const std::
 {
 	LOG_DEBUG << "Build tags reader for file " << p_tagFilePath;
 	std::unique_ptr<CTagsPlugin::ITagsReader> reader(std::move(buildNativeTagReader(p_tagFilePath)));
-	if (m_config.shouldCacheTags())
+	if (config.shouldCacheTags())
 		reader = std::move(buildCachedTagFileReader(p_tagFilePath, std::move(reader)));
-	if (m_config.shouldFilterFileScopedTags())
+	if (config.shouldFilterFileScopedTags())
 		reader = std::move(buildFileScopedTagFileReader(std::move(reader)));
 	return reader;
 }
@@ -213,12 +213,12 @@ std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildListViewSelector()
 std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildGridViewSelector()
 {
     return std::make_unique<CTagsPlugin::GridViewTagsSelector>(
-        npp.npp, hModule, m_config);
+        npp.npp, hModule, config);
 }
 
 std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildTagsSelector()
 {
-    switch(m_config.getSelectTagsViewType())
+    switch(config.getSelectTagsViewType())
     {
         case CTagsPlugin::SelectTagsViewType::ListView : return buildListViewSelector();
         case CTagsPlugin::SelectTagsViewType::GridView : return buildGridViewSelector();
@@ -232,7 +232,7 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 		<< " from " << p_message.srcModuleName;
 	try
 	{
-		m_tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
+		tagsController->handleTransaction(p_message.internalMsg, *static_cast<Messaging::Transaction*>(p_message.info));
 	}
 	catch (std::exception& e)
 	{
@@ -254,43 +254,43 @@ void TagsPlugin::test2()
 
 void TagsPlugin::nextTag()
 {
-    m_tagsController->next();
+    tagsController->next();
 }
 
 void TagsPlugin::previousTag()
 {
-    m_tagsController->previous();
+    tagsController->previous();
 }
 
 void TagsPlugin::findTag()
 {
-    m_tagsController->find();
+    tagsController->find();
 }
 void TagsPlugin::tagInfo()
 {
-	m_tagsController->tagInfo();
+	tagsController->tagInfo();
 }
 void TagsPlugin::cppSearch()
 {
-	m_tagsController->tagsSearch();
+	tagsController->tagsSearch();
 }
 void TagsPlugin::tagHierarchy()
 {
-	m_tagsController->tagHierarchy();
+	tagsController->tagHierarchy();
 }
 void TagsPlugin::clearTags()
 {
-    m_tagsController->clear();
+    tagsController->clear();
 }
 
 void TagsPlugin::setTagsFiles()
 {
-    m_tagsController->setTagFiles();
+    tagsController->setTagFiles();
 }
 
 void TagsPlugin::generateTagsFile()
 {
-    m_tagsController->generateTags();
+    tagsController->generateTags();
 }
 
 void TagsPlugin::info()
