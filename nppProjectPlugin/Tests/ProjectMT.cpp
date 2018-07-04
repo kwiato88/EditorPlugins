@@ -70,9 +70,9 @@ private:
 	IFiles& files;
 };
 
-struct ProjectMgmyMT : public Test
+struct ProjectMgmtMT : public Test
 {
-	ProjectMgmyMT()
+	ProjectMgmtMT()
 	{
 		rootPath = std::getenv("projectRootPath");
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
@@ -94,7 +94,7 @@ struct ProjectMgmyMT : public Test
 	StrictMock<Plugin::UiMock> uiMock;
 };
 
-struct ProjectMT : public ProjectMgmyMT
+struct ProjectMT : public ProjectMgmtMT
 {
 	Project loadProject(const std::string& p_projectFile)
 	{
@@ -382,7 +382,7 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledIncludesNavigationDuringRefresh)
 	project.refresh();
 }
 
-struct WorkspaceMT : public ProjectMgmyMT
+struct WorkspaceMT : public ProjectMgmtMT
 {
 	~WorkspaceMT()
 	{
