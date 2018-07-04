@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "UI.hpp"
 #include "Project.hpp"
@@ -12,18 +13,21 @@
 namespace ProjectMgmt
 {
 
+typedef std::function<std::unique_ptr<Project>(const Project&)> ProjectFactory;
+
 class Workspace
 {
 public:
 	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
-		Plugin::UI& p_ui);
+		Plugin::UI& p_ui, ProjectFactory p_factory);
 	Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
-		Plugin::UI& p_ui,
+		Plugin::UI& p_ui, ProjectFactory p_factory,
 		const std::string& p_dir);
 	virtual void openProject();
 	virtual void closeProject();
 	virtual void newProject();
 	virtual void refreshProject();
+	virtual void modifyProject();
 
 private:
 	std::vector<std::string> availableProjects() const;
@@ -44,7 +48,7 @@ private:
 	const std::string projectFileName;
 	std::string projectsDir;
 	std::unique_ptr<Project> currentProject;
-	std::vector<std::string> originalTagFiles;
+	ProjectFactory factory;
 };
 
 }

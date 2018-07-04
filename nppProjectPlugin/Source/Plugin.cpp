@@ -40,7 +40,8 @@ void ProjectPlugin::onNppHandleSet()
 		workspace->enable(workspacePath,
 			std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
 			std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui),
-			std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui));
+			std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui),
+			[](const ProjectMgmt::Project&) { return nullptr; }); // TODO: add real factory
 	}
 }
 

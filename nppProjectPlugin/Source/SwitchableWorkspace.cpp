@@ -5,9 +5,13 @@
 namespace ProjectMgmt
 {
 
+std::unique_ptr<Project> noProject(const Project&)
+{
+	return nullptr;
+}
 NotLoadedWorkspace::NotLoadedWorkspace(Plugin::UI& p_ui)
 	: ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), std::make_unique<DisabledFiles>(),
-		p_ui, ""), ui(p_ui)
+		p_ui, &noProject, ""), ui(p_ui)
 {}
 void NotLoadedWorkspace::openProject()
 {
@@ -26,9 +30,14 @@ void NotLoadedWorkspace::refreshProject()
 	ui.infoMessage("nppProject", "Workspace is not loaded");
 }
 
+void NotLoadedWorkspace::modifyProject()
+{
+	ui.infoMessage("nppProject", "Workspace is not loaded");
+}
+
 SwitchableWorkspace::SwitchableWorkspace(Plugin::UI& p_ui)
  : ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), std::make_unique<DisabledFiles>(),
-	 p_ui, ""),
+	 p_ui, &noProject, ""),
 	ui(p_ui), invalidWorkspace(ui), validWorkspace(), currentWorkspace(&invalidWorkspace)
 {}
 
@@ -49,10 +58,16 @@ void SwitchableWorkspace::refreshProject()
     currentWorkspace->refreshProject();
 }
 
+void SwitchableWorkspace::modifyProject()
+{
+	currentWorkspace->modifyProject();
+}
+
 void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
 	std::unique_ptr<ITags> p_tags,
 	std::unique_ptr<IIncludes> p_inc,
-    std::unique_ptr<IFiles> p_files)
+    std::unique_ptr<IFiles> p_files,
+	ProjectFactory p_factory)
 {
 	try
 	{
@@ -65,6 +80,7 @@ void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,
 				std::move(p_inc),
 				std::move(p_files),
 				ui,
+				p_factory,
 				p_workspaceDirPath);
 		}
 		currentWorkspace = validWorkspace.get();

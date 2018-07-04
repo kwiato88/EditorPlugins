@@ -20,6 +20,7 @@ public:
 	void closeProject();
 	void newProject();
 	void refreshProject();
+	void modifyProject();
 private:
 	Plugin::UI& ui;
 };
@@ -33,11 +34,13 @@ public:
 	void closeProject();
 	void newProject();
 	void refreshProject();
+	void modifyProject();
 
     void enable(const std::string& p_workspaceDirPath,
 		std::unique_ptr<ITags> p_tags,
 		std::unique_ptr<IIncludes> p_inc,
-        std::unique_ptr<IFiles> p_files);
+        std::unique_ptr<IFiles> p_files,
+		ProjectFactory p_factory);
     void disable();
 
 private:

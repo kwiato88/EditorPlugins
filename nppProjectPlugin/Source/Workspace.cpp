@@ -71,14 +71,18 @@ private:
 
 }
 Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
-	Plugin::UI& p_ui)
-	: projectFileName("project.json"), projectsDir(), tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)), ui(p_ui)
+	Plugin::UI& p_ui, ProjectFactory p_factory)
+	: projectFileName("project.json"), projectsDir(),
+	tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)),
+	ui(p_ui), factory(p_factory)
 {}
 
 Workspace::Workspace(std::unique_ptr<ITags> p_tags, std::unique_ptr<IIncludes> p_inc, std::unique_ptr<IFiles> p_files,
-	Plugin::UI& p_ui,
+	Plugin::UI& p_ui, ProjectFactory p_factory,
 	const std::string& p_dir)
-	: projectFileName("project.json"), projectsDir(p_dir), tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)), ui(p_ui)
+	: projectFileName("project.json"), projectsDir(p_dir),
+	tags(std::move(p_tags)), inc(std::move(p_inc)), files(std::move(p_files)),
+	ui(p_ui), factory(p_factory)
 {}
 
 std::string Workspace::projectDir(const std::string& p_projectName) const
@@ -230,6 +234,11 @@ void Workspace::refreshProject()
 	{
 		ui.errorMessage("Refresh Project", std::string("Failed to refresh project ") + currentProjectName() + ". Detail: " + e.what());
 	}
+}
+
+void Workspace::modifyProject()
+{
+	// TODO: implement
 }
 
 }
