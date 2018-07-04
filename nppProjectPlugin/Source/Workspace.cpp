@@ -239,6 +239,8 @@ void Workspace::refreshProject()
 void Workspace::modifyProject()
 {
 	// TODO: implement
+	if(currentProject != nullptr)
+		currentProject = std::move(factory(*currentProject, *tags, *inc, *files));
 }
 
 }

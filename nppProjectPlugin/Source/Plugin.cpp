@@ -46,8 +46,19 @@ void ProjectPlugin::onNppHandleSet()
 			std::make_unique<CTags>(npp.npp, "nppProjectPlugin.dll", ui),
 			std::make_unique<Includes>(npp.npp, "nppProjectPlugin.dll", ui),
 			std::make_unique<Files>(npp.npp, "nppProjectPlugin.dll", ui),
-			[](const ProjectMgmt::Project&) { return nullptr; }); // TODO: add real factory
+			std::bind(&ProjectPlugin::createProjectBasedOn, this,
+				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 	}
+}
+
+std::unique_ptr<ProjectMgmt::Project> ProjectPlugin::createProjectBasedOn(
+	const ProjectMgmt::Project& p_project,
+	ProjectMgmt::ITags& p_tags, ProjectMgmt::IIncludes& p_includes, ProjectMgmt::IFiles& p_files)
+{
+	WinApi::CreateProjectDialog dlg(hModule, npp.npp);
+	dlg.setInputProjectData(p_project.exportData());
+	dlg.show();
+	return std::make_unique<ProjectMgmt::Project>(dlg.getResultProject(), p_tags, p_includes, p_files);
 }
 
 void ProjectPlugin::initMenu()
@@ -85,13 +96,11 @@ void ProjectPlugin::editPr()
 {
 	try
 	{
-		WinApi::CreateProjectDialog dlg(hModule, npp.npp);
-		dlg.setInputProjectData(ProjectMgmt::Project("TestProject", {}).exportData());
-		dlg.show();
-		dlg.getResultProject();
+		workspace->modifyProject();
 	}
 	catch (std::exception& e)
 	{
+		// TODO: remove after imple finished
 		ui.errorMessage("ERROR", e.what());
 	}
 }

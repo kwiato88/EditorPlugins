@@ -18,7 +18,7 @@ CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_pa
 void CreateProjectDialog::onInit()
 {
 	itemsPaths.init(this->getItem(ResourceId(ID_ITEMS_NAMES)));
-	itemsPaths.addColumns({ "Iten", "Path" });
+	itemsPaths.addColumns({ "Item", "Path" });
 	fillItemsTable();
 }
 
@@ -52,6 +52,7 @@ void CreateProjectDialog::onEditClick()
 void CreateProjectDialog::setInputProjectData(const boost::property_tree::ptree& p_project)
 {
 	inputProject = p_project;
+	modifiedProject = inputProject;
 }
 
 boost::property_tree::ptree CreateProjectDialog::getResultProject()

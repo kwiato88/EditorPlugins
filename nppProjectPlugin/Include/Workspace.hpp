@@ -13,7 +13,7 @@
 namespace ProjectMgmt
 {
 
-typedef std::function<std::unique_ptr<Project>(const Project&)> ProjectFactory;
+typedef std::function<std::unique_ptr<Project>(const Project&, ITags&, IIncludes&, IFiles&)> ProjectFactory;
 
 class Workspace
 {

@@ -413,7 +413,8 @@ struct WorkspaceMT : public ProjectMgmtMT
 		return Workspace(std::make_unique<TagsProxy>(tagsMock),
 			std::make_unique<IncludesProxy>(incMock),
 			std::make_unique<FilesProxy>(filesMock),
-			uiMock, std::bind(&WorkspaceMT::createProject, this, std::placeholders::_1),
+			uiMock, std::bind(&WorkspaceMT::createProject, this,
+				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
 			testsRootPath + p_workspaceDir);
 	}
 	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
@@ -421,10 +422,11 @@ struct WorkspaceMT : public ProjectMgmtMT
 		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock),
 			std::make_unique<IncludesProxy>(incNiceMock),
 			std::make_unique<FilesProxy>(filesNiceMock),
-			uiMock, std::bind(&WorkspaceMT::createProject, this, std::placeholders::_1),
+			uiMock, std::bind(&WorkspaceMT::createProject, this,
+				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
 			testsRootPath + p_workspaceDir);
 	}
-	std::unique_ptr<Project> createProject(const Project&)
+	std::unique_ptr<Project> createProject(const Project&, ITags&, IIncludes&, IFiles&)
 	{
 		throw std::runtime_error("create new project is not implemented"); // TODO: add stub implementation
 	}

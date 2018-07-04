@@ -25,6 +25,9 @@ protected:
 	void onShoutdown() override;
 
 private:
+	std::unique_ptr<ProjectMgmt::Project> createProjectBasedOn(
+		const ProjectMgmt::Project&, ProjectMgmt::ITags&, ProjectMgmt::IIncludes&, ProjectMgmt::IFiles&);
+
 	std::unique_ptr<ProjectMgmt::SwitchableWorkspace> workspace;
 };
 
