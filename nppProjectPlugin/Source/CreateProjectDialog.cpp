@@ -40,6 +40,12 @@ CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent)
 	registerHandler(MsgMatchers::ButtonClick(ID_BROWSE_BUTTON), std::bind(&CreateItemDialog::onBrowseClick, this));
 }
 
+void CreateItemDialog::setDefaultInputItem()
+{
+	// TODO: init input with deafult values
+	modifiedItem = inputItem;
+}
+
 void CreateItemDialog::setInputItem(const boost::property_tree::ptree& p_item)
 {
 	inputItem = p_item;
@@ -68,7 +74,7 @@ void CreateItemDialog::onInit()
 
 void CreateItemDialog::onBrowseClick()
 {
-
+	//TODO: impl
 }
 
 boost::property_tree::ptree CreateItemDialog::buildModifiedItem()
@@ -79,7 +85,7 @@ boost::property_tree::ptree CreateItemDialog::buildModifiedItem()
 	data.put("includesBrowsing", toEnbleState(includesBrowsing.isChecked()));
 	data.put("fileSearching", toEnbleState(fileSearching.isChecked()));
 	data.put("sourcePath", sourcePath.getContent());
-	// TODO:
+	// TODO: how to set tag file path?
 	//data.put("tagFilePath", ctagsFilePath);
 	return data;
 }
@@ -146,12 +152,18 @@ void CreateProjectDialog::onCancelClick()
 
 boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item)
 {
-	return p_item;
+	CreateItemDialog dlg(m_hInstance, m_self);
+	dlg.setInputItem(p_item);
+	dlg.show();
+	return dlg.getResultItem();
 }
 
 void CreateProjectDialog::onAddClick()
 {
-	items.push_back(editItem(boost::property_tree::ptree()));
+	CreateItemDialog dlg(m_hInstance, m_self);
+	dlg.setDefaultInputItem();
+	dlg.show();
+	items.push_back(dlg.getResultItem());
 	fillItemsTable();
 }
 
@@ -187,5 +199,7 @@ boost::property_tree::ptree CreateProjectDialog::getResultProject()
 {
 	return modifiedProject;
 }
+
+//TODO: validate data correctness
 
 }

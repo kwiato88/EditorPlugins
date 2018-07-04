@@ -15,6 +15,7 @@ public:
 	CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent);
 
 	void setInputItem(const boost::property_tree::ptree& p_item);
+	void setDefaultInputItem();
 	boost::property_tree::ptree getResultItem();
 
 private:
