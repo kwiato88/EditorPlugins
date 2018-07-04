@@ -4,6 +4,7 @@
 #include "CTags.hpp"
 #include "NppIncludes.hpp"
 #include "NppFiles.hpp"
+#include "CreateProjectDialog.hpp"
 
 extern NppPlugin::ProjectPlugin g_plugin;
 
@@ -25,6 +26,10 @@ void fun_close()
 void fun_refresh()
 {
 	g_plugin.refreshPr();
+}
+void fun_edit()
+{
+	g_plugin.editPr();
 }
 
 ProjectPlugin::ProjectPlugin()
@@ -50,6 +55,7 @@ void ProjectPlugin::initMenu()
 	setCommand(TEXT("New project"), fun_new, NULL);
 	setCommand(TEXT("Open project"), fun_open, NULL);
 	setCommand(TEXT("Close project"), fun_close, NULL);
+	setCommand(TEXT("Edit project"), fun_edit, NULL);
 	setCommand(TEXT("Refresh project"), fun_refresh, NULL);
 }
 
@@ -73,6 +79,21 @@ void ProjectPlugin::closePr()
 void ProjectPlugin::refreshPr()
 {
 	workspace->refreshProject();
+}
+
+void ProjectPlugin::editPr()
+{
+	try
+	{
+		WinApi::CreateProjectDialog dlg(hModule, npp.npp);
+		dlg.setInputProjectData(ProjectMgmt::Project("TestProject", {}).exportData());
+		dlg.show();
+		dlg.getResultProject();
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("ERROR", e.what());
+	}
 }
 
 }
