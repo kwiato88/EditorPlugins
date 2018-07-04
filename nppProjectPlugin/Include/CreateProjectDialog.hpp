@@ -21,12 +21,15 @@ private:
 	void onAddClick();
 	void onDeleteClick();
 	void onEditClick();
+
 	void fillItemsTable();
+	boost::property_tree::ptree buildModifiedItemsTree();
 
 	Control::RcFileGrid itemsPaths;
 
 	boost::property_tree::ptree inputProject;
 	boost::property_tree::ptree modifiedProject;
+	std::vector<boost::property_tree::ptree> items;
 };
 
 }
