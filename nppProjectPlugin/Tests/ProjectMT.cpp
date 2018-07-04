@@ -413,14 +413,20 @@ struct WorkspaceMT : public ProjectMgmyMT
 		return Workspace(std::make_unique<TagsProxy>(tagsMock),
 			std::make_unique<IncludesProxy>(incMock),
 			std::make_unique<FilesProxy>(filesMock),
-			uiMock, testsRootPath + p_workspaceDir);
+			uiMock, std::bind(&WorkspaceMT::createProject, this, std::placeholders::_1),
+			testsRootPath + p_workspaceDir);
 	}
 	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
 	{
 		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock),
 			std::make_unique<IncludesProxy>(incNiceMock),
 			std::make_unique<FilesProxy>(filesNiceMock),
-			uiMock, testsRootPath + p_workspaceDir);
+			uiMock, std::bind(&WorkspaceMT::createProject, this, std::placeholders::_1),
+			testsRootPath + p_workspaceDir);
+	}
+	std::unique_ptr<Project> createProject(const Project&)
+	{
+		throw std::runtime_error("create new project is not implemented"); // TODO: add stub implementation
 	}
 
 	std::string projectDirToCleanup;
