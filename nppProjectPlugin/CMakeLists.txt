@@ -29,7 +29,9 @@ add_library(
     Source/CTags.cpp
     Source/NppIncludes.cpp
     Source/NppFiles.cpp
+    Source/CreateProjectDialog.cpp
     Resource/ProjectPluginDetail.rc
+    Resource/CreateProjectDialog.rc
     ../WinApi/Resource/GridDialog.rc
     ../WinApi/Resource/QueryDialog.rc
 )
