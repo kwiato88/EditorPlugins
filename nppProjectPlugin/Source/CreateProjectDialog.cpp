@@ -21,7 +21,81 @@ std::vector<std::string> itemToRow(const boost::property_tree::ptree& p_item)
 		return{ "Item", "source dir not defined" };
 	return{ getLastComponentName(src), src };
 }
+void conditionalyEnable(Control::CheckBox& p_control, const std::string& p_value)
+{
+	if (p_value == "enabled")
+		p_control.enable();
 }
+std::string toEnbleState(bool p_value)
+{
+	return p_value ? "enabled" : "disabled";
+}
+}
+
+CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent)
+	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_ITEM_DIALOG), "Edit Item")
+{
+	registerHandler(MsgMatchers::ButtonClick(IDOK), std::bind(&CreateItemDialog::onOkClick, this));
+	registerHandler(MsgMatchers::ButtonClick(IDCANCEL), std::bind(&CreateItemDialog::onCancelClick, this));
+	registerHandler(MsgMatchers::ButtonClick(ID_BROWSE_BUTTON), std::bind(&CreateItemDialog::onBrowseClick, this));
+}
+
+void CreateItemDialog::setInputItem(const boost::property_tree::ptree& p_item)
+{
+	inputItem = p_item;
+	modifiedItem = inputItem;
+}
+
+boost::property_tree::ptree CreateItemDialog::getResultItem()
+{
+	return modifiedItem;
+}
+
+void CreateItemDialog::onInit()
+{
+	tagsGeneration.init(getItem(ResourceId(ID_TAGS_GENERATION)));
+	tagsNavigation.init(getItem(ResourceId(ID_TAGS_NAVIGATION)));
+	includesBrowsing.init(getItem(ResourceId(ID_INCLUDES_BROWSING)));
+	fileSearching.init(getItem(ResourceId(ID_FILES_SEARCHING)));
+	sourcePath.init(getItem(ResourceId(ID_ITEM_PATH)));
+	
+	conditionalyEnable(tagsGeneration, inputItem.get<std::string>("tagsGeneration", ""));
+	conditionalyEnable(tagsNavigation, inputItem.get<std::string>("tagsNavigation", ""));
+	conditionalyEnable(includesBrowsing, inputItem.get<std::string>("includesBrowsing", ""));
+	conditionalyEnable(fileSearching, inputItem.get<std::string>("fileSearching", ""));
+	sourcePath.setContent(inputItem.get<std::string>("sourcePath", ""));
+}
+
+void CreateItemDialog::onBrowseClick()
+{
+
+}
+
+boost::property_tree::ptree CreateItemDialog::buildModifiedItem()
+{
+	boost::property_tree::ptree data;
+	data.put("tagsGeneration", toEnbleState(tagsGeneration.isChecked()));
+	data.put("tagsNavigation", toEnbleState(tagsNavigation.isChecked()));
+	data.put("includesBrowsing", toEnbleState(includesBrowsing.isChecked()));
+	data.put("fileSearching", toEnbleState(fileSearching.isChecked()));
+	data.put("sourcePath", sourcePath.getContent());
+	// TODO:
+	//data.put("tagFilePath", ctagsFilePath);
+	return data;
+}
+
+void CreateItemDialog::onOkClick()
+{
+	modifiedItem = buildModifiedItem();
+	close(Dialog::RESULT_OK);
+}
+
+void CreateItemDialog::onCancelClick()
+{
+	modifiedItem = inputItem;
+	close(Dialog::RESULT_CANCEL);
+}
+
 
 CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent)
 	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_PROJECT_DIALOG), "Edit Project")

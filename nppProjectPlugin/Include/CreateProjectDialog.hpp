@@ -3,9 +3,36 @@
 #include <boost/property_tree/ptree.hpp>
 #include "Dialog.hpp"
 #include "ControlGrid.hpp"
+#include "ControlCheckBox.hpp"
+#include "ControlEdit.hpp"
 
 namespace WinApi
 {
+
+class CreateItemDialog : public Dialog
+{
+public:
+	CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent);
+
+	void setInputItem(const boost::property_tree::ptree& p_item);
+	boost::property_tree::ptree getResultItem();
+
+private:
+	void onInit() override;
+	void onBrowseClick();
+	void onOkClick();
+	void onCancelClick();
+	boost::property_tree::ptree buildModifiedItem();
+
+	Control::CheckBox tagsGeneration;
+	Control::CheckBox tagsNavigation;
+	Control::CheckBox includesBrowsing;
+	Control::CheckBox fileSearching;
+	Control::Edit sourcePath;
+
+	boost::property_tree::ptree inputItem;
+	boost::property_tree::ptree modifiedItem;
+};
 
 class CreateProjectDialog : public Dialog
 {
