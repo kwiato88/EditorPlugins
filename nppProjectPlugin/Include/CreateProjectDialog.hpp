@@ -24,6 +24,7 @@ private:
 
 	void fillItemsTable();
 	boost::property_tree::ptree buildModifiedItemsTree();
+	boost::property_tree::ptree editItem(const boost::property_tree::ptree& p_item);
 
 	Control::RcFileGrid itemsPaths;
 

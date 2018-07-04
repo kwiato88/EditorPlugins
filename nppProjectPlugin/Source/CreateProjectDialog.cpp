@@ -69,9 +69,16 @@ void CreateProjectDialog::onCancelClick()
 	modifiedProject = inputProject;
 	close(Dialog::RESULT_CANCEL);
 }
+
+boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item)
+{
+	return p_item;
+}
+
 void CreateProjectDialog::onAddClick()
 {
-
+	items.push_back(editItem(boost::property_tree::ptree()));
+	fillItemsTable();
 }
 
 void CreateProjectDialog::onDeleteClick()
@@ -86,7 +93,12 @@ void CreateProjectDialog::onDeleteClick()
 
 void CreateProjectDialog::onEditClick()
 {
-
+	auto idxToEdit = itemsPaths.getSelectedRowIndex();
+	if (idxToEdit >= 0 && idxToEdit < items.size())
+	{
+		items[idxToEdit] = editItem(items[idxToEdit]);
+		fillItemsTable();
+	}
 }
 
 void CreateProjectDialog::setInputProjectData(const boost::property_tree::ptree& p_project)
