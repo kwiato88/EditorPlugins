@@ -468,12 +468,20 @@ struct WorkspaceMT : public ProjectMgmtMT
 				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
 			testsRootPath + p_workspaceDir);
 	}
+	std::unique_ptr<Project> loadProject(const std::string& p_projectFilePath)
+	{
+		boost::property_tree::ptree projectData;
+		boost::property_tree::json_parser::read_json(p_projectFilePath, projectData);
+
+		return std::make_unique<Project>(projectData, tagsMock, incMock, filesMock);
+	}
 	std::unique_ptr<Project> createProject(const Project&, ITags&, IIncludes&, IFiles&)
 	{
-		throw std::runtime_error("create new project is not implemented"); // TODO: add stub implementation
+		return std::move(modifiedProject);
 	}
 
 	std::string projectDirToCleanup;
+	std::unique_ptr<Project> modifiedProject;
 };
 
 TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
@@ -852,6 +860,42 @@ TEST_F(WorkspaceMT, shouldParseIncludesDuringRefreshProject)
 
 	sut.openProject();
 	sut.refreshProject();
+	sut.closeProject();
+}
+
+TEST_F(WorkspaceMT, shouldRestoreDataAfterCloseModifiedProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(buildWorkspace("Workspace"));
+
+	Strings originalSearchDirsPaths{ "D:\\dir", "D:\\dir2\\dir3", "D:\\dir44" };
+	Strings originalTagFilesPaths{ "D:\\file1.txt", "D:\\file2.txt", "D:\\file3.txt" };
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "FirstProject", testsRootPath + "Workspace\\FirstProject" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(originalSearchDirsPaths));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir1", "d:\\dir2" })));
+		EXPECT_CALL(filesMock, setSearchDirs(originalSearchDirsPaths));
+	}
+	{
+		InSequence seq;
+		EXPECT_CALL(incMock, clear());
+		EXPECT_CALL(incMock, parse("d:\\dir1"));
+		EXPECT_CALL(incMock, parse("d:\\dir2"));
+		EXPECT_CALL(incMock, clear());
+	}
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\file2.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
+	}
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	sut.openProject();
+	modifiedProject = std::move(loadProject(testsRootPath + "Workspace\\FirstProject\\project.json"));
+	sut.modifyProject();
 	sut.closeProject();
 }
 

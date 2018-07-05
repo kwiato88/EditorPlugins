@@ -3,11 +3,19 @@
     "items": [
         {
             "sourcePath": "d:\\dir1",
-            "tagFilePath": "d:\\dir1\\file1.txt"
+            "tagFilePath": "d:\\dir1\\file1.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled",
+            "includesBrowsing": "enabled",
+            "fileSearching": "enabled"
         },
         {
             "sourcePath": "d:\\dir2",
-            "tagFilePath": "d:\\dir2\\file2.txt"
+            "tagFilePath": "d:\\dir2\\file2.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled",
+            "includesBrowsing": "enabled",
+            "fileSearching": "enabled"
         }
     ]
 }
