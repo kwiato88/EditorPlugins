@@ -30,7 +30,7 @@ std::string getLastComponentName(const std::string& p_filePath)
 class ProjectWithTagsNavigation : public Project
 {
 public:
-	ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items,
+	explicit ProjectWithTagsNavigation(const std::string& p_name, const std::vector<Elem>& p_items,
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
 		: Project(p_name, p_items, p_tags, p_includes, p_searchFiles),
 		  tags(p_tags), inc(p_includes), files(p_searchFiles),
@@ -43,7 +43,7 @@ public:
 		originalSerachDirs = p_searchFiles.getSearchDirs();
 		refershCodeNavigation();
 	}
-	ProjectWithTagsNavigation(const std::string& p_name, const boost::property_tree::ptree& p_data,
+	explicit ProjectWithTagsNavigation(const std::string& p_name, const boost::property_tree::ptree& p_data,
 		ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
 		: Project(p_data, p_tags, p_includes, p_searchFiles), tags(p_tags), inc(p_includes), files(p_searchFiles),
 		originalTagFiles(), originalSerachDirs()
@@ -54,6 +54,13 @@ public:
 		originalTagFiles = p_tags.getTagFiles();
 		originalSerachDirs = p_searchFiles.getSearchDirs();
 		refershCodeNavigation();
+	}
+	explicit ProjectWithTagsNavigation(const Project& p_project, ITags& p_tags, IIncludes& p_includes, IFiles& p_searchFiles)
+		: Project(p_project), tags(p_tags), inc(p_includes), files(p_searchFiles),
+		originalTagFiles(), originalSerachDirs()
+	{
+		originalTagFiles = p_tags.getTagFiles();
+		originalSerachDirs = p_searchFiles.getSearchDirs();
 	}
 	~ProjectWithTagsNavigation()
 	{
@@ -238,16 +245,23 @@ void Workspace::refreshProject()
 
 void Workspace::modifyProject()
 {
-	// TODO: implement
 	try
 	{
 		if (currentProject != nullptr)
-			currentProject = std::move(factory(*currentProject, *tags, *inc, *files));
+		{
+			std::unique_ptr<Project> modifiedProject = std::move(factory(*currentProject, *tags, *inc, *files));
+			if (!modifiedProject->operator==(*currentProject))
+			{
+				currentProject.reset();
+				currentProject = std::move(std::make_unique<ProjectWithTagsNavigation>(*modifiedProject, *tags, *inc, *files));
+				currentProject->refresh();
+				ui.infoMessage("Edit Project", std::string("Refreshed edited project: ") + currentProject->getName());
+			}
+		}
 	}
 	catch (std::exception& e)
 	{
-		currentProject.reset();
-		ui.errorMessage("edit project", e.what());
+		ui.errorMessage("Edit Project", std::string("Failed to edit project ") + currentProjectName() + ". Detail: " + e.what());
 	}
 }
 

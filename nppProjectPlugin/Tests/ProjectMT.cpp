@@ -510,6 +510,7 @@ TEST_F(WorkspaceMT, shouldOpenSelectedProject)
 		std::vector<Plugin::UI::Row>(
 		{
 			Plugin::UI::Row({"FirstProject", testsRootPath + "Workspace\\FirstProject"}),
+			Plugin::UI::Row({ "ModifiedFirstProject1", testsRootPath + "Workspace\\ModifiedFirstProject1" }),
 			Plugin::UI::Row({ "ProjectWithIncBrowser", testsRootPath + "Workspace\\ProjectWithIncBrowser" }),
 			Plugin::UI::Row({ "ProjectWithSearchFiles", testsRootPath + "Workspace\\ProjectWithSearchFiles" }),
 			Plugin::UI::Row({"SecondProject", testsRootPath + "Workspace\\SecondProject" })
@@ -897,6 +898,53 @@ TEST_F(WorkspaceMT, shouldRestoreDataAfterCloseModifiedProject)
 	modifiedProject = std::move(loadProject(testsRootPath + "Workspace\\FirstProject\\project.json"));
 	sut.modifyProject();
 	sut.closeProject();
+}
+
+TEST_F(WorkspaceMT, shouldRefreshProjectWithModifiedPaths)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	Workspace sut(buildWorkspace("Workspace"));
+
+	Strings originalSearchDirsPaths{ "D:\\dir", "D:\\dir2\\dir3", "D:\\dir44" };
+	Strings originalTagFilesPaths{ "D:\\file1.txt", "D:\\file2.txt", "D:\\file3.txt" };
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "FirstProject", testsRootPath + "Workspace\\FirstProject" })));
+	{
+		InSequence seq;
+		EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(originalSearchDirsPaths));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir1", "d:\\dir2" })));
+		EXPECT_CALL(filesMock, setSearchDirs(originalSearchDirsPaths));
+		EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(originalSearchDirsPaths));
+		EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir1New", "d:\\dir2New" })));
+		EXPECT_CALL(filesMock, setSearchDirs(originalSearchDirsPaths));
+	}
+	{
+		InSequence seq;
+		EXPECT_CALL(incMock, clear());
+		EXPECT_CALL(incMock, parse("d:\\dir1"));
+		EXPECT_CALL(incMock, parse("d:\\dir2"));
+		EXPECT_CALL(incMock, clear());
+		EXPECT_CALL(incMock, clear());
+		EXPECT_CALL(incMock, parse("d:\\dir1New"));
+		EXPECT_CALL(incMock, parse("d:\\dir2New"));
+		EXPECT_CALL(incMock, clear());
+	}
+	{
+		InSequence seq;
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\file2.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(originalTagFilesPaths));
+		EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1New.txt", Strings({ "d:\\dir1New" })));
+		EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\file2New.txt", Strings({ "d:\\dir2New" })));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1New.txt", "d:\\dir2\\file2New.txt" })));
+		EXPECT_CALL(tagsMock, setTagFiles(originalTagFilesPaths));
+	}
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	sut.openProject();
+	modifiedProject = std::move(loadProject(testsRootPath + "Workspace\\ModifiedFirstProject1\\project.json"));
+	sut.modifyProject();
 }
 
 }

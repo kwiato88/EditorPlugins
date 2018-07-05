@@ -1,0 +1,21 @@
+{
+    "name": "ModifiedFirstProject1",
+    "items": [
+        {
+            "sourcePath": "d:\\dir1New",
+            "tagFilePath": "d:\\dir1\\file1New.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled",
+            "includesBrowsing": "enabled",
+            "fileSearching": "enabled"
+        },
+        {
+            "sourcePath": "d:\\dir2New",
+            "tagFilePath": "d:\\dir2\\file2New.txt",
+            "tagsGeneration": "enabled",
+            "tagsNavigation": "enabled",
+            "includesBrowsing": "enabled",
+            "fileSearching": "enabled"
+        }
+    ]
+}
