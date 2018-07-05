@@ -49,8 +49,6 @@ void CreateItemDialog::setDefaultInputItem()
 	data.put("includesBrowsing", "enabled");
 	data.put("fileSearching", "enabled");
 	data.put("sourcePath", "Path to source dir");
-	// TODO: how to set tag file path?
-	//data.put("tagFilePath", ctagsFilePath);
 	inputItem = data;
 	modifiedItem = inputItem;
 }
@@ -88,22 +86,20 @@ void CreateItemDialog::onBrowseClick()
 		sourcePath.setContent(dlg.getSelectedPath());
 }
 
-boost::property_tree::ptree CreateItemDialog::buildModifiedItem()
+void CreateItemDialog::updateModifiedItem()
 {
-	boost::property_tree::ptree data;
-	data.put("tagsGeneration", toEnbleState(tagsGeneration.isChecked()));
-	data.put("tagsNavigation", toEnbleState(tagsNavigation.isChecked()));
-	data.put("includesBrowsing", toEnbleState(includesBrowsing.isChecked()));
-	data.put("fileSearching", toEnbleState(fileSearching.isChecked()));
-	data.put("sourcePath", sourcePath.getContent());
-	// TODO: how to set tag file path?
-	//data.put("tagFilePath", ctagsFilePath);
-	return data;
+	modifiedItem.put("tagsGeneration", toEnbleState(tagsGeneration.isChecked()));
+	modifiedItem.put("tagsNavigation", toEnbleState(tagsNavigation.isChecked()));
+	modifiedItem.put("includesBrowsing", toEnbleState(includesBrowsing.isChecked()));
+	modifiedItem.put("fileSearching", toEnbleState(fileSearching.isChecked()));
+	modifiedItem.put("sourcePath", sourcePath.getContent());
+	// TODO: how to set tag file path in case on new item is created ?
+	//modifiedItem.put("tagFilePath", ctagsFilePath);
 }
 
 void CreateItemDialog::onOkClick()
 {
-	modifiedItem = buildModifiedItem();
+	updateModifiedItem();
 	close(Dialog::RESULT_OK);
 }
 

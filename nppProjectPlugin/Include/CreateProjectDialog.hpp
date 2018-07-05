@@ -23,7 +23,7 @@ private:
 	void onBrowseClick();
 	void onOkClick();
 	void onCancelClick();
-	boost::property_tree::ptree buildModifiedItem();
+	void updateModifiedItem();
 
 	Control::CheckBox tagsGeneration;
 	Control::CheckBox tagsNavigation;
