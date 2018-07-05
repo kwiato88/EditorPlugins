@@ -28,7 +28,7 @@ FONT 8, "Ms Shell Dlg"
 {
     AUTOCHECKBOX    "Tags generation", ID_TAGS_GENERATION, 11, 46, 67, 8, 0, WS_EX_LEFT
     AUTOCHECKBOX    "Tags navigation", ID_TAGS_NAVIGATION, 11, 60, 67, 8, 0, WS_EX_LEFT
-    AUTOCHECKBOX    "Includes browsking", ID_INCLUDES_BROWSING, 93, 46, 77, 8, 0, WS_EX_LEFT
+    AUTOCHECKBOX    "Includes browsing", ID_INCLUDES_BROWSING, 93, 46, 77, 8, 0, WS_EX_LEFT
     AUTOCHECKBOX    "File searching", ID_FILES_SEARCHING, 93, 60, 59, 8, 0, WS_EX_LEFT
     PUSHBUTTON      "Cancel", IDCANCEL, 285, 63, 50, 14, 0, WS_EX_LEFT
     GROUPBOX        "Type", ID_TYPE_GROUP, 3, 34, 174, 44, 0, WS_EX_LEFT

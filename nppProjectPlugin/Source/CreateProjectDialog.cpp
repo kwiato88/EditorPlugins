@@ -22,10 +22,10 @@ std::vector<std::string> itemToRow(const boost::property_tree::ptree& p_item)
 		return{ "Item", "source dir not defined" };
 	return{ getLastComponentName(src), src };
 }
-void conditionalyEnable(Control::CheckBox& p_control, const std::string& p_value)
+void conditionalyCheck(Control::CheckBox& p_control, const std::string& p_value)
 {
 	if (p_value == "enabled")
-		p_control.enable();
+		p_control.check();
 }
 std::string toEnbleState(bool p_value)
 {
@@ -74,10 +74,10 @@ void CreateItemDialog::onInit()
 	fileSearching.init(getItem(ResourceId(ID_FILES_SEARCHING)));
 	sourcePath.init(getItem(ResourceId(ID_ITEM_PATH)));
 	
-	conditionalyEnable(tagsGeneration, inputItem.get<std::string>("tagsGeneration", ""));
-	conditionalyEnable(tagsNavigation, inputItem.get<std::string>("tagsNavigation", ""));
-	conditionalyEnable(includesBrowsing, inputItem.get<std::string>("includesBrowsing", ""));
-	conditionalyEnable(fileSearching, inputItem.get<std::string>("fileSearching", ""));
+	conditionalyCheck(tagsGeneration, inputItem.get<std::string>("tagsGeneration", ""));
+	conditionalyCheck(tagsNavigation, inputItem.get<std::string>("tagsNavigation", ""));
+	conditionalyCheck(includesBrowsing, inputItem.get<std::string>("includesBrowsing", ""));
+	conditionalyCheck(fileSearching, inputItem.get<std::string>("fileSearching", ""));
 	sourcePath.setContent(inputItem.get<std::string>("sourcePath", ""));
 }
 
