@@ -123,6 +123,7 @@ CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_pa
 	registerHandler(MsgMatchers::ButtonClick(ID_DELETE_BUTTON), std::bind(&CreateProjectDialog::onDeleteClick, this));
 	registerHandler(MsgMatchers::KeyDown(itemsPaths, VK_DELETE), std::bind(&CreateProjectDialog::onDeleteClick, this));
 	registerHandler(MsgMatchers::ButtonClick(ID_EDIT_BUTTON), std::bind(&CreateProjectDialog::onEditClick, this));
+	registerHandler(MsgMatchers::DoubleClick(itemsPaths), std::bind(&CreateProjectDialog::onEditClick, this));
 }
 
 void CreateProjectDialog::onInit()
@@ -212,5 +213,6 @@ boost::property_tree::ptree CreateProjectDialog::getResultProject()
 }
 
 //TODO: validate data correctness : inject some validator?
+//TODO: context menu in windows? copy to clipboard?
 
 }
