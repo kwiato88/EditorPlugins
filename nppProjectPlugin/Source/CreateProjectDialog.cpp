@@ -1,6 +1,7 @@
 #include "CreateProjectDialog.hpp"
 #include "CreateProjectDialogDef.h"
 #include "DialogMsgMatchers.hpp"
+#include "SelectDirPathDialog.hpp"
 
 namespace WinApi
 {
@@ -42,7 +43,15 @@ CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent)
 
 void CreateItemDialog::setDefaultInputItem()
 {
-	// TODO: init input with deafult values
+	boost::property_tree::ptree data;
+	data.put("tagsGeneration", "enabled");
+	data.put("tagsNavigation", "enabled");
+	data.put("includesBrowsing", "enabled");
+	data.put("fileSearching", "enabled");
+	data.put("sourcePath", "Path to source dir");
+	// TODO: how to set tag file path?
+	//data.put("tagFilePath", ctagsFilePath);
+	inputItem = data;
 	modifiedItem = inputItem;
 }
 
@@ -74,7 +83,9 @@ void CreateItemDialog::onInit()
 
 void CreateItemDialog::onBrowseClick()
 {
-	//TODO: impl
+	SelectDirPathDialog dlg(m_self, "Select source dir", sourcePath.getContent());
+	if (dlg.show() == Dialog::RESULT_OK)
+		sourcePath.setContent(dlg.getSelectedPath());
 }
 
 boost::property_tree::ptree CreateItemDialog::buildModifiedItem()
@@ -140,7 +151,7 @@ boost::property_tree::ptree CreateProjectDialog::buildModifiedItemsTree()
 void CreateProjectDialog::onOkClick()
 {
 	modifiedProject.erase("items");
-	modifiedProject.add_child("items", buildModifiedItemsTree());
+	modifiedProject.put_child("items", buildModifiedItemsTree());
 	close(Dialog::RESULT_OK);
 }
 
@@ -200,6 +211,6 @@ boost::property_tree::ptree CreateProjectDialog::getResultProject()
 	return modifiedProject;
 }
 
-//TODO: validate data correctness
+//TODO: validate data correctness : inject some validator?
 
 }

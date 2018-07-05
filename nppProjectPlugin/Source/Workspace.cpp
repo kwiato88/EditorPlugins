@@ -239,8 +239,16 @@ void Workspace::refreshProject()
 void Workspace::modifyProject()
 {
 	// TODO: implement
-	if(currentProject != nullptr)
-		currentProject = std::move(factory(*currentProject, *tags, *inc, *files));
+	try
+	{
+		if (currentProject != nullptr)
+			currentProject = std::move(factory(*currentProject, *tags, *inc, *files));
+	}
+	catch (std::exception& e)
+	{
+		currentProject.reset();
+		ui.errorMessage("edit project", e.what());
+	}
 }
 
 }
