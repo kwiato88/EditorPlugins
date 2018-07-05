@@ -67,6 +67,7 @@ void Elem::refresh()
 {
 	if(shouldGenerateTags)
 		tags.generateTags(ctagsFilePath, { sourcePath });
+	refreshIncludesNavigation();
 }
 
 void Elem::appendNavigationTagFile(std::vector<std::string>& p_tagFiles) const
@@ -138,9 +139,11 @@ Project::Project(const boost::property_tree::ptree& p_data,
 
 void Project::refresh()
 {
+	includes.clear();
     for(auto& item : items)
         item.refresh();
-	refreshIncludesNavigation();
+	refreshTagsNavigation();
+	refreshFileSearching();
 }
 
 void Project::refreshTagsNavigation()

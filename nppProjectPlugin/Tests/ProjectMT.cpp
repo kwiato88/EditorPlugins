@@ -289,7 +289,7 @@ TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledFileSearchingDuringRefreshCodeNav
 	project.refershCodeNavigation();
 }
 
-TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
+TEST_F(ProjectMT, shouldGenerateTagsAndSetTagFilesDuringRefresh)
 {
 	Project project
 	{
@@ -305,6 +305,7 @@ TEST_F(ProjectMT, shouldGenerateTagsDuringRefresh)
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir1\\file1.txt", Strings({ "d:\\dir1\\dir" })));
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir2\\dir3\\file2.txt", Strings({ "d:\\dir2\\dir" })));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir1\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
 	project.refresh();
 }
 
@@ -322,6 +323,7 @@ TEST_F(ProjectMT, shouldSupprotSpacesDuringRefersh)
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\dir 2\\file 1.txt", Strings({ "d:\\dir1 q\\dir w" })));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir 2\\file 1.txt" })));
 	project.refresh();
 }
 
@@ -340,6 +342,7 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledTagsGenerationDuringRefresh)
 	};
 
 	EXPECT_CALL(tagsMock, generateTags("d:\\file1.txt", Strings({ "d:\\dir1\\dir" })));
+	EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\file1.txt", "d:\\dir2\\dir3\\file2.txt" })));
 	project.refresh();
 }
 
@@ -379,6 +382,42 @@ TEST_F(ProjectMT, shouldIgnoreItemWithDisabledIncludesNavigationDuringRefresh)
 
 	EXPECT_CALL(incMock, clear());
 	EXPECT_CALL(incMock, parse("d:\\dir2\\dir"));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldSetSearchDirsPathsDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incNiceMock }
+		},
+		tagsNiceMock,
+		incNiceMock,
+		filesMock
+	};
+
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir1\\dir", "d:\\dir2\\dir" })));
+	project.refresh();
+}
+
+TEST_F(ProjectMT, shouldIgnoreItemsWithDisabledFileSearchingDuringRefresh)
+{
+	Project project
+	{
+		"ProjectName",
+		{
+			Elem{ "d:\\dir1\\dir", "d:\\dir1\\file1.txt", tagsNiceMock, incNiceMock, true, true, true, false },
+			Elem{ "d:\\dir2\\dir", "d:\\dir2\\dir3\\file2.txt", tagsNiceMock, incNiceMock }
+		},
+		tagsNiceMock,
+		incNiceMock,
+		filesMock
+	};
+
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({ "d:\\dir2\\dir" })));
 	project.refresh();
 }
 
@@ -772,11 +811,12 @@ TEST_F(WorkspaceMT, shouldGenerateTagsDuringRefreshProject)
 		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
 		EXPECT_CALL(tagsMock, generateTags("d:\\dir12\\file12.txt", Strings({ "d:\\dir12" })));
 		EXPECT_CALL(tagsMock, generateTags("d:\\dir43\\file2.txt", Strings({ "d:\\dir44\\dir" })));
+		EXPECT_CALL(tagsMock, setTagFiles(Strings({ "d:\\dir12\\file12.txt", "d:\\dir43\\file2.txt" })));
 		EXPECT_CALL(tagsMock, setTagFiles(Strings()));
 	}
 	EXPECT_CALL(incMock, clear()).Times(3);
 	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(3);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
@@ -802,9 +842,9 @@ TEST_F(WorkspaceMT, shouldParseIncludesDuringRefreshProject)
 		EXPECT_CALL(incMock, clear());
 	}
 	EXPECT_CALL(tagsMock, getTagFiles()).WillOnce(Return(Strings()));
-	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(2);
+	EXPECT_CALL(tagsMock, setTagFiles(Strings())).Times(3);
 	EXPECT_CALL(filesMock, getSearchDirs()).WillOnce(Return(Strings()));
-	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(2);
+	EXPECT_CALL(filesMock, setSearchDirs(Strings({}))).Times(3);
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
 
 	sut.openProject();
