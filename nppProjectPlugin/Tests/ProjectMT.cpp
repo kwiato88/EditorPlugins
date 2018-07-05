@@ -74,7 +74,10 @@ struct ProjectMgmtMT : public Test
 {
 	ProjectMgmtMT()
 	{
-		rootPath = std::getenv("projectRootPath");
+		char* envVar = std::getenv("projectRootPath");
+		if(envVar == nullptr)
+			throw std::runtime_error("Failed to startup test. Env var 'projectRootPath' is not set");
+		rootPath = envVar;
 		testsRootPath = rootPath + "nppProjectPlugin\\Tests\\";
 		projectsDirPath = testsRootPath + "Projects\\";
 		EXPECT_CALL(tagsNiceMock, getTagFiles()).WillRepeatedly(Return(Strings()));
