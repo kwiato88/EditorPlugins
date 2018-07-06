@@ -459,7 +459,7 @@ struct WorkspaceMT : public ProjectMgmtMT
 				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5),
 			testsRootPath + p_workspaceDir);
 	}
-	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
+	Workspace buildWorkspaceWithNiceMocks(const std::string& p_workspaceDir)
 	{
 		return Workspace(std::make_unique<TagsProxy>(tagsNiceMock),
 			std::make_unique<IncludesProxy>(incNiceMock),
@@ -487,7 +487,7 @@ struct WorkspaceMT : public ProjectMgmtMT
 TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "notExistingDir"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("notExistingDir"));
+	Workspace sut(buildWorkspaceWithNiceMocks("notExistingDir"));
 	EXPECT_CALL(uiMock, errorMessage(_, _));
 	sut.openProject();
 }
@@ -495,7 +495,7 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspaceDirDoesNotExist)
 TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 {
 	ASSERT_TRUE(doesFileExist(testsRootPath + "WorkspaceFile"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceFile"));
+	Workspace sut(buildWorkspaceWithNiceMocks("WorkspaceFile"));
 	EXPECT_CALL(uiMock, errorMessage(_, _));
 	sut.openProject();
 }
@@ -503,7 +503,7 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenWorkspacePathIsNotADir)
 TEST_F(WorkspaceMT, shouldOpenSelectedProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
 	
 	EXPECT_CALL(uiMock, selectRow(
 		Strings({ "Project", "Path" }),
@@ -524,7 +524,7 @@ TEST_F(WorkspaceMT, shouldOpenSelectedProject)
 TEST_F(WorkspaceMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
 	
 	EXPECT_CALL(uiMock, selectRow(_, _,	_))
 		.WillOnce(Return(Plugin::UI::Row({ "FirstProject", testsRootPath + "Workspace\\FirstProject" })));
@@ -537,7 +537,7 @@ TEST_F(WorkspaceMT, shouldNotOpenProjectWhenOneAlreadyOpened)
 TEST_F(WorkspaceMT, shouldPrintMessageWhenNoProjectFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
+	Workspace sut(buildWorkspaceWithNiceMocks("WorkspaceWithInvalidProjects"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "NoProjectFile", testsRootPath + "WorkspaceWithInvalidProjects\\NoProjectFile" })));
@@ -548,7 +548,7 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenNoProjectFile)
 TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectFileIsInvalid)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
+	Workspace sut(buildWorkspaceWithNiceMocks("WorkspaceWithInvalidProjects"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "InvaliProjectFile", testsRootPath + "WorkspaceWithInvalidProjects\\InvaliProjectFile" })));
@@ -559,7 +559,7 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectFileIsInvalid)
 TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectNameIsNoSameAsProjectDir)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
+	Workspace sut(buildWorkspaceWithNiceMocks("WorkspaceWithInvalidProjects"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "WrongProjectName", testsRootPath + "WorkspaceWithInvalidProjects\\WrongProjectName" })));
@@ -570,7 +570,7 @@ TEST_F(WorkspaceMT, shouldPrintMessageWhenProjectNameIsNoSameAsProjectDir)
 TEST_F(WorkspaceMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "WorkspaceWithInvalidProjects"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("WorkspaceWithInvalidProjects"));
+	Workspace sut(buildWorkspaceWithNiceMocks("WorkspaceWithInvalidProjects"));
 	InSequence dummy;
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
@@ -587,7 +587,7 @@ TEST_F(WorkspaceMT, shouldBeAbleToOpenProjectWhenPreviousOpenFailed)
 TEST_F(WorkspaceMT, shouldOpenAndCloseProject)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
 
 	EXPECT_CALL(uiMock, selectRow(_, _, _))
 		.WillOnce(Return(Plugin::UI::Row({ "SecondProject", testsRootPath + "Workspace\\SecondProject" })));
@@ -731,7 +731,7 @@ TEST_F(WorkspaceMT, closingNewProjectShouldCreateProjectDirAndFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("Workspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -747,7 +747,7 @@ TEST_F(WorkspaceMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
-	Workspace sut(buildWorkspaceWithNiceTagsMock( "Workspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks( "Workspace"));
 
 	std::string projectDir = testsRootPath + "Workspace\\NewProject";
 	projectDirToCleanup = projectDir;
@@ -763,7 +763,7 @@ TEST_F(WorkspaceMT, shouldNotCreateNewProjectWhenOneWithGivenNameAlreadyExists)
 TEST_F(WorkspaceMT, shouldNotCreateNewProjectIfWorkspaceIsInvalid)
 {
 	ASSERT_FALSE(doesDirExist(testsRootPath + "NotExistingWorkspace"));
-	Workspace sut(buildWorkspaceWithNiceTagsMock("NotExistingWorkspace"));
+	Workspace sut(buildWorkspaceWithNiceMocks("NotExistingWorkspace"));
 	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("NewProject"));
 	EXPECT_CALL(uiMock, errorMessage(_, _)).Times(AtLeast(0));
 	sut.newProject();

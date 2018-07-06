@@ -96,15 +96,9 @@ void ProjectPlugin::refreshPr()
 
 void ProjectPlugin::editPr()
 {
-	try
-	{
-		workspace->modifyProject();
-	}
-	catch (std::exception& e)
-	{
-		// TODO: remove after imple finished
-		ui.errorMessage("ERROR", e.what());
-	}
+	workspace->modifyProject();
 }
+
+//TODO: add delete project
 
 }
