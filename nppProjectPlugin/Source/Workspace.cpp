@@ -273,8 +273,13 @@ std::unique_ptr<Project> Workspace::modifiedPr() const
 
 std::string Workspace::tagFilePath(const std::string& p_sourcePath) const
 {
-	//TODO:
-	return "";
+	using namespace boost::filesystem;
+	path tagsFileBase = path(projectDir(currentProject->getName())) /= path(p_sourcePath).filename();
+	path tagsFile = tagsFileBase;
+	tagsFile.replace_extension("txt");
+	for (size_t i = 0; exists(tagsFile) && (i < 10); ++i)
+		tagsFile = (path(tagsFileBase) += std::to_string(i)).replace_extension("txt");
+	return tagsFile.string();
 }
 
 }

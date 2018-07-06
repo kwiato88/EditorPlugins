@@ -49,7 +49,7 @@ void CreateItemDialog::setDefaultInputItem()
 	data.put("tagsNavigation", "enabled");
 	data.put("includesBrowsing", "enabled");
 	data.put("fileSearching", "enabled");
-	data.put("sourcePath", "Path to source dir");
+	data.put("sourcePath", "");
 	inputItem = data;
 	modifiedItem = inputItem;
 }

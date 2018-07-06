@@ -29,7 +29,6 @@ public:
 	virtual void newProject();
 	virtual void refreshProject();
 	virtual void modifyProject();
-
 private:
 	std::vector<std::string> availableProjects() const;
 	std::string select(const std::vector<std::string>& p_projectsDirsPaths) const;
