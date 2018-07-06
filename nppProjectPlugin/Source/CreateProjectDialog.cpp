@@ -2,6 +2,7 @@
 #include "CreateProjectDialogDef.h"
 #include "DialogMsgMatchers.hpp"
 #include "SelectDirPathDialog.hpp"
+#include "MessageDialog.hpp"
 
 namespace WinApi
 {
@@ -33,8 +34,8 @@ std::string toEnbleState(bool p_value)
 }
 }
 
-CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent)
-	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_ITEM_DIALOG), "Edit Item")
+CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator)
+	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_ITEM_DIALOG), "Edit Item"), validator(p_validator)
 {
 	registerHandler(MsgMatchers::ButtonClick(IDOK), std::bind(&CreateItemDialog::onOkClick, this));
 	registerHandler(MsgMatchers::ButtonClick(IDCANCEL), std::bind(&CreateItemDialog::onCancelClick, this));
@@ -99,8 +100,21 @@ void CreateItemDialog::updateModifiedItem()
 
 void CreateItemDialog::onOkClick()
 {
-	updateModifiedItem();
-	close(Dialog::RESULT_OK);
+	try
+	{
+		updateModifiedItem();
+		validator(modifiedItem);
+		close(Dialog::RESULT_OK);
+	}
+	catch (std::exception& e)
+	{
+		MessageDialog dlg(m_self);
+		dlg.withTitle("Create Item");
+		dlg.withContent(std::string("Failed to create item: ") + e.what());
+		dlg.with(MessageDialog::Icon::Error);
+		dlg.with(MessageDialog::Buttons::Ok);
+		dlg.show();
+	}
 }
 
 void CreateItemDialog::onCancelClick()
@@ -110,8 +124,8 @@ void CreateItemDialog::onCancelClick()
 }
 
 
-CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent)
-	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_PROJECT_DIALOG), "Edit Project")
+CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator)
+	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_PROJECT_DIALOG), "Edit Project"), validator(p_validator)
 {
 	registerHandler(MsgMatchers::ButtonClick(IDOK), std::bind(&CreateProjectDialog::onOkClick, this));
 	registerHandler(MsgMatchers::ButtonClick(IDCANCEL), std::bind(&CreateProjectDialog::onCancelClick, this));
@@ -160,7 +174,7 @@ void CreateProjectDialog::onCancelClick()
 
 boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item)
 {
-	CreateItemDialog dlg(m_hInstance, m_self);
+	CreateItemDialog dlg(m_hInstance, m_self, validator);
 	dlg.setInputItem(p_item);
 	dlg.show();
 	return dlg.getResultItem();
@@ -168,11 +182,13 @@ boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_
 
 void CreateProjectDialog::onAddClick()
 {
-	CreateItemDialog dlg(m_hInstance, m_self);
+	CreateItemDialog dlg(m_hInstance, m_self, validator);
 	dlg.setDefaultInputItem();
-	dlg.show();
-	items.push_back(dlg.getResultItem());
-	fillItemsTable();
+	if (Dialog::RESULT_OK == dlg.show())
+	{
+		items.push_back(dlg.getResultItem());
+		fillItemsTable();
+	}
 }
 
 void CreateProjectDialog::onDeleteClick()
@@ -208,7 +224,6 @@ boost::property_tree::ptree CreateProjectDialog::getResultProject()
 	return modifiedProject;
 }
 
-//TODO: validate data correctness : inject some validator?
 //TODO: context menu in windows? copy to clipboard?
 
 }

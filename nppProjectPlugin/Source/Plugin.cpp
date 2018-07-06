@@ -55,7 +55,8 @@ std::unique_ptr<ProjectMgmt::Project> ProjectPlugin::createProjectBasedOn(
 	const ProjectMgmt::Project& p_project,
 	ProjectMgmt::ITags& p_tags, ProjectMgmt::IIncludes& p_includes, ProjectMgmt::IFiles& p_files)
 {
-	WinApi::CreateProjectDialog dlg(hModule, npp.npp);
+	auto validateItem = [&](const boost::property_tree::ptree& p_item) { ProjectMgmt::Elem{ p_item }; };
+	WinApi::CreateProjectDialog dlg(hModule, npp.npp, validateItem);
 	dlg.setInputProjectData(p_project.exportData());
 	dlg.show();
 	return std::make_unique<ProjectMgmt::Project>(dlg.getResultProject(), p_tags, p_includes, p_files);
