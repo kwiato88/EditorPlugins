@@ -34,8 +34,8 @@ std::string toEnbleState(bool p_value)
 }
 }
 
-CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator)
-	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_ITEM_DIALOG), "Edit Item"), validator(p_validator)
+CreateItemDialog::CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator, GetTagFilePath p_tagFile)
+	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_ITEM_DIALOG), "Edit Item"), validator(p_validator), tagFile(p_tagFile)
 {
 	registerHandler(MsgMatchers::ButtonClick(IDOK), std::bind(&CreateItemDialog::onOkClick, this));
 	registerHandler(MsgMatchers::ButtonClick(IDCANCEL), std::bind(&CreateItemDialog::onCancelClick, this));
@@ -94,8 +94,8 @@ void CreateItemDialog::updateModifiedItem()
 	modifiedItem.put("includesBrowsing", toEnbleState(includesBrowsing.isChecked()));
 	modifiedItem.put("fileSearching", toEnbleState(fileSearching.isChecked()));
 	modifiedItem.put("sourcePath", sourcePath.getContent());
-	// TODO: how to set tag file path in case on new item is created ?
-	//modifiedItem.put("tagFilePath", ctagsFilePath);
+	if (modifiedItem.get<std::string>("tagFilePath", "").empty())
+		modifiedItem.put("tagFilePath", tagFile(sourcePath.getContent()));
 }
 
 void CreateItemDialog::onOkClick()
@@ -124,8 +124,8 @@ void CreateItemDialog::onCancelClick()
 }
 
 
-CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator)
-	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_PROJECT_DIALOG), "Edit Project"), validator(p_validator)
+CreateProjectDialog::CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator, GetTagFilePath p_tagFile)
+	: Dialog(p_hInstance, p_parent, ResourceId(ID_CREATE_PROJECT_DIALOG), "Edit Project"), validator(p_validator), tagFile(p_tagFile)
 {
 	registerHandler(MsgMatchers::ButtonClick(IDOK), std::bind(&CreateProjectDialog::onOkClick, this));
 	registerHandler(MsgMatchers::ButtonClick(IDCANCEL), std::bind(&CreateProjectDialog::onCancelClick, this));
@@ -174,7 +174,7 @@ void CreateProjectDialog::onCancelClick()
 
 boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item)
 {
-	CreateItemDialog dlg(m_hInstance, m_self, validator);
+	CreateItemDialog dlg(m_hInstance, m_self, validator, tagFile);
 	dlg.setInputItem(p_item);
 	dlg.show();
 	return dlg.getResultItem();
@@ -182,7 +182,7 @@ boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_
 
 void CreateProjectDialog::onAddClick()
 {
-	CreateItemDialog dlg(m_hInstance, m_self, validator);
+	CreateItemDialog dlg(m_hInstance, m_self, validator, tagFile);
 	dlg.setDefaultInputItem();
 	if (Dialog::RESULT_OK == dlg.show())
 	{

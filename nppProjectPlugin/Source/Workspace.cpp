@@ -249,7 +249,7 @@ void Workspace::modifyProject()
 	{
 		if (currentProject != nullptr)
 		{
-			std::unique_ptr<Project> modifiedProject = std::move(factory(*currentProject, *tags, *inc, *files));
+			std::unique_ptr<Project> modifiedProject = std::move(modifiedPr());
 			if (!modifiedProject->operator==(*currentProject))
 			{
 				currentProject.reset();
@@ -263,6 +263,18 @@ void Workspace::modifyProject()
 	{
 		ui.errorMessage("Edit Project", std::string("Failed to edit project ") + currentProjectName() + ". Detail: " + e.what());
 	}
+}
+
+
+std::unique_ptr<Project> Workspace::modifiedPr() const
+{
+	return std::move(factory(*currentProject, *tags, *inc, *files, std::bind(&Workspace::tagFilePath, this, std::placeholders::_1)));
+}
+
+std::string Workspace::tagFilePath(const std::string& p_sourcePath) const
+{
+	//TODO:
+	return "";
 }
 
 }

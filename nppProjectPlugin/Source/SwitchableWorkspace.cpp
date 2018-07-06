@@ -5,7 +5,7 @@
 namespace ProjectMgmt
 {
 
-std::unique_ptr<Project> noProject(const Project&, ITags&, IIncludes&, IFiles&)
+std::unique_ptr<Project> noProject(const Project&, ITags&, IIncludes&, IFiles&, GetTagFilePath)
 {
 	return nullptr;
 }

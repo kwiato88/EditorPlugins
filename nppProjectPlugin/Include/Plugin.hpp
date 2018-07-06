@@ -26,7 +26,8 @@ protected:
 
 private:
 	std::unique_ptr<ProjectMgmt::Project> createProjectBasedOn(
-		const ProjectMgmt::Project&, ProjectMgmt::ITags&, ProjectMgmt::IIncludes&, ProjectMgmt::IFiles&);
+		const ProjectMgmt::Project&, ProjectMgmt::ITags&, ProjectMgmt::IIncludes&, ProjectMgmt::IFiles&,
+		ProjectMgmt::GetTagFilePath);
 
 	std::unique_ptr<ProjectMgmt::SwitchableWorkspace> workspace;
 };

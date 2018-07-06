@@ -13,7 +13,8 @@
 namespace ProjectMgmt
 {
 
-typedef std::function<std::unique_ptr<Project>(const Project&, ITags&, IIncludes&, IFiles&)> ProjectFactory;
+typedef std::function<std::string(const std::string& p_sourcePath)> GetTagFilePath;
+typedef std::function<std::unique_ptr<Project>(const Project&, ITags&, IIncludes&, IFiles&, GetTagFilePath)> ProjectFactory;
 
 class Workspace
 {
@@ -39,6 +40,8 @@ private:
 	std::string currentProjectName() const;
 	std::string projectDir(const std::string& p_projectName) const;
 	std::string projectFile(const std::string& p_projectName) const;
+	std::unique_ptr<Project> modifiedPr() const;
+	std::string tagFilePath(const std::string& p_sourcePath) const;
 
 	Plugin::UI& ui;
 	std::unique_ptr<ITags> tags;

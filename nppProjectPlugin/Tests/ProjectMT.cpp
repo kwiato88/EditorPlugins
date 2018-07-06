@@ -456,7 +456,7 @@ struct WorkspaceMT : public ProjectMgmtMT
 			std::make_unique<IncludesProxy>(incMock),
 			std::make_unique<FilesProxy>(filesMock),
 			uiMock, std::bind(&WorkspaceMT::createProject, this,
-				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5),
 			testsRootPath + p_workspaceDir);
 	}
 	Workspace buildWorkspaceWithNiceTagsMock(const std::string& p_workspaceDir)
@@ -465,7 +465,7 @@ struct WorkspaceMT : public ProjectMgmtMT
 			std::make_unique<IncludesProxy>(incNiceMock),
 			std::make_unique<FilesProxy>(filesNiceMock),
 			uiMock, std::bind(&WorkspaceMT::createProject, this,
-				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4),
+				std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5),
 			testsRootPath + p_workspaceDir);
 	}
 	std::unique_ptr<Project> loadProject(const std::string& p_projectFilePath)
@@ -475,7 +475,7 @@ struct WorkspaceMT : public ProjectMgmtMT
 
 		return std::make_unique<Project>(projectData, tagsMock, incMock, filesMock);
 	}
-	std::unique_ptr<Project> createProject(const Project&, ITags&, IIncludes&, IFiles&)
+	std::unique_ptr<Project> createProject(const Project&, ITags&, IIncludes&, IFiles&, GetTagFilePath)
 	{
 		return std::move(modifiedProject);
 	}

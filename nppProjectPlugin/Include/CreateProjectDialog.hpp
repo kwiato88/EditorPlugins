@@ -11,11 +11,13 @@ namespace WinApi
 {
 
 typedef std::function<void(const boost::property_tree::ptree& p_item)> ValidateItem;
+typedef std::function<std::string(const std::string& p_sourcePath)> GetTagFilePath;
 
 class CreateItemDialog : public Dialog
 {
 public:
-	CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator);
+	CreateItemDialog(InstanceHandle p_hInstance, Handle p_parent,
+		ValidateItem p_validator, GetTagFilePath p_tagFile);
 
 	void setInputItem(const boost::property_tree::ptree& p_item);
 	void setDefaultInputItem();
@@ -37,12 +39,14 @@ private:
 	boost::property_tree::ptree inputItem;
 	boost::property_tree::ptree modifiedItem;
 	ValidateItem validator;
+	GetTagFilePath tagFile;
 };
 
 class CreateProjectDialog : public Dialog
 {
 public:
-	CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent, ValidateItem p_validator);
+	CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent,
+		ValidateItem p_validator, GetTagFilePath p_tagFile);
 	void setInputProjectData(const boost::property_tree::ptree& p_project);
 	boost::property_tree::ptree getResultProject();
 
@@ -64,6 +68,7 @@ private:
 	boost::property_tree::ptree modifiedProject;
 	std::vector<boost::property_tree::ptree> items;
 	ValidateItem validator;
+	GetTagFilePath tagFile;
 };
 
 }
