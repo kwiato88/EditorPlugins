@@ -129,8 +129,8 @@ std::string Workspace::select(const std::vector<std::string>& p_projectsDirsPath
 	std::sort(table.begin(), table.end(), [&](const auto& lhs, const auto& rhs) { return lhs.at(1) < rhs.at(1); });
 	auto selected = ui.selectRow({ "Project", "Path" }, table, {"",""}).at(1);
 	
-	if(selected.empty())
-		std::runtime_error("No project was selected");
+	if (selected.empty())
+		throw std::runtime_error("No project was selected");
 	return selected;
 }
 
@@ -284,7 +284,22 @@ std::string Workspace::tagFilePath(const std::string& p_sourcePath) const
 
 void Workspace::deleteProject()
 {
-	//TODO:
+	try
+	{
+		std::string projectDirToDelete = select(availableProjects());
+		std::string projectToDelete = getLastComponentName(projectDirToDelete);
+		if (projectDir(currentProjectName()) == projectDirToDelete)
+			throw std::runtime_error("Selected project is opened. Close it first");
+		if (ui.binQuery(std::string("Delete project ") + projectToDelete + " [" + projectDirToDelete + "] ?"))
+		{
+			boost::filesystem::remove_all(projectDirToDelete);
+			ui.infoMessage("Delete Project", "Deleted project: " + projectToDelete);
+		}
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("Delete Project", e.what());
+	}
 }
 
 }

@@ -947,4 +947,89 @@ TEST_F(WorkspaceMT, shouldRefreshProjectWithModifiedPaths)
 	sut.modifyProject();
 }
 
+TEST_F(WorkspaceMT, shouldDeleteSelectedProject)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	std::string projectDir = testsRootPath + "Workspace\\TmpProject";
+	projectDirToCleanup = projectDir;
+	ASSERT_FALSE(doesDirExist(projectDir));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("TmpProject"));
+	sut.newProject();
+	sut.closeProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "TmpProject", testsRootPath + "Workspace\\TmpProject" })));
+	EXPECT_CALL(uiMock, binQuery(_)).WillOnce(Return(true));
+	sut.deleteProject();
+	ASSERT_FALSE(doesDirExist(projectDir));
+}
+
+TEST_F(WorkspaceMT, shouldNotDeleteSelectedProjectIfCanceled)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	std::string projectDir = testsRootPath + "Workspace\\TmpProject";
+	projectDirToCleanup = projectDir;
+	ASSERT_FALSE(doesDirExist(projectDir));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("TmpProject"));
+	sut.newProject();
+	sut.closeProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "TmpProject", testsRootPath + "Workspace\\TmpProject" })));
+	EXPECT_CALL(uiMock, binQuery(_)).WillOnce(Return(false));
+	sut.deleteProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+	ASSERT_TRUE(doesFileExist(projectDir + "\\project.json"));
+}
+
+TEST_F(WorkspaceMT, shouldNotDeleteSelectedProjectIfItsOpened)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	std::string projectDir = testsRootPath + "Workspace\\TmpProject";
+	projectDirToCleanup = projectDir;
+	ASSERT_FALSE(doesDirExist(projectDir));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("TmpProject"));
+	sut.newProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "TmpProject", testsRootPath + "Workspace\\TmpProject" })));
+	EXPECT_CALL(uiMock, errorMessage(_, _));
+	sut.deleteProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+}
+
+TEST_F(WorkspaceMT, shouldNotDeleteProjectIfNoneSelected)
+{
+	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
+	std::string projectDir = testsRootPath + "Workspace\\TmpProject";
+	projectDirToCleanup = projectDir;
+	ASSERT_FALSE(doesDirExist(projectDir));
+	Workspace sut(buildWorkspaceWithNiceMocks("Workspace"));
+	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
+
+	EXPECT_CALL(uiMock, query(_, _, _)).WillOnce(Return("TmpProject"));
+	sut.newProject();
+	sut.closeProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+
+	EXPECT_CALL(uiMock, selectRow(_, _, _))
+		.WillOnce(Return(Plugin::UI::Row({ "", "" })));
+	EXPECT_CALL(uiMock, errorMessage(_, _));
+	sut.deleteProject();
+	ASSERT_TRUE(doesDirExist(projectDir));
+	ASSERT_TRUE(doesFileExist(projectDir + "\\project.json"));
+}
+
 }
