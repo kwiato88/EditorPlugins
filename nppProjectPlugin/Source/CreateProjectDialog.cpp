@@ -278,7 +278,9 @@ void CreateProjectDialog::copyItem()
 }
 void CreateProjectDialog::copyAllItems() const
 {
-	copyToClipboard(modifiedProject.get_child("items"));
+	boost::property_tree::ptree allItems;
+	allItems.put_child("items", modifiedProject.get_child("items"));
+	copyToClipboard(allItems);
 }
 void CreateProjectDialog::copyPath()
 {
