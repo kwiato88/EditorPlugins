@@ -1,8 +1,12 @@
+#include <sstream>
+#include <boost/property_tree/json_parser.hpp>
 #include "CreateProjectDialog.hpp"
 #include "CreateProjectDialogDef.h"
 #include "DialogMsgMatchers.hpp"
 #include "SelectDirPathDialog.hpp"
 #include "MessageDialog.hpp"
+#include "ContextMenu.hpp"
+#include "Clipboard.hpp"
 
 namespace WinApi
 {
@@ -151,7 +155,7 @@ void CreateProjectDialog::fillItemsTable()
 	itemsPaths.addRows(rows);
 }
 
-boost::property_tree::ptree CreateProjectDialog::buildModifiedItemsTree()
+boost::property_tree::ptree CreateProjectDialog::buildModifiedItemsTree() const
 {
 	boost::property_tree::ptree modifiedItems;
 	for (const auto& item : items)
@@ -159,10 +163,14 @@ boost::property_tree::ptree CreateProjectDialog::buildModifiedItemsTree()
 	return modifiedItems;
 }
 
-void CreateProjectDialog::onOkClick()
+void CreateProjectDialog::updateModifiedProject()
 {
 	modifiedProject.erase("items");
 	modifiedProject.put_child("items", buildModifiedItemsTree());
+}
+
+void CreateProjectDialog::onOkClick()
+{
 	close(Dialog::RESULT_OK);
 }
 
@@ -172,7 +180,7 @@ void CreateProjectDialog::onCancelClick()
 	close(Dialog::RESULT_CANCEL);
 }
 
-boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item)
+boost::property_tree::ptree CreateProjectDialog::editItem(const boost::property_tree::ptree& p_item) const
 {
 	CreateItemDialog dlg(m_hInstance, m_self, validator, tagFile);
 	dlg.setInputItem(p_item);
@@ -188,6 +196,7 @@ void CreateProjectDialog::onAddClick()
 	{
 		items.push_back(dlg.getResultItem());
 		fillItemsTable();
+		updateModifiedProject();
 	}
 }
 
@@ -198,6 +207,7 @@ void CreateProjectDialog::onDeleteClick()
 	{
 		items.erase(items.begin() + idxToRemove);
 		fillItemsTable();
+		updateModifiedProject();
 	}
 }
 
@@ -208,6 +218,7 @@ void CreateProjectDialog::onEditClick()
 	{
 		items[idxToEdit] = editItem(items[idxToEdit]);
 		fillItemsTable();
+		updateModifiedProject();
 	}
 }
 
@@ -219,11 +230,68 @@ void CreateProjectDialog::setInputProjectData(const boost::property_tree::ptree&
 		items.push_back(item.second);
 }
 
-boost::property_tree::ptree CreateProjectDialog::getResultProject()
+boost::property_tree::ptree CreateProjectDialog::getResultProject() const
 {
 	return modifiedProject;
 }
 
-//TODO: context menu in windows? copy to clipboard?
+bool CreateProjectDialog::showContextMenu(int p_xPos, int p_yPos)
+{
+	if (itemsPaths.isWithin(p_xPos, p_yPos))
+	{
+		ContextMenu menu(m_self);
+		menu.add(ContextMenu::Item{ "Copy project", std::bind(&CreateProjectDialog::copyProject, this) });
+		menu.addSeparator();
+		menu.add(ContextMenu::Item{ "Copy selected item", std::bind(&CreateProjectDialog::copyItem, this) });
+		menu.add(ContextMenu::Item{ "Copy selected item path", std::bind(&CreateProjectDialog::copyPath, this) });
+		menu.addSeparator();
+		menu.add(ContextMenu::Item{ "Copy all items", std::bind(&CreateProjectDialog::copyAllItems, this) });
+		menu.add(ContextMenu::Item{ "Copy all items paths", std::bind(&CreateProjectDialog::copyAllPaths, this) });
+		menu.show(p_xPos, p_yPos);
+		return true;
+	}
+	return false;
+}
+
+void CreateProjectDialog::copyToClipboard(const boost::property_tree::ptree& p_data) const
+{
+	try
+	{
+		std::ostringstream buff;
+		boost::property_tree::json_parser::write_json(buff, p_data);
+		Clipboard::set(Clipboard::String(buff.str()));
+	}
+	catch (boost::property_tree::json_parser::json_parser_error&)
+	{
+	}
+}
+
+void CreateProjectDialog::copyProject() const
+{
+	copyToClipboard(modifiedProject);
+}
+void CreateProjectDialog::copyItem()
+{
+	auto idx = itemsPaths.getSelectedRowIndex();
+	if (idx >= 0 && idx < items.size())
+		copyToClipboard(items[idx]);
+}
+void CreateProjectDialog::copyAllItems() const
+{
+	copyToClipboard(modifiedProject.get_child("items"));
+}
+void CreateProjectDialog::copyPath()
+{
+	auto idx = itemsPaths.getSelectedRowIndex();
+	if (idx >= 0 && idx < items.size())
+		Clipboard::set(Clipboard::String(items[idx].get<std::string>("sourcePath", "")));
+}
+void CreateProjectDialog::copyAllPaths() const
+{
+	std::string buff;
+	for (const auto& item : items)
+		buff += item.get<std::string>("sourcePath", "") + "\n";
+	Clipboard::set(Clipboard::String(buff));
+}
 
 }

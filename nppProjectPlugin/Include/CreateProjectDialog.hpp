@@ -48,19 +48,27 @@ public:
 	CreateProjectDialog(InstanceHandle p_hInstance, Handle p_parent,
 		ValidateItem p_validator, GetTagFilePath p_tagFile);
 	void setInputProjectData(const boost::property_tree::ptree& p_project);
-	boost::property_tree::ptree getResultProject();
+	boost::property_tree::ptree getResultProject() const;
 
 private:
 	void onInit() override;
+	bool showContextMenu(int p_xPos, int p_yPos) override;
 	void onOkClick();
 	void onCancelClick();
 	void onAddClick();
 	void onDeleteClick();
 	void onEditClick();
+	void copyProject() const;
+	void copyItem();
+	void copyAllItems() const;
+	void copyPath();
+	void copyAllPaths() const;
 
+	void copyToClipboard(const boost::property_tree::ptree& p_data) const;
 	void fillItemsTable();
-	boost::property_tree::ptree buildModifiedItemsTree();
-	boost::property_tree::ptree editItem(const boost::property_tree::ptree& p_item);
+	void updateModifiedProject();
+	boost::property_tree::ptree buildModifiedItemsTree() const;
+	boost::property_tree::ptree editItem(const boost::property_tree::ptree& p_item) const;
 
 	Control::RcFileGrid itemsPaths;
 
