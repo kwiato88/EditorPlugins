@@ -282,4 +282,9 @@ std::string Workspace::tagFilePath(const std::string& p_sourcePath) const
 	return tagsFile.string();
 }
 
+void Workspace::deleteProject()
+{
+	//TODO:
+}
+
 }

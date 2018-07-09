@@ -21,6 +21,7 @@ public:
 	void newProject();
 	void refreshProject();
 	void modifyProject();
+	void deleteProject();
 private:
 	Plugin::UI& ui;
 };
@@ -35,6 +36,7 @@ public:
 	void newProject();
 	void refreshProject();
 	void modifyProject();
+	void deleteProject();
 
     void enable(const std::string& p_workspaceDirPath,
 		std::unique_ptr<ITags> p_tags,

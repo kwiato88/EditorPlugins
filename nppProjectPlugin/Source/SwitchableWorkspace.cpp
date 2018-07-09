@@ -35,6 +35,11 @@ void NotLoadedWorkspace::modifyProject()
 	ui.infoMessage("nppProject", "Workspace is not loaded");
 }
 
+void NotLoadedWorkspace::deleteProject()
+{
+	ui.infoMessage("nppProject", "Workspace is not loaded");
+}
+
 SwitchableWorkspace::SwitchableWorkspace(Plugin::UI& p_ui)
  : ProjectMgmt::Workspace(std::make_unique<DisabledTags>(), std::make_unique<DisabledIncludes>(), std::make_unique<DisabledFiles>(),
 	 p_ui, &noProject, ""),
@@ -61,6 +66,11 @@ void SwitchableWorkspace::refreshProject()
 void SwitchableWorkspace::modifyProject()
 {
 	currentWorkspace->modifyProject();
+}
+
+void SwitchableWorkspace::deleteProject()
+{
+	currentWorkspace->deleteProject();
 }
 
 void SwitchableWorkspace::enable(const std::string& p_workspaceDirPath,

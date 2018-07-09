@@ -18,6 +18,7 @@ public:
 	void closePr();
 	void refreshPr();
 	void editPr();
+	void deletePr();
 
 protected:
 	void onNppHandleSet() override;
