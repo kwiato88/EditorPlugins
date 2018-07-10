@@ -106,7 +106,7 @@ void ProjectPlugin::editPr()
 
 void ProjectPlugin::deletePr()
 {
-
+	workspace->deleteProject();
 }
 
 }
