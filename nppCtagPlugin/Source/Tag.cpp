@@ -4,6 +4,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include "Tag.hpp"
 #include "TagPrinter.hpp"
@@ -24,6 +25,18 @@ std::string pathSeparatorsToBackSlash(std::string p_path)
 	boost::algorithm::replace_all(p_path, "\\\\", "\\");
 	boost::algorithm::replace_all(p_path, "/", "\\");
 	return p_path;
+}
+std::string toString(const std::wstring& p_str)
+{
+	return std::string(p_str.begin(), p_str.end());
+}
+std::string toString(const std::string& p_str)
+{
+	return p_str;
+}
+std::string toNativePath(const std::string& p_path)
+{
+	return toString(boost::filesystem::path(p_path).native());
 }
 }
 
@@ -53,7 +66,7 @@ Tag::Addr::Addr(const std::string& p_path, const std::string& p_addr)
 {}
 std::string Tag::Addr::filePath() const
 {
-	return path;
+	return toNativePath(path);
 }
 int Tag::Addr::lineNoInFile() const
 {
@@ -84,7 +97,7 @@ void Tag::Addr::updatePosition() const
 }
 std::pair<int, int> Tag::Addr::findPosition() const
 {
-	std::ifstream fileWithTag(path.c_str());
+	std::ifstream fileWithTag(filePath().c_str());
 	if (!fileWithTag.is_open())
 		throw Plugin::OpenFileException(std::string("Can't open file: ") + path);
 	
