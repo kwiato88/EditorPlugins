@@ -1,3 +1,4 @@
+#include <boost/filesystem/path.hpp>
 #include "NppEditor.hpp"
 #include "OpenFileException.hpp"
 #include "Notepad_plus_msgs.h"
@@ -58,9 +59,8 @@ int Editor::getColumn() const
 
 void Editor::setFile(const std::string& p_filePath)
 {
-	TCHAR filePath[_MAX_PATH];
-	mbstowcs(filePath, p_filePath.c_str(), _MAX_PATH - 1);
-	if (!::SendMessage(npp, NPPM_DOOPEN, 0, (LPARAM)filePath))
+	auto nativePath = boost::filesystem::path(p_filePath).native();
+	if (!::SendMessage(npp, NPPM_DOOPEN, 0, (LPARAM)nativePath.c_str()))
 		throw Plugin::OpenFileException("Editor can't open file: " + p_filePath);
 }
 
