@@ -35,6 +35,10 @@ void fun_delete()
 {
 	g_plugin.deletePr();
 }
+void fun_save()
+{
+	g_plugin.savePr();
+}
 
 ProjectPlugin::ProjectPlugin()
 	: BasePluginWithUI(), workspace(std::make_unique<ProjectMgmt::SwitchableWorkspace>(ui))
@@ -72,6 +76,7 @@ void ProjectPlugin::initMenu()
 	setCommand(TEXT("New project"), fun_new, NULL);
 	setCommand(TEXT("Open project"), fun_open, NULL);
 	setCommand(TEXT("Close project"), fun_close, NULL);
+	setCommand(TEXT("Save project"), fun_save, NULL);
 	setCommand(TEXT("Edit project"), fun_edit, NULL);
 	setCommand(TEXT("Refresh project"), fun_refresh, NULL);
 	setCommand(TEXT("Delete project"), fun_delete, NULL);
@@ -103,7 +108,10 @@ void ProjectPlugin::editPr()
 {
 	workspace->modifyProject();
 }
-
+void ProjectPlugin::savePr()
+{
+	workspace->saveProject();
+}
 void ProjectPlugin::deletePr()
 {
 	workspace->deleteProject();

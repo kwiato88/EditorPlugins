@@ -191,6 +191,11 @@ void Workspace::closeProject()
 	}
 }
 
+void Workspace::saveProject()
+{
+
+}
+
 std::unique_ptr<Project> Workspace::newPr(const std::string& p_projectName) const
 {
 	using namespace boost::filesystem;

@@ -21,6 +21,10 @@ void NotLoadedWorkspace::closeProject()
 {
 	ui.infoMessage("nppProject", "Workspace is not loaded");
 }
+void NotLoadedWorkspace::saveProject()
+{
+	ui.infoMessage("nppProject", "Workspace is not loaded");
+}
 void NotLoadedWorkspace::newProject()
 {
 	ui.infoMessage("nppProject", "Workspace is not loaded");
@@ -54,6 +58,10 @@ void SwitchableWorkspace::closeProject()
 {
     currentWorkspace->closeProject();
 }
+void SwitchableWorkspace::saveProject()
+{
+	currentWorkspace->saveProject();
+}
 void SwitchableWorkspace::newProject()
 {
     currentWorkspace->newProject();
@@ -62,12 +70,10 @@ void SwitchableWorkspace::refreshProject()
 {
     currentWorkspace->refreshProject();
 }
-
 void SwitchableWorkspace::modifyProject()
 {
 	currentWorkspace->modifyProject();
 }
-
 void SwitchableWorkspace::deleteProject()
 {
 	currentWorkspace->deleteProject();

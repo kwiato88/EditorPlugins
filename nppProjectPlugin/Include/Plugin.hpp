@@ -8,7 +8,7 @@ namespace NppPlugin
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("Project Mgmt");
 
-class ProjectPlugin : public BasePluginWithUI<6>
+class ProjectPlugin : public BasePluginWithUI<7>
 {
 public:
 	ProjectPlugin();
@@ -18,6 +18,7 @@ public:
 	void closePr();
 	void refreshPr();
 	void editPr();
+	void savePr();
 	void deletePr();
 
 protected:

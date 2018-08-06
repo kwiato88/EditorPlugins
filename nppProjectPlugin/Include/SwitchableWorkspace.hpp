@@ -18,6 +18,7 @@ public:
 	NotLoadedWorkspace(Plugin::UI& p_ui);
 	void openProject();
 	void closeProject();
+	void saveProject();
 	void newProject();
 	void refreshProject();
 	void modifyProject();
@@ -33,6 +34,7 @@ public:
     
     void openProject();
 	void closeProject();
+	void saveProject();
 	void newProject();
 	void refreshProject();
 	void modifyProject();

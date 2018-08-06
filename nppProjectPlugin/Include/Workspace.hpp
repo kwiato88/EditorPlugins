@@ -26,6 +26,7 @@ public:
 		const std::string& p_dir);
 	virtual void openProject();
 	virtual void closeProject();
+	virtual void saveProject();
 	virtual void newProject();
 	virtual void refreshProject();
 	virtual void modifyProject();
