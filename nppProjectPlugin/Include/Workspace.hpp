@@ -35,7 +35,7 @@ private:
 	std::vector<std::string> availableProjects() const;
 	std::string select(const std::vector<std::string>& p_projectsDirsPaths) const;
 	std::unique_ptr<Project> open(const std::string& p_projectDirPath) const;
-	void close(const Project& p_project) const;
+	void save(const Project& p_project) const;
 	std::unique_ptr<Project> newPr(const std::string& p_projectName) const;
 	std::string newProjectName() const;
 	std::string currentProjectName() const;

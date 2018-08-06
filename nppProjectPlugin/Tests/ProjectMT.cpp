@@ -727,7 +727,7 @@ TEST_F(WorkspaceMT, shouldRestoreSearchDirsPathsAfterCloseProject)
 	sut.closeProject();
 }
 
-TEST_F(WorkspaceMT, closingNewProjectShouldCreateProjectDirAndFile)
+TEST_F(WorkspaceMT, saveingNewProjectShouldCreateProjectDirAndFile)
 {
 	ASSERT_TRUE(doesDirExist(testsRootPath + "Workspace"));
 	EXPECT_CALL(uiMock, infoMessage(_, _)).Times(AtLeast(0));
@@ -739,6 +739,7 @@ TEST_F(WorkspaceMT, closingNewProjectShouldCreateProjectDirAndFile)
 	EXPECT_CALL(uiMock, query(_, "NewProject", "")).WillOnce(Return("NewProject"));
 	sut.newProject();
 	ASSERT_TRUE(doesDirExist(projectDir));
+	sut.saveProject();
 	sut.closeProject();
 	ASSERT_TRUE(doesFileExist(projectDir + "\\project.json"));
 }

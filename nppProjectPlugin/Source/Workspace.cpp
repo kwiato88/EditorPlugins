@@ -160,7 +160,7 @@ void Workspace::openProject()
 	}
 }
 
-void Workspace::close(const Project& p_project) const
+void Workspace::save(const Project& p_project) const
 {
 	ensureDirExists(projectsDir);
 	ensureDirExists(projectDir(p_project.getName()));
@@ -172,28 +172,41 @@ std::string Workspace::currentProjectName() const
 	return currentProject != nullptr ? currentProject->getName() : std::string("No project");
 }
 
+void Workspace::saveProject()
+{
+	try
+	{
+		if (currentProject != nullptr)
+		{
+			save(*currentProject);
+			ui.infoMessage("Save Project", std::string("Saved project: ") + currentProject->getName());
+		}
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("Save Project",
+			std::string("Error occured while saving project ") + currentProjectName() + ". Releasing project. Detail: " + e.what());
+		currentProject.reset();
+	}
+}
+
 void Workspace::closeProject()
 {
 	try
 	{
 		if (currentProject != nullptr)
 		{
-			close(*currentProject);
-			ui.infoMessage("Close Project", std::string("Closed project: ") + currentProject->getName());
+			auto name = currentProject->getName();
 			currentProject.reset();
+			ui.infoMessage("Close Project", std::string("Closed project: ") + name);
 		}
 	}
 	catch (std::exception& e)
 	{
 		ui.errorMessage("Close Project",
-			std::string("Error occured while closing project ") + currentProjectName() + ". Releasing project. Detail: " + e.what());
+			std::string("Error occured while closing project. Releasing project. Detail: ") + e.what());
 		currentProject.reset();
 	}
-}
-
-void Workspace::saveProject()
-{
-
 }
 
 std::unique_ptr<Project> Workspace::newPr(const std::string& p_projectName) const
@@ -213,6 +226,7 @@ void Workspace::newProject()
 		if (currentProject == nullptr)
 		{
 			currentProject = newPr(newProjectName());
+			save(*currentProject);
 			ui.infoMessage("New Project", std::string("New project: ") + currentProject->getName());
 		}
 		else
