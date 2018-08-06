@@ -97,9 +97,10 @@ void Tag::Addr::updatePosition() const
 }
 std::pair<int, int> Tag::Addr::findPosition() const
 {
-	std::ifstream fileWithTag(filePath().c_str());
+	auto toOpen = filePath();
+	std::ifstream fileWithTag(toOpen.c_str());
 	if (!fileWithTag.is_open())
-		throw Plugin::OpenFileException(std::string("Can't open file: ") + path);
+		throw Plugin::OpenFileException(std::string("Can't open file: ") + toOpen);
 	
 	int lineNo = 0;
 	std::string line;
