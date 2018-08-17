@@ -63,13 +63,14 @@ bool contains(const std::string& p_name, const T& p_tokens)
 struct NameMatchingPatternCaseSensitive
 {
 	NameMatchingPatternCaseSensitive(const std::string& p_patterns)
-		: patterns(p_patterns)
+		: patterns(p_patterns), separator(" ")
 	{}
 	std::string patterns;
+	boost::char_separator<char> separator;
 
 	bool isTrue(const std::string& p_name) const
 	{
-		boost::tokenizer<> searchItems(patterns);
+		boost::tokenizer<boost::char_separator<char>> searchItems(patterns, separator);
 		return contains(p_name, searchItems);
 	}
 };
@@ -77,15 +78,16 @@ struct NameMatchingPatternCaseSensitive
 struct NameMatchingPattern
 {
 	NameMatchingPattern(const std::string& p_patterns)
-		: patterns(p_patterns)
+		: patterns(p_patterns), separator(" ")
 	{
 		boost::to_lower(patterns);
 	}
 	std::string patterns;
+	boost::char_separator<char> separator;
 
 	bool isTrue(const std::string& p_name) const
 	{
-		boost::tokenizer<> searchItems(patterns);
+		boost::tokenizer<boost::char_separator<char>> searchItems(patterns, separator);
 		auto lowerCaseName = boost::to_lower_copy<std::string>(p_name);
 		return contains(lowerCaseName, searchItems);
 	}
