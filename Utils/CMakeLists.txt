@@ -8,6 +8,7 @@ add_library(
     nppUtils
     STATIC
     Source/ShellCommand.cpp
+    Source/WinCommand.cpp
     Source/NppEditor.cpp
     Source/WinApiUI.cpp
     Source/WinApiUIFileSystem.cpp
