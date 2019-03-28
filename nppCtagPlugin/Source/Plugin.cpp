@@ -176,7 +176,7 @@ void TagsPlugin::createTagsController()
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), config),
         config,
 		WinApi::CppSearchMatcherGetter(npp.npp, hModule),
-		&buildBasicCommand));
+		&buildWinCommand));
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
