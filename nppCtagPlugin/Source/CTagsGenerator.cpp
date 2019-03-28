@@ -2,7 +2,6 @@
 #include <iterator>
 #include <functional>
 #include "CTagsGenerator.hpp"
-#include "ShellCommand.hpp"
 #include "ShellCommandException.hpp"
 #include "GenerateTagsException.hpp"
 #include "Log.hpp"
@@ -20,8 +19,8 @@ void appendField(std::string& p_fields, bool p_field, const std::string& p_value
 
 } // namespace
 
-CTagsGenerator::CTagsGenerator(const std::string& p_ctagsExePath, const Fields& p_fields)
- : m_ctagsExePath(p_ctagsExePath), m_fields(p_fields)
+CTagsGenerator::CTagsGenerator(Plugin::CommandFactory p_cmdFactory, const std::string& p_ctagsExePath, const Fields& p_fields)
+ : m_buildCmd(p_cmdFactory), m_ctagsExePath(p_ctagsExePath), m_fields(p_fields)
 {
 }
 
@@ -90,8 +89,8 @@ void CTagsGenerator::executeCommand(const Cmd& p_commandString) const
 {
     try
     {
-        Plugin::ShellCommand l_shellCommand(p_commandString.cmd + " " + p_commandString.params);
-        l_shellCommand.execute();
+		auto command(std::move(m_buildCmd(p_commandString.cmd, p_commandString.params)));
+		command->execute();
     }
     catch(Plugin::ShellCommandException&)
     {

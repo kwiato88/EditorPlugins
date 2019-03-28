@@ -47,6 +47,7 @@ add_library(
 target_include_directories(
     CTagsReader
     PUBLIC
+    ../Utils/Interfaces
     ../Utils/Include
     Include
     D:/boost_1_61_0
@@ -67,6 +68,7 @@ add_library(
 target_include_directories(
     CTagsTags
     PUBLIC
+    ../Utils/Interfaces
     ../Utils/Include
     Include
     D:/boost_1_61_0

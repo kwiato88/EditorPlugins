@@ -26,14 +26,16 @@ CTagsController::CTagsController(
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader,
     IConfiguration& p_config,
-	GetTagSearchMatcher p_tagSearchMatcherFactory)
+	GetTagSearchMatcher p_tagSearchMatcherFactory,
+	Plugin::CommandFactory p_cmdFactory)
  : m_editor(p_editor),
    m_ui(p_ui),
    m_files(p_files),
    m_config(p_config),
    m_tagSearchMatcherFactory(p_tagSearchMatcherFactory),
    m_locationsNavigator(m_editor),
-   m_tagsNavigator(m_locationsNavigator, m_editor, std::move(p_tagsSelector), std::move(p_hierSelector), p_tagsReader)
+   m_tagsNavigator(m_locationsNavigator, m_editor, std::move(p_tagsSelector), std::move(p_hierSelector), p_tagsReader),
+   m_cmdFactory(p_cmdFactory)
 {
 	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
 		Command::GenerateTags::Id(), [&](const auto& p) { return handleGenerateTags(p); });
@@ -228,7 +230,7 @@ void CTagsController::generateTags()
 void CTagsController::gnerateTags(std::string p_outFile, std::vector<std::string> p_sourceDirs)
 {
 	LOG_INFO << "Generate tags to file: " << p_outFile;
-    CTagsGenerator(m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
+    CTagsGenerator(m_cmdFactory, m_config.getCtagsPath(), m_config.getSupportedExtensionFileds()).generate(p_outFile, p_sourceDirs);
 }
 
 Result::Basic CTagsController::handleGenerateTags(const Command::GenerateTags& p_com)

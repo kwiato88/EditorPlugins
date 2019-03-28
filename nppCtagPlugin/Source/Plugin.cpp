@@ -14,6 +14,8 @@
 #include "LazyInitializedTagsSelector.hpp"
 #include "TreeViewTagHierSelector.hpp"
 #include "GetCppTagSearchMatcher.hpp"
+#include "ShellCommand.hpp"
+#include "WinCommand.hpp"
 
 #include "Logger.hpp"
 #include "Log.hpp"
@@ -88,6 +90,21 @@ static ShortcutKey generateTagSk = {true,  true, false, 'G'};
 static ShortcutKey cppSearchSk =   {true,  true, false, 'H'};
 
 
+std::unique_ptr<Plugin::Command> buildBasicCommand(const std::string& p_cmd, const std::string& p_args)
+{
+	return std::make_unique<Plugin::ShellCommand>(p_cmd + " " + p_args);
+}
+
+std::unique_ptr<Plugin::Command> buildWinCommand(const std::string& p_cmd, const std::string& p_args)
+{
+	return std::make_unique<Plugin::WinCommand>(p_cmd, p_args);
+}
+
+std::unique_ptr<Plugin::Command> buildWinCommandWithOutput(const std::string& p_cmd, const std::string& p_args)
+{
+	return std::make_unique<Plugin::WinCommandWithInOut>(p_cmd + " " + p_args);
+}
+
 TagsPlugin::TagsPlugin()
 	: files(npp.npp, hModule)
 {}
@@ -158,7 +175,8 @@ void TagsPlugin::createTagsController()
 		std::make_unique<CTagsPlugin::TreeViewTagHierSelector>(hModule, npp.npp),
 		std::make_shared<CTagsPlugin::MultipleTagFilesReader>(std::bind(&TagsPlugin::buildTagReader, this, std::placeholders::_1), config),
         config,
-		WinApi::CppSearchMatcherGetter(npp.npp, hModule)));
+		WinApi::CppSearchMatcherGetter(npp.npp, hModule),
+		&buildBasicCommand));
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)

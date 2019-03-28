@@ -17,6 +17,7 @@
 #include "MessageHandler.hpp"
 #include "Commands.hpp"
 #include "Results.hpp"
+#include "Command.hpp"
 
 namespace CTagsPlugin
 {
@@ -34,7 +35,8 @@ public:
 		std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 		std::shared_ptr<ITagsReader> p_tagsReader,
         IConfiguration& p_config,
-		GetTagSearchMatcher p_tagSearchMatcherFactory);
+		GetTagSearchMatcher p_tagSearchMatcherFactory,
+		Plugin::CommandFactory p_cmdFactory);
 
     void next();
     void previous();
@@ -57,6 +59,7 @@ private:
 	GetTagSearchMatcher m_tagSearchMatcherFactory;
     Navigator m_locationsNavigator;
 	CTagsNavigator m_tagsNavigator;
+	Plugin::CommandFactory m_cmdFactory;
 	Messaging::Handlers m_handlers;
 
     void showTagInfo(const std::string& p_tagName);

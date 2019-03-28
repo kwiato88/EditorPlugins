@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include "Fields.hpp"
+#include "Command.hpp"
 
 namespace CTagsPlugin
 {
@@ -12,7 +13,7 @@ namespace CTagsPlugin
 class CTagsGenerator
 {
 public:
-    CTagsGenerator(const std::string& p_ctagsExePath, const Fields& p_fields);
+    CTagsGenerator(Plugin::CommandFactory p_cmdFactory, const std::string& p_ctagsExePath, const Fields& p_fields);
 
     void generate(const std::string& p_outFile, const std::vector<std::string>& p_sourceDirs) const;
 
@@ -30,6 +31,7 @@ private:
     std::string buildOutFileParam(const std::string& p_outFile) const;
     std::string buildFieldsParam() const;
 
+	Plugin::CommandFactory m_buildCmd;
     std::string m_ctagsExePath;
     const Fields m_fields;
 };
