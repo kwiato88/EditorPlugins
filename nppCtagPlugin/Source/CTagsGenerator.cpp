@@ -32,9 +32,9 @@ void CTagsGenerator::generate(const std::string& p_outFile, const std::vector<st
         executeCommand(cmd);
 }
 
-std::list<std::string> CTagsGenerator::buildCommands(const std::string& p_outFile, const std::vector<std::string>& p_sourceDirs) const
+std::list<CTagsGenerator::Cmd> CTagsGenerator::buildCommands(const std::string& p_outFile, const std::vector<std::string>& p_sourceDirs) const
 {
-    std::list<std::string> commands;
+    std::list<Cmd> commands;
     if(!p_sourceDirs.empty())
     {
         commands.push_back(generateTagsCommand(p_outFile, p_sourceDirs.front()));
@@ -46,22 +46,22 @@ std::list<std::string> CTagsGenerator::buildCommands(const std::string& p_outFil
     return commands;
 }
 
-std::string CTagsGenerator::generateTagsCommand(const std::string& p_outFile, const std::string& p_sourceDir) const
+CTagsGenerator::Cmd CTagsGenerator::generateTagsCommand(const std::string& p_outFile, const std::string& p_sourceDir) const
 {
-    return m_ctagsExePath + " "
-        + buildFieldsParam()
-        + " -R "
-        + buildOutFileParam(p_outFile) + " "
-        + buildSrcDirParam(p_sourceDir);
+	return{ m_ctagsExePath,
+		buildFieldsParam()
+		+ " -R "
+		+ buildOutFileParam(p_outFile) + " "
+		+ buildSrcDirParam(p_sourceDir) };
 }
 
-std::string CTagsGenerator::appendTagsCommand(const std::string& p_outFile, const std::string& p_sourceDir) const
+CTagsGenerator::Cmd CTagsGenerator::appendTagsCommand(const std::string& p_outFile, const std::string& p_sourceDir) const
 {
-    return m_ctagsExePath + " "
-        + buildFieldsParam()
-        + " -a -R "
-        + buildOutFileParam(p_outFile) + " "
-        + buildSrcDirParam(p_sourceDir);
+	return{ m_ctagsExePath,
+		buildFieldsParam()
+		+ " -a -R "
+		+ buildOutFileParam(p_outFile) + " "
+		+ buildSrcDirParam(p_sourceDir) };
 }
 
 std::string CTagsGenerator::buildSrcDirParam(const std::string& p_sourceDir) const
@@ -86,11 +86,11 @@ std::string CTagsGenerator::buildFieldsParam() const
     return fields;
 }
 
-void CTagsGenerator::executeCommand(const std::string& p_commandString) const
+void CTagsGenerator::executeCommand(const Cmd& p_commandString) const
 {
     try
     {
-        Plugin::ShellCommand l_shellCommand(p_commandString);
+        Plugin::ShellCommand l_shellCommand(p_commandString.cmd + " " + p_commandString.params);
         l_shellCommand.execute();
     }
     catch(Plugin::ShellCommandException&)
