@@ -11,7 +11,7 @@ UI::UI(Handle& p_parrent, InstanceHandle& p_hModule)
 	: parrent(p_parrent), hModule(p_hModule)
 {}
 
-void UI::infoMessage(const std::string& p_title, const std::string& p_content)
+void UI::infoMessage(const std::string& p_title, const std::string& p_content) const
 {
 	MessageDialog dlg(parrent);
 	dlg.withTitle(p_title);
@@ -21,7 +21,7 @@ void UI::infoMessage(const std::string& p_title, const std::string& p_content)
 	dlg.show();
 }
 
-void UI::errorMessage(const std::string& p_title, const std::string& p_content)
+void UI::errorMessage(const std::string& p_title, const std::string& p_content) const
 {
 	MessageDialog dlg(parrent);
 	dlg.withTitle(p_title);
@@ -32,7 +32,7 @@ void UI::errorMessage(const std::string& p_title, const std::string& p_content)
 }
 
 std::string UI::query(
-    const std::string& p_question, const std::string& p_initialResponse, const std::string& p_defaultResponse)
+    const std::string& p_question, const std::string& p_initialResponse, const std::string& p_defaultResponse) const
 {
 	WinApi::QueryDialog dialog(hModule, parrent);
     dialog.setQuestion(p_question);
@@ -42,7 +42,7 @@ std::string UI::query(
 	return p_defaultResponse;
 }
 
-bool UI::binQuery(const std::string& p_question)
+bool UI::binQuery(const std::string& p_question) const
 {
 	MessageDialog dlg(parrent);
 	dlg.withTitle("Answer question");
@@ -52,7 +52,7 @@ bool UI::binQuery(const std::string& p_question)
 	return dlg.show() == MessageDialog::Button::Yes;
 }
 
-int UI::select(const std::vector<std::string>& p_list)
+int UI::select(const std::vector<std::string>& p_list) const
 {
 	if (p_list.empty())
 		return -1;
@@ -63,7 +63,7 @@ int UI::select(const std::vector<std::string>& p_list)
 	return dialog.getSelectedItemIndex();
 }
 
-std::string UI::select(const std::vector<std::string>& p_list, const std::string& p_default)
+std::string UI::select(const std::vector<std::string>& p_list, const std::string& p_default) const
 {
 	try
 	{
@@ -78,7 +78,7 @@ std::string UI::select(const std::vector<std::string>& p_list, const std::string
 
 int UI::selectRow(
 	const std::vector<std::string>& p_columnsTitles,
-	const std::vector<Row>& p_table)
+	const std::vector<Row>& p_table) const
 {
 	if(p_table.empty())
 		return -1;
@@ -93,7 +93,7 @@ int UI::selectRow(
 UI::Row UI::selectRow(
 	const std::vector<std::string>& p_columnsTitles,
 	const std::vector<Row>& p_table,
-	const Row& p_default)
+	const Row& p_default) const
 {
 	try
 	{

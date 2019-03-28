@@ -28,23 +28,23 @@ UIFileSystem::UIFileSystem(WinApi::Handle& p_parrent, WinApi::InstanceHandle& p_
  : parrent(p_parrent), hModule(p_hModule)
 {}
 
-std::string UIFileSystem::getFilePath(const std::string& p_comment)
+std::string UIFileSystem::getFilePath(const std::string& p_comment) const
 {
     return getFilePath(p_comment, std::string());
 }
 
-std::string UIFileSystem::getFilePath(const std::string& p_comment, const std::string& p_initialDir)
+std::string UIFileSystem::getFilePath(const std::string& p_comment, const std::string& p_initialDir) const
 {
     WinApi::FilePathGetter getter(parrent);
     return getter.getPath(p_comment, p_initialDir);
 }
 
-std::string UIFileSystem::getDirPath(const std::string& p_comment)
+std::string UIFileSystem::getDirPath(const std::string& p_comment) const
 {
     return getDirPath(p_comment, std::string());
 }
 
-std::string UIFileSystem::getDirPath(const std::string& p_comment, const std::string& p_initialDir)
+std::string UIFileSystem::getDirPath(const std::string& p_comment, const std::string& p_initialDir) const
 {
     WinApi::DirPathGetter getter(parrent);
     return getter.getPath(p_comment, p_initialDir);
@@ -52,14 +52,14 @@ std::string UIFileSystem::getDirPath(const std::string& p_comment, const std::st
 
 std::vector<std::string> UIFileSystem::selectFilesPaths(
     const std::vector<std::string>& p_initialPaths,
-    const std::string& p_startingPath)
+    const std::string& p_startingPath) const
 {
 	return selectPaths<WinApi::SelectorType::File>(p_initialPaths, p_startingPath, parrent, hModule);
 }
 
 std::vector<std::string> UIFileSystem::selectDirsPaths(
     const std::vector<std::string>& p_initialPaths,
-    const std::string& p_startingPath)
+    const std::string& p_startingPath) const
 {
 	return selectPaths<WinApi::SelectorType::Directory>(p_initialPaths, p_startingPath, parrent, hModule);
 }
