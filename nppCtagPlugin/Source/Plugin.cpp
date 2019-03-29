@@ -145,9 +145,9 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
 	setSeparator();
 	setCommand(TEXT("About"), fun_info, NULL);
-	//setSeparator();
-	//setCommand(TEXT("test 1"), myTest1, NULL);
-	//setCommand(TEXT("test 2"), myTest2, NULL);
+	setSeparator();
+	setCommand(TEXT("test 1"), myTest1, NULL);
+	setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 void TagsPlugin::setLoggerParams()
@@ -181,7 +181,7 @@ void TagsPlugin::createTagsController()
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildReadTagsProxy(const std::string& p_tagFilePath)
 {
-    return std::make_unique<CTagsPlugin::ReadTagsProxy>(config,[=](){ return p_tagFilePath; });
+    return std::make_unique<CTagsPlugin::ReadTagsProxy>(config,[=](){ return p_tagFilePath; }, &buildWinCommandWithOutput);
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildTagFileReader(const std::string& p_tagFilePath)
@@ -262,12 +262,28 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-
+	try
+	{
+		std::string output = buildWinCommandWithOutput(config.getReadTagsPath(), "-e -t D:\\tags.txt bind")->execute();
+		ui.infoMessage("run ctags.exe", output);
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("run ctags.exe", e.what());
+	}
 }
 
 void TagsPlugin::test2()
 {
-
+	try
+	{
+		std::string output = buildWinCommandWithOutput(config.getReadTagsPath(), "-e -t D:\\tags.txt dupa")->execute();
+		ui.infoMessage("run ctags.exe", output);
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("run ctags.exe", e.what());
+	}
 }
 
 void TagsPlugin::nextTag()

@@ -23,37 +23,32 @@ namespace CTagsPlugin
 
 ReadTagsProxy::ReadTagsProxy(
     IConfiguration& p_config,
-    TagFilePathProvider p_provider)
+    TagFilePathProvider p_provider,
+	Plugin::CommandFactory p_cmdFactory)
 	: m_config(p_config),
-      m_tagsFile(p_provider)
+      m_tagsFile(p_provider),
+      m_cmdFactory(p_cmdFactory)
 {
 }
 
 std::vector<TagHolder> ReadTagsProxy::findTag(const std::string& p_tagName) const
 {
-	std::string l_command = m_config.getReadTagsPath() + " -e -t ";
-	l_command += "\"" + m_tagsFile() + "\"";
-	l_command += " ";
-	l_command += p_tagName;
-
-	return parseReadTagsOutput(executeCommand(l_command));
+	return parseReadTagsOutput(executeCommand(
+		Cmd{ m_config.getReadTagsPath(), std::string("-e -t ") + "\"" + m_tagsFile() + "\" " + p_tagName }));
 }
 
 std::vector<TagHolder> ReadTagsProxy::findTag(TagMatcher p_matcher) const
 {
-    std::string l_command = m_config.getReadTagsPath() + " -e -t ";
-	l_command += "\"" + m_tagsFile() + "\"" ;
-	l_command += " -l ";
-
-    return parseListTagsOutput(executeCommand(l_command), p_matcher);
+    return parseListTagsOutput(executeCommand(
+		Cmd{ m_config.getReadTagsPath(), std::string(" -e -t ") + "\"" + m_tagsFile() + "\" -l" }), p_matcher);
 }
 
-std::string ReadTagsProxy::executeCommand(const std::string& p_commad) const
+std::string ReadTagsProxy::executeCommand(const Cmd& p_commad) const
 {
-	Plugin::ShellCommand l_shellCommand(p_commad);
 	try
 	{
-		return l_shellCommand.execute();
+		auto command(std::move(m_cmdFactory(p_commad.cmd, p_commad.params)));
+		return command->execute();
 	}
 	catch(Plugin::ShellCommandException&)
 	{

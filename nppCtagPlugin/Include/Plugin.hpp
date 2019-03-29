@@ -34,7 +34,7 @@ private:
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 
-class TagsPlugin : public BasePluginWithUI<13>
+class TagsPlugin : public BasePluginWithUI<16>//13
 {
 public:
 	TagsPlugin();
