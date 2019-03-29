@@ -13,7 +13,6 @@
 
 #include "ReadTagsProxy.hpp"
 #include "TagsReaderException.hpp"
-#include "ShellCommand.hpp"
 #include "ShellCommandException.hpp"
 #include "TagParser.hpp"
 #include "Tag.hpp"
