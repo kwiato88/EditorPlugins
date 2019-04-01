@@ -1,5 +1,6 @@
 #include <iterator>
 #include <algorithm>
+#include <chrono>
 #include <boost/filesystem.hpp>
 
 #include "CachedTagsReader.hpp"
@@ -20,7 +21,15 @@ CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
 			   throw TagsReaderException("Can't check last file modify Time. File " + m_tagFile.string() + " does not exist");
 		   return fs::last_write_time(m_tagFile);
        },
-       [&]() -> std::vector<TagHolder> { return m_tagFileReader->findTag([](const Tag&) { return true; }); }),
+       [&]() -> std::vector<TagHolder>
+	   {
+		   auto begin = std::chrono::system_clock::now();
+		   auto tags = m_tagFileReader->findTag([](const Tag&) { return true; });
+		   auto end = std::chrono::system_clock::now();
+		   std::chrono::duration<double> diff = end - begin;
+		   LOG_DEBUG << "STATS [tagsCount " << tags.size() << ", time " << diff.count() << "s]";
+		   return tags;
+	   }),
    m_tagFileReader(std::move(p_tagFileReader))
 {}
 

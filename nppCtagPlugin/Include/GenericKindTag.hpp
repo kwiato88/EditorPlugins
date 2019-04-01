@@ -6,7 +6,7 @@
 namespace CTagsPlugin
 {
 
-struct GenericKindTag: public Tag
+struct GenericKindTag: public Tag, Counter<GenericKindTag>
 {
 	Tag* clone() const override;
 	void assign(const Tag& p_tag) override;

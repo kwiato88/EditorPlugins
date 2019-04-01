@@ -24,6 +24,11 @@
 #include "Results.hpp"
 #include "MessageHandler.hpp"
 
+#include "Counter.hpp"
+#include "Tag.hpp"
+#include "CppTag.hpp"
+#include "GenericKindTag.hpp"
+
 extern NppPlugin::TagsPlugin g_plugin;
 
 namespace NppPlugin
@@ -121,6 +126,12 @@ void TagsPlugin::init()
 void TagsPlugin::detach()
 {
 	config.saveConfigFile(configFilePath);
+	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::Tag>::objectsAlive
+		<< ", created " << Counter<CTagsPlugin::Tag>::objectsCreated << ", Tag]";
+	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::CppTag>::objectsAlive
+		<< ", created " << Counter<CTagsPlugin::CppTag>::objectsCreated << ", CppTag]";
+	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::GenericKindTag>::objectsAlive
+		<< ", created " << Counter<CTagsPlugin::GenericKindTag>::objectsCreated << ", GenericKindTag]";
 }
 
 void TagsPlugin::onNppHandleSet()

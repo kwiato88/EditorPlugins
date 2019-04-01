@@ -15,7 +15,7 @@ class ExtensionFields;
 class ITagsReader;
 class TestCppTagBuilder;
 
-class CppTag: public Tag
+class CppTag: public Tag, public Counter<CppTag>
 {
 public:
 	friend class Cpp::IsTagWithAtt;
