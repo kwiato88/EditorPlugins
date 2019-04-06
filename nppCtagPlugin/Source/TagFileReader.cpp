@@ -147,12 +147,18 @@ std::vector<TagHolder> searchInSortedFile(TagFile& p_file, const std::string& p_
 	if(tag == p_file.end())
         return std::vector<TagHolder>();
 
+	//FIXME: TagFile::Iterator is not working with std algorithms
+	TagFile::Iterator begin = findFirstMatchingTagLine(tag, p_tagName, p_file.begin());
+	TagFile::Iterator end = findLastMatchingTagLine(tag, p_tagName, p_file.end()) + 1;
+	for (TagFile::Iterator i = begin; i != end; ++i)
+		tags.push_back(parseTag(*i));
+	/*
 	std::transform(
 		findFirstMatchingTagLine(tag, p_tagName, p_file.begin()),
 		findLastMatchingTagLine(tag, p_tagName, p_file.end()) + 1,
         std::back_inserter(tags),
         &parseTag);	
-
+	*/
     return tags;
 }
 
