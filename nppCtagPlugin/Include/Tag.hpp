@@ -8,7 +8,7 @@
 #include "Fields.hpp"
 #include "FillBaseTag.hpp"
 #include "TagHolder.hpp"
-#include "Counter.hpp"
+//#include "Counter.hpp"
 
 #include <map>
 namespace CTagsPlugin
@@ -45,7 +45,7 @@ class ExtensionFields;
 class ITagsReader;
 class TestTagBuilder;
 
-class Tag : public Counter<Tag>
+class Tag //: public Counter<Tag>
 {
 public:
 	friend void fillBaseTag(Tag& p_outTag, const std::string& p_TagFileLine, const ExtensionFields& p_fields);
