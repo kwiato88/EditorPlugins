@@ -24,7 +24,7 @@
 #include "Results.hpp"
 #include "MessageHandler.hpp"
 
-//#include "Counter.hpp"
+#include "ObjectsCounter.hpp"
 #include "Tag.hpp"
 #include "CppTag.hpp"
 #include "GenericKindTag.hpp"
@@ -126,15 +126,13 @@ void TagsPlugin::init()
 void TagsPlugin::detach()
 {
 	config.saveConfigFile(configFilePath);
-	// TODO:uncomment
-	/*
-	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::Tag>::objectsAlive
-		<< ", created " << Counter<CTagsPlugin::Tag>::objectsCreated << ", Tag]";
-	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::CppTag>::objectsAlive
-		<< ", created " << Counter<CTagsPlugin::CppTag>::objectsCreated << ", CppTag]";
-	LOG_INFO << "STATS [alive " << Counter<CTagsPlugin::GenericKindTag>::objectsAlive
-		<< ", created " << Counter<CTagsPlugin::GenericKindTag>::objectsCreated << ", GenericKindTag]";
-		*/
+	
+	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsAlive
+		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsCreated << ", Tag]";
+	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::objectsAlive
+		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::objectsCreated << ", CppTag]";
+	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::objectsAlive
+		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::objectsCreated << ", GenericKindTag]";
 }
 
 void TagsPlugin::onNppHandleSet()
