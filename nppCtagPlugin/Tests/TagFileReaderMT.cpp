@@ -80,7 +80,7 @@ struct TagFileReader_SortedFileMT : public TagFileReaderMT, public WithParamInte
 	}
 	static void SetUpTestCase()
 	{
-		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_SortedFile.txt";
+		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tmp_tagsFile_SortedFile.txt";
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),
@@ -193,7 +193,7 @@ struct TagFileReader_UnsortedFileMT : public TagFileReaderMT, public WithParamIn
 	}
 	static void SetUpTestCase()
 	{
-		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_UnsortedFile.txt";
+		s_tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tmp_tagsFile_UnsortedFile.txt";
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),

@@ -58,7 +58,7 @@ struct CTagsMT : public Test
 		std::make_unique<TagHierarchySelectorProxy>(hierSelector),
 		tagsReader
 	};
-	std::string tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile.txt";
+	std::string tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tmp_tagsFile.txt";
 };
 
 }

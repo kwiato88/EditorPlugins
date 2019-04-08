@@ -28,7 +28,7 @@ void CTagsMT::expectGetAnyLocation()
 }
 void CTagsMT::setPathToFileWithInvalidTags()
 {
-	tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tagsFile_ModifiedWithInvalidTags.txt";
+	tagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\tmp_tagsFile_ModifiedWithInvalidTags.txt";
 }
 
 }
