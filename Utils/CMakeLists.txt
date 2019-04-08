@@ -29,6 +29,19 @@ target_include_directories(
     D:/boost_1_61_0
 )
 
+add_library(
+	measurements
+	STATIC
+	Source/Counters.cpp
+)
+
+target_include_directories(
+    measurements
+    PUBLIC
+    Include
+    D:/boost_1_61_0
+)
+
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
     add_definitions( /D _VARIADIC_MAX=10 )
 endif()
