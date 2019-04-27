@@ -36,10 +36,9 @@ template <typename Tag>
 std::string Samples<Tag>::print()
 {
 	std::ostringstream buff;
-	buff << "[" << Tag::name() << "] "
-		<< "min: " << minElem() << ", max: " << maxElem() 
+	buff << "[min: " << minElem() << ", max: " << maxElem()
 		<< ", avg: " << avgElem() << ", mid: " << midElem()
-		<< ", count: " << measurements.size();
+		<< ", count: " << measurements.size() << ", " << Tag::name() << "]";
 	return buff.str();
 }
 

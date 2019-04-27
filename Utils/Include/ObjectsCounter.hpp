@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+#include <boost/type_index.hpp>
+
 namespace Meas
 {
 
@@ -20,6 +24,14 @@ struct ObjectsCounter
         ++objectsCreated;
         ++objectsAlive;
     }
+
+	static std::string print()
+	{
+		std::ostringstream buff;
+		buff << "[alive " << objectsAlive << ", created " << objectsCreated
+			<< ", " << boost::typeindex::type_id<T>().pretty_name() << "]";
+		return buff.str();
+	}
 protected:
     ~ObjectsCounter() // objects should never be removed through pointers of this type
     {

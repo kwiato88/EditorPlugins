@@ -130,12 +130,9 @@ void TagsPlugin::detach()
 	config.saveConfigFile(configFilePath);
 	
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::TagsLoadTime>::print();
-	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsAlive
-		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsCreated << ", Tag]";
-	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::objectsAlive
-		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::objectsCreated << ", CppTag]";
-	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::objectsAlive
-		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::objectsCreated << ", GenericKindTag]";
+	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::Tag>::print();
+	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::print();
+	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::print();
 }
 
 void TagsPlugin::onNppHandleSet()
