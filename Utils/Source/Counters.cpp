@@ -10,6 +10,7 @@ namespace Meas
 void Counters::Counter::add(double p_value)
 {
 	measurements.push_back(p_value);
+	measurements.sort();
 }
 
 std::string Counters::Counter::print() const

@@ -24,6 +24,8 @@
 #include "Results.hpp"
 #include "MessageHandler.hpp"
 
+#include "CtagsMeasTags.hpp"
+#include "Samples.hpp"
 #include "ObjectsCounter.hpp"
 #include "Tag.hpp"
 #include "CppTag.hpp"
@@ -127,6 +129,7 @@ void TagsPlugin::detach()
 {
 	config.saveConfigFile(configFilePath);
 	
+	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::TagsLoadTime>::print();
 	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsAlive
 		<< ", created " << Meas::ObjectsCounter<CTagsPlugin::Tag>::objectsCreated << ", Tag]";
 	LOG_INFO << "STATS [alive " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::objectsAlive

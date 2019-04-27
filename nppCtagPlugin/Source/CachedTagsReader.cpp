@@ -1,11 +1,13 @@
 #include <iterator>
 #include <algorithm>
-#include <chrono>
+#include <boost/timer.hpp>
 #include <boost/filesystem.hpp>
 
 #include "CachedTagsReader.hpp"
 #include "TagsReaderException.hpp"
 #include "Tag.hpp"
+#include "CtagsMeasTags.hpp"
+#include "Samples.hpp"
 
 namespace CTagsPlugin
 {
@@ -23,11 +25,10 @@ CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
        },
        [&]() -> std::vector<TagHolder>
 	   {
-		   auto begin = std::chrono::system_clock::now();
+		   boost::timer tm;
 		   auto tags = m_tagFileReader->findTag([](const Tag&) { return true; });
-		   auto end = std::chrono::system_clock::now();
-		   std::chrono::duration<double> diff = end - begin;
-		   LOG_DEBUG << "STATS [tagsCount " << tags.size() << ", time " << diff.count() << "s]";
+		   auto time = tm.elapsed();
+		   Meas::Samples<TagsLoadTime>::add(time *100/tags.size());
 		   return tags;
 	   }),
    m_tagFileReader(std::move(p_tagFileReader))
