@@ -12,6 +12,7 @@
 #include "TagHierarchy.hpp"
 #include "ITagHierarchySelector.hpp"
 #include "Editor.hpp"
+#include "ChildrenTags.hpp"
 
 namespace CTagsPlugin
 {
@@ -54,6 +55,7 @@ private:
 	Plugin::Editor& m_editor;
     std::unique_ptr<ITagsSelector> m_tagsSelector;
 	std::unique_ptr<ITagHierarchySelector> m_hierSelector;
+	ChildrenTags m_childrenTags;
 	std::shared_ptr<ITagsReader> m_tagsReader;
 };
 

@@ -66,6 +66,7 @@ CTagsNavigator::CTagsNavigator(
    m_editor(p_editor),
    m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
+   m_childrenTags(p_tagsReader),
    m_tagsReader(p_tagsReader)
 {
 }
@@ -106,7 +107,10 @@ std::vector<TagHolder> CTagsNavigator::getComplexTags(const std::string& p_compl
 
 std::vector<TagHolder> CTagsNavigator::getChildrenTags(const TagHolder& p_parentTag)
 {
-	auto items(std::move(findTag(m_tagsReader, [&](const Tag& t) { return t.isChild(p_parentTag); })));
+	auto items(std::move(m_childrenTags.get(p_parentTag)));
+	if (items.empty())
+		throw TagNotFoundException();
+	boost::range::sort(items, &compareTags);
 	LOG_DEBUG << "Found " << items.size() << " children tags";
 	return std::move(items);
 }

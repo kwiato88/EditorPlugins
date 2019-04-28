@@ -11,6 +11,7 @@ add_library(
     Source/CTagsNavigator.cpp
     Source/TagHierarchy.cpp
     Source/TagsHierarchy.cpp
+	Source/ChildrenTags.cpp
     Source/CTagsGenerator.cpp
     Source/MultipleTagFilesReader.cpp
     Source/FileScopedTagFilteringReader.cpp
