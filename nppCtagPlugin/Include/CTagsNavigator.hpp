@@ -24,7 +24,8 @@ public:
 				   Plugin::Editor& p_editor,
 				   std::unique_ptr<ITagsSelector> p_tagsSelector,
 		           std::unique_ptr<ITagHierarchySelector> p_hierSelector,
-				   std::shared_ptr<ITagsReader> p_tagsReader);
+				   std::shared_ptr<ITagsReader> p_tagsReader,
+                   bool p_useCache);
 
     /*
      * @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException

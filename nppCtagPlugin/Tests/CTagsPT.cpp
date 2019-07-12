@@ -56,7 +56,8 @@ struct CtagsPerformanceTests : public Test
 		editor,
 		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
-		tagsReader
+		tagsReader,
+		false
 	};
 
 	std::string bigTagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
@@ -151,7 +152,8 @@ struct CachedCtagsPerformanceTests : public CtagsPerformanceTests
 		editor,
 		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
-		tagsReaderWithCache
+		tagsReaderWithCache,
+		false
 	};
 };
 

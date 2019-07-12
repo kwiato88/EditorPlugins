@@ -61,12 +61,13 @@ CTagsNavigator::CTagsNavigator(
 	Plugin::Editor& p_editor,
 	std::unique_ptr<ITagsSelector> p_tagsSelector,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
-	std::shared_ptr<ITagsReader> p_tagsReader)
+	std::shared_ptr<ITagsReader> p_tagsReader,
+	bool p_useCache)
  : m_navigator(p_navigator),
    m_editor(p_editor),
    m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
-   m_childrenTags(p_tagsReader),
+   m_childrenTags(p_tagsReader, p_useCache),
    m_tagsReader(p_tagsReader)
 {
 }

@@ -34,7 +34,9 @@ CTagsController::CTagsController(
    m_config(p_config),
    m_tagSearchMatcherFactory(p_tagSearchMatcherFactory),
    m_locationsNavigator(m_editor),
-   m_tagsNavigator(m_locationsNavigator, m_editor, std::move(p_tagsSelector), std::move(p_hierSelector), p_tagsReader),
+   m_tagsNavigator(m_locationsNavigator, m_editor,
+	   std::move(p_tagsSelector), std::move(p_hierSelector), p_tagsReader,
+	   p_config.shouldCacheTags()),
    m_cmdFactory(p_cmdFactory)
 {
 	m_handlers.addHandler<Command::GenerateTags, Result::Basic>(
