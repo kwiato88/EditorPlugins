@@ -158,4 +158,9 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 	goTo(selectTag(hier));
 }
 
+void CTagsNavigator::onTagsLoaded()
+{
+	m_childrenTags.clear();
+}
+
 } /* namespace CTagsPlugin */

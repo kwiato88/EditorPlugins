@@ -80,6 +80,7 @@ private:
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildCachedTagFileReader(const std::string& p_tagFilePath, std::unique_ptr<CTagsPlugin::ITagsReader> p_reader);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader);
 	std::unique_ptr<CTagsPlugin::ITagsReader> buildTagReader(const std::string& p_tagFilePath);
+	void tagsLoaded();
 
 	WinApi::UIFileSystem files;
 	CTagsPlugin::ConfigGetter config;

@@ -16,6 +16,8 @@ public:
 	ChildrenTags(std::shared_ptr<ITagsReader> p_tags);
 
 	std::vector<TagHolder> get(const Tag& p_parent);
+	void clear();
+
 private:
 	bool hasChildren(const Tag& p_parent) const;
 

@@ -43,6 +43,8 @@ public:
 	*/
 	void goToTagInHierarchy(const std::string& p_currentTagName);
 
+	void onTagsLoaded();
+
 private:
     Location getCurrentLocation() const;
     TagHolder selectTag(const std::vector<TagHolder>& p_tags);

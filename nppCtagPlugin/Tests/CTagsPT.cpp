@@ -143,7 +143,8 @@ struct CachedCtagsPerformanceTests : public CtagsPerformanceTests
 {
 	std::shared_ptr<ITagsReader> tagsReaderWithCache = std::make_shared<CachedTagsReader>(
 		std::make_unique<TagFileReader>([&]() {return bigTagsFilePath; }),
-		bigTagsFilePath);
+		bigTagsFilePath,
+		[]() {});
 	CTagsNavigator tagsNavigatorCache =
 	{
 		navigator,

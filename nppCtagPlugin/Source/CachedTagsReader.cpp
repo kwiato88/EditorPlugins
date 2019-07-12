@@ -14,7 +14,8 @@ namespace CTagsPlugin
 
 namespace fs = boost::filesystem;
 CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
-	const std::string& p_tagFilePath)
+	const std::string& p_tagFilePath,
+	std::function<void()> p_tagsLoadedObserver)
  : m_tagFile(p_tagFilePath),
    m_tags(
        [&]()
@@ -30,7 +31,8 @@ CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
 		   auto time = tm.elapsed();
 		   Meas::Samples<TagsLoadTime>::add(time *100/tags.size());
 		   return tags;
-	   }),
+	   },
+       p_tagsLoadedObserver),
    m_tagFileReader(std::move(p_tagFileReader))
 {}
 

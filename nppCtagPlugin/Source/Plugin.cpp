@@ -214,7 +214,8 @@ std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildCachedTagFileReader(c
 {
 	return std::make_unique<CTagsPlugin::CachedTagsReader>(
 		std::move(p_reader),
-		p_tagFilePath);
+		p_tagFilePath,
+		[&]() { tagsLoaded(); });
 }
 
 std::unique_ptr<CTagsPlugin::ITagsReader> TagsPlugin::buildFileScopedTagFileReader(std::unique_ptr<CTagsPlugin::ITagsReader> p_reader)
@@ -253,6 +254,11 @@ std::unique_ptr<CTagsPlugin::ITagsSelector> TagsPlugin::buildTagsSelector()
         case CTagsPlugin::SelectTagsViewType::ListView : return buildListViewSelector();
         case CTagsPlugin::SelectTagsViewType::GridView : return buildGridViewSelector();
     }
+}
+
+void TagsPlugin::tagsLoaded()
+{
+	tagsController->onTagsLoaded();
 }
 
 void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)

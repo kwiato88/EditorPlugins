@@ -49,6 +49,7 @@ public:
 	void tagHierarchy();
 
 	void handleTransaction(long p_id, Messaging::Transaction& p_trans);
+	void onTagsLoaded();
 
 private:
 	Plugin::Editor& m_editor;

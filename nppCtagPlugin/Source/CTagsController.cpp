@@ -308,4 +308,9 @@ void CTagsController::handleTransaction(long p_id, Messaging::Transaction& p_tra
 	m_handlers.handle(p_id, p_trans);
 }
 
+void CTagsController::onTagsLoaded()
+{
+	m_tagsNavigator.onTagsLoaded();
+}
+
 } /* namespace CTagsPlugin */

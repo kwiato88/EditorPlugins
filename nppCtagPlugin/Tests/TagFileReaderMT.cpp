@@ -29,7 +29,8 @@ struct TagFileReaderMT : public CTagsMT
 		if (p_readerType == Reader::Cached)
 			return std::make_unique<CachedTagsReader>(
 				std::make_unique<TagFileReader>([&]() {return p_tagFilePath; }),
-				p_tagFilePath);
+				p_tagFilePath,
+				[]() {});
 	}
 
 	TagMatcher tagMatcher_TagHolderClass()
@@ -84,7 +85,8 @@ struct TagFileReader_SortedFileMT : public TagFileReaderMT, public WithParamInte
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),
-			s_tagsFilePath);
+			s_tagsFilePath,
+			[]() {});
 	}
 };
 
@@ -197,7 +199,8 @@ struct TagFileReader_UnsortedFileMT : public TagFileReaderMT, public WithParamIn
 		s_nativeTagsReader = std::make_shared<TagFileReader>([&]() {return s_tagsFilePath; });
 		s_cachedTagsReader = std::make_shared<CachedTagsReader>(
 			std::make_unique<TagFileReader>([&]() {return s_tagsFilePath; }),
-			s_tagsFilePath);
+			s_tagsFilePath,
+			[]() {});
 	}
 };
 
