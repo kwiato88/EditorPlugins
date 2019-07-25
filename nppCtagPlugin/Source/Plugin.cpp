@@ -130,6 +130,7 @@ void TagsPlugin::detach()
 	config.saveConfigFile(configFilePath);
 	
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::TagsLoadTime>::print();
+	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::FindChildrenTagsTime>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::Tag>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::print();

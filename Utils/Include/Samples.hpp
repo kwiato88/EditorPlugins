@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <numeric>
+#include <boost/timer.hpp>
 
 namespace Meas
 {
@@ -24,6 +25,18 @@ private:
 	static std::list<double> measurements;
 };
 
+template <typename Tag>
+class ExecutionTimeSample
+{
+public:
+	~ExecutionTimeSample()
+	{
+		auto time = tm.elapsed();
+		Meas::Samples<Tag>::add(time);
+	}
+private:
+	boost::timer tm;
+};
 
 template <typename Tag>
 void Samples<Tag>::add(double p_value)

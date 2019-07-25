@@ -1,6 +1,5 @@
 #include <iterator>
 #include <algorithm>
-#include <boost/timer.hpp>
 #include <boost/filesystem.hpp>
 
 #include "CachedTagsReader.hpp"
@@ -26,11 +25,8 @@ CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
        },
        [&]() -> std::vector<TagHolder>
 	   {
-		   boost::timer tm;
-		   auto tags = m_tagFileReader->findTag([](const Tag&) { return true; });
-		   auto time = tm.elapsed();
-		   Meas::Samples<TagsLoadTime>::add(time *100/tags.size());
-		   return tags;
+		   Meas::ExecutionTimeSample<TagsLoadTime> meas;
+		   return m_tagFileReader->findTag([](const Tag&) { return true; });
 	   },
        p_tagsLoadedObserver),
    m_tagFileReader(std::move(p_tagFileReader))

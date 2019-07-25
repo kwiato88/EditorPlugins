@@ -7,7 +7,15 @@ struct TagsLoadTime
 {
 	static inline char* name()
 	{
-		return "TagsLoadTimePer100Tags";
+		return "TagsLoadTimePer1000Tags";
+	}
+};
+
+struct FindChildrenTagsTime
+{
+	static inline char* name()
+	{
+		return "FindChildrenTagsTime";
 	}
 };
 
