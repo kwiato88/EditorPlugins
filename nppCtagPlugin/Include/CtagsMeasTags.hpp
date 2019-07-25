@@ -19,4 +19,12 @@ struct FindChildrenTagsTime
 	}
 };
 
+struct ParseTagsHierarchyTime
+{
+	static inline char* name()
+	{
+		return "ParseTagsHierarchyTime";
+	}
+};
+
 }
