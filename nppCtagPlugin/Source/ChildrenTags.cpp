@@ -6,11 +6,8 @@
 namespace CTagsPlugin
 {
 
-ChildrenTags::ChildrenTags(std::shared_ptr<ITagsReader> p_tags, bool p_useCache)
-	: tags(p_tags),
-	getImpl(p_useCache
-		? std::bind(&ChildrenTags::getCachedChildrenTags, this, std::placeholders::_1)
-		: std::bind(&ChildrenTags::findChildrenTags, this, std::placeholders::_1))
+ChildrenTags::ChildrenTags(std::shared_ptr<ITagsReader> p_tags, const IConfiguration& p_config)
+	: tags(p_tags), config(p_config)
 {}
 
 void ChildrenTags::clear()
@@ -21,7 +18,9 @@ void ChildrenTags::clear()
 
 std::vector<TagHolder> ChildrenTags::get(const Tag& p_parent)
 {
-	return getImpl(p_parent);
+	if (config.shouldCacheTags())
+		return getCachedChildrenTags(p_parent);
+	return findChildrenTags(p_parent);
 }
 
 std::vector<TagHolder> ChildrenTags::getCachedChildrenTags(const Tag& p_parent)

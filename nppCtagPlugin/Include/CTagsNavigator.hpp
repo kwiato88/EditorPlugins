@@ -8,6 +8,7 @@
 
 #include "Navigator.hpp"
 #include "ITagsReader.hpp"
+#include "IConfiguration.hpp"
 #include "ITagsSelector.hpp"
 #include "TagHierarchy.hpp"
 #include "ITagHierarchySelector.hpp"
@@ -25,7 +26,7 @@ public:
 				   std::unique_ptr<ITagsSelector> p_tagsSelector,
 		           std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 				   std::shared_ptr<ITagsReader> p_tagsReader,
-                   bool p_useCache);
+                   const IConfiguration& p_config);
 
     /*
      * @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException

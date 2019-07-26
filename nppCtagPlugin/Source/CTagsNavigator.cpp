@@ -64,12 +64,12 @@ CTagsNavigator::CTagsNavigator(
 	std::unique_ptr<ITagsSelector> p_tagsSelector,
 	std::unique_ptr<ITagHierarchySelector> p_hierSelector,
 	std::shared_ptr<ITagsReader> p_tagsReader,
-	bool p_useCache)
+	const IConfiguration& p_config)
  : m_navigator(p_navigator),
    m_editor(p_editor),
    m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
-   m_childrenTags(p_tagsReader, p_useCache),
+   m_childrenTags(p_tagsReader, p_config),
    m_tagsReader(p_tagsReader)
 {
 }
