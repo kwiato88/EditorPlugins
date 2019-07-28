@@ -11,8 +11,6 @@
 #include "TagNotFoundException.hpp"
 #include "ContainerTagsReader.hpp"
 #include "Log.hpp"
-#include "CtagsMeasTags.hpp"
-#include "Samples.hpp"
 
 namespace CTagsPlugin
 {
@@ -70,6 +68,7 @@ CTagsNavigator::CTagsNavigator(
    m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
    m_childrenTags(p_tagsReader, p_config),
+   m_tagsHierarchy(p_config),
    m_tagsReader(p_tagsReader)
 {
 }
@@ -156,11 +155,7 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 	LOG_INFO << "go to tag in hierarchy. Hierarchy for tag with name: " << p_currentTagName;
 
 	ContainerTagsReader complexTags(m_tagsReader->findTag([&](const auto& t) { return t.isComplex(); }));
-	TagHierarchy hier(complexTags, selectTag(getComplexTags(p_currentTagName)));
-	{
-		//Meas::ExecutionTimeSample<ParseTagsHierarchyTime> meas;
-	}
-	goTo(selectTag(hier));
+	goTo(selectTag(m_tagsHierarchy.get(selectTag(getComplexTags(p_currentTagName)), complexTags)));
 }
 
 void CTagsNavigator::onTagsLoaded()

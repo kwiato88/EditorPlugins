@@ -1,4 +1,6 @@
 #include "TagsHierarchy.hpp"
+#include "CtagsMeasTags.hpp"
+#include "Samples.hpp"
 
 namespace CTagsPlugin
 {
@@ -17,7 +19,10 @@ TagHierarchy TagsHierarchy::get(const Tag& p_tag, const ITagsReader& p_tags)
 TagHierarchy TagsHierarchy::getCached(const Tag& p_tag, const ITagsReader& p_tags)
 {
 	if (hierarchy.find(p_tag.getName()) == hierarchy.end())
+	{
+		Meas::ExecutionTimeSample<ParseTagsHierarchyTime> meas;
 		hierarchy.emplace(p_tag.getName(), TagHierarchy(p_tags, p_tag));
+	}
 	return hierarchy.at(p_tag.getName());
 }
 
