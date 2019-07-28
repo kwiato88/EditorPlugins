@@ -18,6 +18,7 @@ void ChildrenTags::clear()
 
 std::vector<TagHolder> ChildrenTags::get(const Tag& p_parent)
 {
+	LOG_INFO << "Get children for " << p_parent.getName();
 	if (config.shouldCacheTags())
 		return getCachedChildrenTags(p_parent);
 	return findChildrenTags(p_parent);
@@ -25,7 +26,6 @@ std::vector<TagHolder> ChildrenTags::get(const Tag& p_parent)
 
 std::vector<TagHolder> ChildrenTags::getCachedChildrenTags(const Tag& p_parent)
 {
-	LOG_INFO << "Get children for " << p_parent.getName();
 	if (!hasChildren(p_parent))
 		childrenCache[p_parent.getName()] = findChildrenTags(p_parent);
 	return childrenCache.at(p_parent.getName());
