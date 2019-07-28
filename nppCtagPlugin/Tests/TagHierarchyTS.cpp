@@ -96,7 +96,6 @@ struct TagHierarchyTS : public Test
 	{
 		TagsReaderFake tags(p_tags);
 		TagHierarchy hier(tags, p_tag);
-		hier.parse();
 		return hier;
 	}
 	TagHierarchyItem findTagHier(const TagHolder& p_tagToFind, const std::vector<TagHierarchyItem>& p_hier)

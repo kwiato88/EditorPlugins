@@ -37,7 +37,9 @@ private:
 
 TagHierarchy::TagHierarchy(const ITagsReader& p_tags, const Tag& p_tag)
 	: tag(p_tag), tags(p_tags), upHierarchy(), downHierarchy()
-{}
+{
+	parse();
+}
 
 TagHierarchy::TagHierarchy(const TagHierarchy& p_other)
 	: tag(p_other.tag), tags(p_other.tags),

@@ -158,8 +158,7 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 	ContainerTagsReader complexTags(m_tagsReader->findTag([&](const auto& t) { return t.isComplex(); }));
 	TagHierarchy hier(complexTags, selectTag(getComplexTags(p_currentTagName)));
 	{
-		Meas::ExecutionTimeSample<ParseTagsHierarchyTime> meas;
-		hier.parse();
+		//Meas::ExecutionTimeSample<ParseTagsHierarchyTime> meas;
 	}
 	goTo(selectTag(hier));
 }
