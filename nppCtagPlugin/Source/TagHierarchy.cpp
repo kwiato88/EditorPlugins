@@ -44,6 +44,14 @@ TagHierarchy::TagHierarchy(const TagHierarchy& p_other)
 	upHierarchy(p_other.upHierarchy), downHierarchy(p_other.downHierarchy)
 {}
 
+TagHierarchy& TagHierarchy::operator=(const TagHierarchy& p_other)
+{
+	tag = p_other.tag;
+	upHierarchy = p_other.upHierarchy;
+	downHierarchy = p_other.downHierarchy;
+	return *this;
+}
+
 void TagHierarchy::parse()
 {
 	upHierarchy = TagHierarchyItem::build(tag, BasedTags(tags));

@@ -1,36 +1,29 @@
 #pragma once
 
-#include <unordered_map>
-#include <vector>
+#include <map>
 
-#include "Tree.hpp"
-#include "TagHolder.hpp"
+#include "Tag.hpp"
+#include "TagHierarchy.hpp"
+#include "IConfiguration.hpp"
 
 namespace CTagsPlugin
 {
 
-using TagHierarchyItem = Plugin::Tree<TagHolder>;
-
 class ITagsReader;
-
-struct TagNameHash
-{
-	std::size_t operator()(const TagHolder& p) const noexcept;
-};
 
 class TagsHierarchy
 {
 public:
-	void update(const ITagsReader& p_tags);
-	TagHierarchyItem getUpHierarchy(const Tag& p_tag);
-	TagHierarchyItem getDownHierarchy(const Tag& p_tag);
-private:
-	void buildBase(const std::vector<TagHolder>& p_complexTags, const ITagsReader& p_tags);
-	void buildDerived();
-	void updateDerived(const TagHolder& p_derived, const std::vector<TagHolder>& p_base);
+	TagsHierarchy(const IConfiguration& p_config);
 
-	std::unordered_map<TagHolder, std::vector<TagHolder>, TagNameHash> baseTags;
-	std::unordered_map<TagHolder, std::vector<TagHolder>, TagNameHash> derivedTags;
+	TagHierarchy get(const Tag& p_tag, const ITagsReader& p_tags);
+	void clear();
+
+private:
+	TagHierarchy getCached(const Tag& p_tag, const ITagsReader& p_tags);
+
+	const IConfiguration& config;
+	std::map<std::string, TagHierarchy> hierarchy;
 };
 
 }

@@ -20,6 +20,7 @@ public:
 
 	TagHierarchy(const ITagsReader& p_tags, const Tag& p_tag);
 	TagHierarchy(const TagHierarchy& p_other);
+	TagHierarchy& operator=(const TagHierarchy& p_other);
 
 	void parse();
 
