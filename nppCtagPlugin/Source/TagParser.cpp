@@ -62,8 +62,7 @@ std::vector<Field> toFields(const std::string& p_extensions)
 {
 	std::vector<Field> fields;
     boost::tokenizer<boost::char_separator<char>> fieldsStr(p_extensions, boost::char_separator<char>("\t"));
-    for(const auto& field : fieldsStr)
-        fields.push_back(toField(field));
+	boost::range::transform(fieldsStr, std::back_inserter(fields), &toField);
     return fields;
 }
 
