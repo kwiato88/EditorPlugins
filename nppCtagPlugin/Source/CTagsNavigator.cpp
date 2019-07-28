@@ -161,6 +161,7 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 void CTagsNavigator::onTagsLoaded()
 {
 	m_childrenTags.clear();
+	m_tagsHierarchy.clear();
 }
 
 } /* namespace CTagsPlugin */
