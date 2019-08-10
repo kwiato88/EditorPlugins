@@ -42,10 +42,44 @@ struct TagHierarchySelectorStub : public ITagHierarchySelector
 	boost::optional<TagHolder> select(const TagHierarchy&) { return boost::none; }
 };
 
+class ConfigStub : public IConfiguration
+{
+public:
+	void loadConfigFile(const std::string& p_configFilePath);
+	void saveConfigFile(const std::string& p_configFilePath);
+
+	std::string getCtagsPath() const;
+	std::string getReadTagsPath() const;
+	SelectTagsViewType getSelectTagsViewType() const;
+	TagReaderType getTagsReaderType() const;
+	std::vector<std::string> getTagsFilesPaths() const;
+	void setTagsFilesPaths(const std::vector<std::string>& p_tagsFiles);
+	Fields getSupportedExtensionFileds() const;
+	bool shouldFilterFileScopedTags() const;
+	bool shouldCacheTags() const;
+	bool isLoggerEnabled() const;
+	Logger::Level getLogSeverity() const;
+};
+
+void ConfigStub::loadConfigFile(const std::string&) {}
+void ConfigStub::saveConfigFile(const std::string&) {}
+std::string ConfigStub::getCtagsPath() const { return ""; }
+std::string ConfigStub::getReadTagsPath() const { return ""; }
+SelectTagsViewType ConfigStub::getSelectTagsViewType() const { return SelectTagsViewType(); }
+TagReaderType ConfigStub::getTagsReaderType() const { return TagReaderType(); }
+std::vector<std::string> ConfigStub::getTagsFilesPaths() const { return {}; }
+void ConfigStub::setTagsFilesPaths(const std::vector<std::string>&) {}
+Fields ConfigStub::getSupportedExtensionFileds() const { return Fields{}; }
+bool ConfigStub::shouldFilterFileScopedTags() const { return false; }
+bool ConfigStub::shouldCacheTags() const { return false; }
+bool ConfigStub::isLoggerEnabled() const { return false; }
+Logger::Level ConfigStub::getLogSeverity() const { return Logger::Level(); }
+
 constexpr int c_numberOfIterations = 100;
 
 struct CtagsPerformanceTests : public Test
 {
+	ConfigStub config;
 	EditorStub editor;
 	Navigator navigator{ editor };
 	std::shared_ptr<ITagsReader> tagsReader = std::make_shared<TagFileReader>([&]() {return bigTagsFilePath; });
@@ -57,7 +91,7 @@ struct CtagsPerformanceTests : public Test
 		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReader,
-		false
+		config
 	};
 
 	std::string bigTagsFilePath = rootPath + "nppCtagPlugin\\Tests\\TestSourceCode\\bigTagsFile_cppTags.txt";
@@ -153,7 +187,7 @@ struct CachedCtagsPerformanceTests : public CtagsPerformanceTests
 		std::make_unique<TagsSelectorStub>(),
 		std::make_unique<TagHierarchySelectorStub>(),
 		tagsReaderWithCache,
-		false
+		config
 	};
 };
 
