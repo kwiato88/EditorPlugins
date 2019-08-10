@@ -22,6 +22,7 @@ public:
 private:
 	TagHierarchy getCached(const Tag& p_tag, const ITagsReader& p_tags);
 	TagHierarchy buildHierarchy(const Tag& p_tag, const ITagsReader& p_tags);
+	bool hasHierarchy(const Tag& p_tag) const;
 
 	const IConfiguration& config;
 	std::map<std::string, TagHierarchy> hierarchy;
