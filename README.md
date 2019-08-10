@@ -178,7 +178,10 @@ Adds project management functionality to Notepad++.
 ### Functions:
  * open/close project;
  * new project;
+ * save project
+ * edit project
  * refresh project;
+ * delete project
 
 Synchronises other plugins work. Configures plugins in this repositry
 to parse directories configured in project. Projects are stored
