@@ -25,8 +25,11 @@ CachedTagsReader::CachedTagsReader(std::unique_ptr<ITagsReader> p_tagFileReader,
        },
        [&]() -> std::vector<TagHolder>
 	   {
-		   Meas::ExecutionTimeSample<TagsLoadTime> meas;
-		   return m_tagFileReader->findTag([](const Tag&) { return true; });
+		   boost::timer tm;
+		   auto tags = m_tagFileReader->findTag([](const Tag&) { return true; });
+		   auto time = tm.elapsed();
+		   Meas::Samples<TagsLoadTime>::add(time*1000/tags.size());
+		   return tags;
 	   },
        p_tagsLoadedObserver),
    m_tagFileReader(std::move(p_tagFileReader))
