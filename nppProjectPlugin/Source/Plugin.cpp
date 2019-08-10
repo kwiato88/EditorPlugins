@@ -39,6 +39,10 @@ void fun_save()
 {
 	g_plugin.savePr();
 }
+void fun_about()
+{
+	g_plugin.about();
+}
 
 ProjectPlugin::ProjectPlugin()
 	: BasePluginWithUI(), workspace(std::make_unique<ProjectMgmt::SwitchableWorkspace>(ui))
@@ -80,6 +84,8 @@ void ProjectPlugin::initMenu()
 	setCommand(TEXT("Edit project"), fun_edit, NULL);
 	setCommand(TEXT("Refresh project"), fun_refresh, NULL);
 	setCommand(TEXT("Delete project"), fun_delete, NULL);
+	setSeparator();
+	setCommand(TEXT("About"), fun_about, NULL);
 }
 
 void ProjectPlugin::onShoutdown()
@@ -115,6 +121,12 @@ void ProjectPlugin::savePr()
 void ProjectPlugin::deletePr()
 {
 	workspace->deleteProject();
+}
+
+void ProjectPlugin::about()
+{
+	std::string info = "Project:    Project plugin for notepad++\n\nVersion:    1.0\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
+	ui.infoMessage("About", info);
 }
 
 }
