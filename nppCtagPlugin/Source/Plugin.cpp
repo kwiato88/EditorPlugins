@@ -159,9 +159,9 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
 	setSeparator();
 	setCommand(TEXT("About"), fun_info, NULL);
-	setSeparator();
-	setCommand(TEXT("test 1"), myTest1, NULL);
-	setCommand(TEXT("test 2"), myTest2, NULL);
+	//setSeparator();
+	//setCommand(TEXT("test 1"), myTest1, NULL);
+	//setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 void TagsPlugin::setLoggerParams()
@@ -282,28 +282,10 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-	try
-	{
-		std::string output = buildWinCommandWithOutput(config.getReadTagsPath(), "-e -t D:\\tags.txt bind")->execute();
-		ui.infoMessage("run ctags.exe", output);
-	}
-	catch (std::exception& e)
-	{
-		ui.errorMessage("run ctags.exe", e.what());
-	}
 }
 
 void TagsPlugin::test2()
 {
-	try
-	{
-		std::string output = buildWinCommandWithOutput(config.getReadTagsPath(), "-e -t D:\\tags.txt dupa")->execute();
-		ui.infoMessage("run ctags.exe", output);
-	}
-	catch (std::exception& e)
-	{
-		ui.errorMessage("run ctags.exe", e.what());
-	}
 }
 
 void TagsPlugin::nextTag()
@@ -349,7 +331,7 @@ void TagsPlugin::generateTagsFile()
 
 void TagsPlugin::info()
 {
-    std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.7.4\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
+    std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.8.0\n\nPage:    https://kwiato88.github.io/EditorPlugins/";
     ui.infoMessage("About", l_info);
 }
 
