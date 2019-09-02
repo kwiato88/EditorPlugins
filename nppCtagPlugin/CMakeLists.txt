@@ -23,6 +23,7 @@ add_library(
     Source/ExtensionFields.cpp
     Source/TagPrinter.cpp
     Source/LazyInitializedTagsSelector.cpp
+    Source/ClassDiagram.cpp
 )
 
 target_include_directories(
@@ -152,6 +153,7 @@ add_executable(
     Tests/TagHierarchyTS.cpp
     Tests/TestsCppTagBuilder.cpp
     Tests/TestsTagBuilder.cpp
+    Tests/ClassDiagramTS.cpp
 )
 
 target_include_directories(
