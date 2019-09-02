@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "ClassDiagram.hpp"
 
 namespace CTagsPlugin
@@ -25,6 +26,18 @@ ClassDiagram::~ClassDiagram()
 
 void ClassDiagram::add(const Class& p_class)
 {
+	if (!isAlreadyIncluded(p_class))
+		append(p_class);
+}
+
+bool ClassDiagram::isAlreadyIncluded(const Class& p_class) const
+{
+	return std::find(addedClasses.begin(), addedClasses.end(), p_class.name) != addedClasses.end();
+}
+
+void ClassDiagram::append(const Class& p_class)
+{
+	addedClasses.push_back(p_class.name);
 	out << p_class.buff.str();
 }
 

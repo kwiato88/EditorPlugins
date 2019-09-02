@@ -116,4 +116,20 @@ TEST_F(ClassDiagramTS, 2classWith2BaseShoulHave4Relations)
 		+ endMarker, buff.str());
 }
 
+TEST_F(ClassDiagramTS, shouldNotDuplicateClasses)
+{
+	{
+		ClassDiagram::Class derived{ TestTag{"derived"} };
+		derived.addBase(TestTag{ "base1" });
+		derived.addBase(TestTag{ "base2" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(derived);
+		diagram.add(derived);
+	}
+	ASSERT_EQ(beginMarker
+		+ "base1 <|-- derived\n" + "base2 <|-- derived\n"
+		+ endMarker, buff.str());
+}
+
 }
