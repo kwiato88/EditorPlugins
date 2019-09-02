@@ -1,4 +1,5 @@
 #include <functional>
+#include <fstream>
 #include "CTagsController.hpp"
 #include "CTagsGenerator.hpp"
 #include "OpenFileException.hpp"
@@ -313,6 +314,20 @@ void CTagsController::handleTransaction(long p_id, Messaging::Transaction& p_tra
 void CTagsController::onTagsLoaded()
 {
 	m_tagsNavigator.onTagsLoaded();
+}
+
+void CTagsController::classDiagram()
+{
+	try
+	{
+		std::ofstream file(m_files.getFilePath("Select plant UML file"));
+		m_tagsNavigator.exportClassDiagram(file);
+	}
+	catch (std::exception& e)
+	{
+		LOG_WARN << "Error during class diagram generation: " << typeid(e).name() << ". Details: " << e.what();
+		m_ui.errorMessage("Class diagram", e.what());
+	}
 }
 
 } /* namespace CTagsPlugin */

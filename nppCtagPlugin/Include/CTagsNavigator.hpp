@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <ostream>
 
 #include "Navigator.hpp"
 #include "ITagsReader.hpp"
@@ -46,6 +47,8 @@ public:
 	void goToTagInHierarchy(const std::string& p_currentTagName);
 
 	void onTagsLoaded();
+
+	void exportClassDiagram(std::ostream& p_out);
 
 private:
     Location getCurrentLocation() const;

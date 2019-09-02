@@ -47,6 +47,7 @@ public:
 	void generateTags();
 	void tagsSearch();
 	void tagHierarchy();
+	void classDiagram();
 
 	void handleTransaction(long p_id, Messaging::Transaction& p_trans);
 	void onTagsLoaded();

@@ -10,6 +10,7 @@
 #include "CppIsTagWithAtt.hpp"
 #include "TagNotFoundException.hpp"
 #include "ContainerTagsReader.hpp"
+#include "ClassDiagram.hpp"
 #include "Log.hpp"
 
 namespace CTagsPlugin
@@ -162,6 +163,11 @@ void CTagsNavigator::onTagsLoaded()
 {
 	m_childrenTags.clear();
 	m_tagsHierarchy.clear();
+}
+
+void CTagsNavigator::exportClassDiagram(std::ostream& p_out)
+{
+	//TODO:
 }
 
 } /* namespace CTagsPlugin */

@@ -159,9 +159,9 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
 	setSeparator();
 	setCommand(TEXT("About"), fun_info, NULL);
-	//setSeparator();
-	//setCommand(TEXT("test 1"), myTest1, NULL);
-	//setCommand(TEXT("test 2"), myTest2, NULL);
+	setSeparator();
+	setCommand(TEXT("test 1"), myTest1, NULL);
+	setCommand(TEXT("test 2"), myTest2, NULL);
 }
 
 void TagsPlugin::setLoggerParams()
@@ -282,6 +282,7 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
+	tagsController->classDiagram();
 }
 
 void TagsPlugin::test2()
