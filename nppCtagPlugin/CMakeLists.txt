@@ -195,6 +195,7 @@ add_executable(
     Tests/GoToCppTagMT.cpp
     Tests/ManageLocationMT.cpp
     Tests/TagFileReaderMT.cpp
+	Tests/ClassDiagramMT.cpp
     Tests/DescribeTags.cpp
     Tests/TestsMain.cpp
     Tests/TestsCppTagBuilder.cpp
