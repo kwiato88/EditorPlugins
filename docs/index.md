@@ -1,7 +1,7 @@
 # Editor Plugins
 
 Package of Notepad++ plugins I use for SW development.  
-Plugins binaries can be donwloaded [here]({{ "/assets/nppPluginsBin.zip" | absolute_url }}).
+Plugins binaries can be donwloaded [here]({{ "https://1drv.ms/u/s!Ai6NbNjBMICr5nv8oNMJMTZVFIgh?e=u7KinG" | absolute_url }}).
 
 
 ## Open file plugin
