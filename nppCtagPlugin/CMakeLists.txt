@@ -24,6 +24,7 @@ add_library(
     Source/TagPrinter.cpp
     Source/LazyInitializedTagsSelector.cpp
     Source/ClassDiagram.cpp
+	Source/ComplexTagWithMatchingName.cpp
 )
 
 target_include_directories(

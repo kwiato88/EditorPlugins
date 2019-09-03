@@ -49,7 +49,7 @@ public:
 
 	void onTagsLoaded();
 
-	void exportClassDiagram(std::ostream& p_out);
+	void exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude);
 
 private:
     Location getCurrentLocation() const;

@@ -172,11 +172,10 @@ ClassDiagram::Class CTagsNavigator::classDiagramClass(const Tag& p_tag)
 	return tag;
 }
 
-void CTagsNavigator::exportClassDiagram(std::ostream& p_out)
+void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude)
 {
-	TagMatcher p_matcher;
 	ClassDiagram diagram(p_out);
-	for (const Tag& tag : m_tagsReader->findTag(p_matcher))
+	for (const Tag& tag : m_tagsReader->findTag(p_tagsToInclude))
 		diagram.add(classDiagramClass(tag));
 }
 

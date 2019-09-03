@@ -3,6 +3,7 @@
 #include "CTagsController.hpp"
 #include "CTagsGenerator.hpp"
 #include "OpenFileException.hpp"
+#include "ComplexTagWithMatchingName.hpp"
 #include "TagsReaderException.hpp"
 #include "TagNotFoundException.hpp"
 #include "GenerateTagsException.hpp"
@@ -321,7 +322,8 @@ void CTagsController::classDiagram()
 	try
 	{
 		std::ofstream file(m_files.getFilePath("Select plant UML file"));
-		m_tagsNavigator.exportClassDiagram(file);
+		std::string namePattern(m_ui.query("Tag name pattern to include(regex)", "pattern", ""));
+		m_tagsNavigator.exportClassDiagram(file, ComplexTagWithMatchingName(namePattern));
 	}
 	catch (std::exception& e)
 	{
