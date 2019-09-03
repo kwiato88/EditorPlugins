@@ -1,7 +1,8 @@
 # Editor Plugins
 
 Package of Notepad++ plugins I use for SW development.  
-Page: https://kwiato88.github.io/EditorPlugins/
+Page: https://kwiato88.github.io/EditorPlugins/  
+Binaries download: https://1drv.ms/u/s!Ai6NbNjBMICr5nv8oNMJMTZVFIgh?e=u7KinG
 
 
 ## Open file plugin
