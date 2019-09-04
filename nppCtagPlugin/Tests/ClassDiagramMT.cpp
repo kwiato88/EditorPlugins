@@ -67,4 +67,18 @@ TEST_F(ClassDiagramMT, generateDiagramForMultipleTags)
 		})));
 }
 
+TEST_F(ClassDiagramMT, generateDiagramForTagsWithDifferentBases)
+{
+	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("(.*Reader|.*Selector)"));
+	EXPECT_THAT(
+		diagram.str(),
+		HasRelations(std::vector<std::string>({
+			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::TagFileReader",
+			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::MultipleTagFilesReader",
+			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::FileScopedTagFilteringReader",
+			"CTagsPlugin::ITagsSelector <|-- CTagsPlugin::TagsSelector",
+			"CTagsPlugin::ITagsSelector <|-- CTagsPlugin::GridViewTagsSelector"
+			})));
+}
+
 }
