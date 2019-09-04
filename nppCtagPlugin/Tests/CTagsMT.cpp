@@ -31,6 +31,7 @@ void ConfigStub::setTagsFilesPaths(const std::vector<std::string>&) {}
 Fields ConfigStub::getSupportedExtensionFileds() const { return Fields{}; }
 bool ConfigStub::shouldFilterFileScopedTags() const { return false; }
 bool ConfigStub::shouldCacheTags() const { return false; }
+std::string ConfigStub::getPlantUmlPath() const { return ""; }
 bool ConfigStub::isLoggerEnabled() const { return false; }
 Logger::Level ConfigStub::getLogSeverity() const { return Logger::Level(); }
 

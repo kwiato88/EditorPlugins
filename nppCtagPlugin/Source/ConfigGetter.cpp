@@ -194,6 +194,11 @@ bool ConfigGetter::shouldCacheTags() const
 	return toBool(getOption("Tags.useCache").get());
 }
 
+std::string ConfigGetter::getPlantUmlPath() const
+{
+	return getParam("ClassDiagram.plantUmlJarPath", "plantuml.jar");
+}
+
 bool ConfigGetter::isLoggerEnabled() const
 {
 	return toBool(getOption("Logs.enabled").get());

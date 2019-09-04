@@ -26,6 +26,7 @@ public:
     Fields getSupportedExtensionFileds() const;
 	bool shouldFilterFileScopedTags() const;
 	bool shouldCacheTags() const;
+	std::string getPlantUmlPath() const;
 	bool isLoggerEnabled() const;
 	Logger::Level getLogSeverity() const;
 

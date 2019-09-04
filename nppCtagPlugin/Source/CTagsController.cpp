@@ -343,8 +343,11 @@ void CTagsController::classDiagram()
 		m_tagsNavigator.exportClassDiagram(file, ComplexTagWithMatchingName(getTagNamePattern()));
 		file.close();
 		m_ui.infoMessage("Class diagram", "Diagram script saved to file: " + plantUmlFilePath);
-		m_cmdFactory("java", std::string("-jar plantuml.jar ") + plantUmlFilePath)->execute();
-		m_ui.infoMessage("Class diagram", "Diagram PNG saved.");
+		m_cmdFactory(
+			"java",
+			std::string("-jar ") + m_config.getPlantUmlPath() + " " + plantUmlFilePath
+		)->execute();
+		m_ui.infoMessage("Class diagram", "Diagram PNG saved");
 	}
 	catch (Plugin::UserInputError& e)
 	{

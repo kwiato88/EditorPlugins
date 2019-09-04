@@ -34,6 +34,7 @@ struct IConfiguration
     virtual Fields getSupportedExtensionFileds() const = 0;
 	virtual bool shouldFilterFileScopedTags() const = 0;
 	virtual bool shouldCacheTags() const = 0;
+	virtual std::string getPlantUmlPath() const = 0;
 	virtual bool isLoggerEnabled() const = 0;
 	virtual Logger::Level getLogSeverity() const = 0;
 };
