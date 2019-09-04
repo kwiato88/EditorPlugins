@@ -75,6 +75,8 @@ private:
     std::string getCurrentWord() const;
     std::vector<std::string> getSourceDirs() const;
     std::string getTargetFile() const;
+	std::string getPlantUmlScriptPath() const;
+	std::string getTagNamePattern() const;
 };
 
 } /* namespace CTagsPlugin */

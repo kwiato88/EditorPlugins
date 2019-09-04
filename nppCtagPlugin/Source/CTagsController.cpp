@@ -317,13 +317,35 @@ void CTagsController::onTagsLoaded()
 	m_tagsNavigator.onTagsLoaded();
 }
 
+std::string CTagsController::getPlantUmlScriptPath() const
+{
+	auto path = m_files.getFilePath("Select plant UML file");
+	if (path.empty())
+		throw Plugin::UserInputError("Plant UML file not specified");
+	return path;
+}
+
+std::string CTagsController::getTagNamePattern() const
+{
+	auto pattern = m_ui.query("Tag name pattern to include(regex)", "pattern", "");
+	if (pattern.empty())
+		throw Plugin::UserInputError("Pattern not specified");
+	return pattern;
+}
+
 void CTagsController::classDiagram()
 {
 	try
 	{
-		std::ofstream file(m_files.getFilePath("Select plant UML file"));
-		std::string namePattern(m_ui.query("Tag name pattern to include(regex)", "pattern", ""));
-		m_tagsNavigator.exportClassDiagram(file, ComplexTagWithMatchingName(namePattern));
+		auto plantUmlFilePath(getPlantUmlScriptPath());
+		std::ofstream file(plantUmlFilePath);
+		m_tagsNavigator.exportClassDiagram(file, ComplexTagWithMatchingName(getTagNamePattern()));
+		m_ui.infoMessage("Class diagram", "Diagram script saved to file: " + plantUmlFilePath);
+	}
+	catch (Plugin::UserInputError& e)
+	{
+		LOG_WARN << "Error during class diagram generation: " << typeid(e).name() << ". Details: " << e.what();
+		m_ui.infoMessage("Class diagram", e.what());
 	}
 	catch (std::exception& e)
 	{
