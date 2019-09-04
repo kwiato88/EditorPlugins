@@ -4,6 +4,7 @@
 #include "CTagsGenerator.hpp"
 #include "OpenFileException.hpp"
 #include "ComplexTagWithMatchingName.hpp"
+#include "ShellCommandException.hpp"
 #include "TagsReaderException.hpp"
 #include "TagNotFoundException.hpp"
 #include "GenerateTagsException.hpp"
@@ -340,12 +341,20 @@ void CTagsController::classDiagram()
 		auto plantUmlFilePath(getPlantUmlScriptPath());
 		std::ofstream file(plantUmlFilePath);
 		m_tagsNavigator.exportClassDiagram(file, ComplexTagWithMatchingName(getTagNamePattern()));
+		file.close();
 		m_ui.infoMessage("Class diagram", "Diagram script saved to file: " + plantUmlFilePath);
+		m_cmdFactory("java", std::string("-jar plantuml.jar ") + plantUmlFilePath)->execute();
+		m_ui.infoMessage("Class diagram", "Diagram PNG saved.");
 	}
 	catch (Plugin::UserInputError& e)
 	{
 		LOG_WARN << "Error during class diagram generation: " << typeid(e).name() << ". Details: " << e.what();
 		m_ui.infoMessage("Class diagram", e.what());
+	}
+	catch (Plugin::ShellCommandException& e)
+	{
+		LOG_WARN << "Error during class diagram generation: " << typeid(e).name() << ". Details: " << e.what();
+		m_ui.errorMessage("Class diagram", std::string("Failed to execute plant UML. Details: ") + e.what());
 	}
 	catch (std::exception& e)
 	{
