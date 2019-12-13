@@ -5,7 +5,7 @@ namespace CTagsPlugin
 
 struct TagsLoadTime
 {
-	static inline char* name()
+	static inline const char* name()
 	{
 		return "TagsLoadTimePer1000Tags";
 	}
@@ -13,7 +13,7 @@ struct TagsLoadTime
 
 struct FindChildrenTagsTime
 {
-	static inline char* name()
+	static inline const char* name()
 	{
 		return "FindChildrenTagsTime";
 	}
@@ -21,9 +21,39 @@ struct FindChildrenTagsTime
 
 struct ParseTagsHierarchyTime
 {
-	static inline char* name()
+	static inline const char* name()
 	{
 		return "ParseTagsHierarchyTime";
+	}
+};
+
+struct ChildrenTagsCallCount
+{
+	static inline const char* name()
+	{
+		return "ChildrenTagsCallCount";
+	}
+};
+struct ChildrenTagsCacheHits
+{
+	static inline const char* name()
+	{
+		return "ChildrenTagsCacheHits";
+	}
+};
+
+struct TagsHierarchyCallCount
+{
+	static inline const char* name()
+	{
+		return "TagsHierarchyCallCount";
+	}
+};
+struct TagsHierarchyCacheHits
+{
+	static inline const char* name()
+	{
+		return "TagsHierarchyCacheHits";
 	}
 };
 

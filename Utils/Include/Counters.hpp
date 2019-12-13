@@ -1,36 +1,60 @@
 #pragma once
 
 #include <string>
-#include <map>
-#include <list>
-#include <memory>
+#include <sstream>
 
 namespace Meas
 {
 
-class Counters
+template <typename Tag>
+class Counter
 {
 public:
-	class Counter
-	{
-	public:
-		void add(double p_value);
-		std::string print() const;
-	private:
-		double min() const;
-		double max() const;
-		double avg() const;
-		double mid() const;
-
-		std::list<double> measurements;
-	};
-
-public:
-	void addCounter(const std::string& p_name);
-	Counter& get(const std::string& p_name);
+	static void increment();
+	static unsigned int get();
+	static std::string print();
 
 private:
-	std::map<std::string, Counter> counters;
+	static unsigned int value;
+};
+
+template <typename Tag> unsigned int Counter<Tag>::value = 0;
+
+template <typename Tag>
+void Counter<Tag>::increment()
+{
+	++value;
+}
+
+template <typename Tag>
+unsigned int Counter<Tag>::get()
+{
+	return value;
+}
+
+template <typename Tag>
+std::string Counter<Tag>::print()
+{
+	std::ostringstream buff;
+	buff << "[" << value << ", " << Tag::name() << "]";
+	return buff.str();
+}
+
+template <typename NumeratorTag, typename DenominatorTag>
+struct Percent
+{
+	static float value()
+	{
+		return static_cast<float>(Counter<NumeratorTag>::get())
+			/ static_cast<float>(Counter<DenominatorTag>::get());
+	}
+	static std::string print()
+	{
+		std::ostringstream buff;
+		buff << Counter<NumeratorTag>::print() << " " << Counter<DenominatorTag>::print()
+			<< " [" << value() << "]";
+		return buff.str();
+	}
 };
 
 }

@@ -26,6 +26,7 @@
 
 #include "CtagsMeasTags.hpp"
 #include "Samples.hpp"
+#include "Counters.hpp"
 #include "ObjectsCounter.hpp"
 #include "Tag.hpp"
 #include "CppTag.hpp"
@@ -132,6 +133,8 @@ void TagsPlugin::detach()
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::TagsLoadTime>::print();
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::FindChildrenTagsTime>::print();
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::ParseTagsHierarchyTime>::print();
+	LOG_INFO << "STATS " << Meas::Percent<CTagsPlugin::ChildrenTagsCacheHits, CTagsPlugin::ChildrenTagsCallCount>::print();
+	LOG_INFO << "STATS " << Meas::Percent<CTagsPlugin::TagsHierarchyCacheHits, CTagsPlugin::TagsHierarchyCallCount>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::Tag>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::CppTag>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::GenericKindTag>::print();
