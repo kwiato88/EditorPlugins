@@ -108,6 +108,7 @@ add_library(
     ../WinApi/Resource/GridDialog.rc
     ../WinApi/Resource/TreeDialog.rc
     ../WinApi/Resource/SelectPathsDialog.rc
+    ../WinApi/Resource/QueryDialog.rc
     Resource/CppSearchDialog.rc
     Resource/TagHierarchyDialog.rc
     Resource/CTagsPluginDetail.rc
