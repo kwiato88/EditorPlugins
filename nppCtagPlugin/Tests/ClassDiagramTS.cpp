@@ -132,4 +132,80 @@ TEST_F(ClassDiagramTS, shouldNotDuplicateClasses)
 		+ endMarker, buff.str());
 }
 
+TEST_F(ClassDiagramTS, classWith1Member)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "parentClass : member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, classWith2Members)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member1" });
+		parent.addMember(TestTag{ "member2" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "parentClass : member1\n"
+		+ "parentClass : member2\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, 2classWithMembers)
+{
+	{
+		ClassDiagram::Class parent1{ TestTag{"parent1"} };
+		parent1.addMember(TestTag{ "member1" });
+		parent1.addMember(TestTag{ "member2" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent1);
+
+		ClassDiagram::Class parent2{ TestTag{"parent2"} };
+		parent2.addMember(TestTag{ "member1" });
+		parent2.addMember(TestTag{ "member2" });
+		parent2.addMember(TestTag{ "member3" });
+
+		diagram.add(parent2);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "parent1 : member1\n"
+		+ "parent1 : member2\n"
+		+ "parent2 : member1\n"
+		+ "parent2 : member2\n"
+		+ "parent2 : member3\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, classWithMemberAndBase)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parent"} };
+		parent.addMember(TestTag{ "member" });
+		parent.addBase(TestTag{ "base" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "parent : member\n"
+		+ "base <|-- parent\n"
+		+ endMarker, buff.str());
+}
+
 }

@@ -13,6 +13,11 @@ void ClassDiagram::Class::addBase(const Tag& p_base)
 	buff << p_base.getName() << " <|-- " << name << "\n";
 }
 
+void ClassDiagram::Class::addMember(const Tag& p_member)
+{
+	buff << name << " : " << p_member.getName() << "\n";
+}
+
 ClassDiagram::ClassDiagram(std::ostream& p_out)
 	: out(p_out)
 {
