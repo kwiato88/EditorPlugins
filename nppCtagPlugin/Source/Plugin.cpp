@@ -133,6 +133,8 @@ void TagsPlugin::detach()
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::TagsLoadTime>::print();
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::FindChildrenTagsTime>::print();
 	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::ParseTagsHierarchyTime>::print();
+	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::GenerateClassInDiagramTime>::print();
+	LOG_INFO << "STATS " << Meas::Samples<CTagsPlugin::GenerateClassDiagramTime>::print();
 	LOG_INFO << "STATS " << Meas::Percent<CTagsPlugin::ChildrenTagsCacheHits, CTagsPlugin::ChildrenTagsCallCount>::print();
 	LOG_INFO << "STATS " << Meas::Percent<CTagsPlugin::TagsHierarchyCacheHits, CTagsPlugin::TagsHierarchyCallCount>::print();
 	LOG_INFO << "STATS " << Meas::ObjectsCounter<CTagsPlugin::Tag>::print();
