@@ -164,19 +164,23 @@ void CTagsNavigator::onTagsLoaded()
 	m_tagsHierarchy.clear();
 }
 
-ClassDiagram::Class CTagsNavigator::classDiagramClass(const Tag& p_tag)
+ClassDiagram::Class CTagsNavigator::classInDiagram(const Tag& p_tag)
 {
+	LOG_INFO << "export class " << p_tag.getName() << " to class diagram";
 	ClassDiagram::Class tag(p_tag);
 	for (const Tag& base : p_tag.baseTags(*m_tagsReader))
 		tag.addBase(base);
+	for (const Tag& child : m_childrenTags.get(p_tag))
+		tag.addMember(child);
 	return tag;
 }
 
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude)
 {
+	LOG_INFO << "export class diagram";
 	ClassDiagram diagram(p_out);
 	for (const Tag& tag : m_tagsReader->findTag(p_tagsToInclude))
-		diagram.add(classDiagramClass(tag));
+		diagram.add(classInDiagram(tag));
 }
 
 } /* namespace CTagsPlugin */

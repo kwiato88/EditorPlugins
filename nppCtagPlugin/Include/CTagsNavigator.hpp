@@ -58,7 +58,7 @@ private:
     std::vector<TagHolder> getChildrenTags(const TagHolder& p_parentTag);
     std::vector<TagHolder> getComplexTags(const std::string& p_complexTagName);
     void goTo(const TagHolder& p_tag);
-	ClassDiagram::Class classDiagramClass(const Tag& p_tag);
+	ClassDiagram::Class classInDiagram(const Tag& p_tag);
 
     Navigator& m_navigator;
 	Plugin::Editor& m_editor;
