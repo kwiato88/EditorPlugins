@@ -84,6 +84,28 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag_members)
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
 	EXPECT_THAT(
 		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag",
+
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
+
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::clone",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::size",
+
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::kind",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::access",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::signature",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::type",
+			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::baseClasses",
+			})));
+}
+
+TEST_F(ClassDiagramMT, generateDiagramForSingleTag)
+{
+	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
+	EXPECT_THAT(
+		diagram.str(),
 		HasLines(std::vector<std::string>({
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
@@ -109,6 +131,25 @@ TEST_F(ClassDiagramMT, generateDiagramForMultipleTags_baseClasses)
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::MultipleTagFilesReader",
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::FileScopedTagFilteringReader"
 		})));
+}
+
+TEST_F(ClassDiagramMT, generateDiagramForMultipleTags_members)
+{
+	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("(.*Fields|.*GenericKindTag)"));
+	EXPECT_THAT(
+		diagram.str(),
+		HasLines(std::vector<std::string>({
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::kind",
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::access",
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::inherits",
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::prototype",
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::typeref",
+			"CTagsPlugin::Fields : CTagsPlugin::Fields::file",
+
+			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::clone",
+			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::size",
+			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::kind",
+			})));
 }
 
 TEST_F(ClassDiagramMT, generateDiagramForTagsWithDifferentBases)
