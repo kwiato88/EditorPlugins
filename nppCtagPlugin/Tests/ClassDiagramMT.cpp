@@ -17,33 +17,45 @@ void describeLines(
 	const std::vector<std::string>& p_actual,
 	MatchResultListener* p_listener)
 {
-	*p_listener << "  Expected relations:\n";
-	for (const auto& r : p_expected)
-		*p_listener << r << "\n";
-	*p_listener << "  Actual relations:\n";
+	*p_listener << "  Expected lines:\n";
+	for (const auto& l : p_expected)
+		*p_listener << l << "\n";
+	*p_listener << "  Actual lines:\n";
 	for (unsigned int i = 1; i < (p_actual.size() - 2); ++i)
 		*p_listener << p_actual.at(i) << "\n";
 }
 
-MATCHER_P(HasRelations, expectedRelations, "")
+MATCHER_P(HasLines, expectedLines, "")
 {
 	std::vector<std::string> lines;
 	boost::split(lines, arg, boost::is_any_of("\n"));
-	/*
-	if (expectedRelations.size() != lines.size() - 3)
+	for (const auto& line : expectedLines)
+		if (std::find(lines.begin(), lines.end(), line) == lines.end())
+		{
+			*result_listener << "\nDidn't find expected line: " << line << "\n";
+			describeLines(expectedLines, lines, result_listener);
+			return false;
+		}
+	return true;
+}
+
+MATCHER_P(IsLines, expectedLines, "")
+{
+	std::vector<std::string> lines;
+	boost::split(lines, arg, boost::is_any_of("\n"));
+	if (expectedLines.size() != lines.size() - 3)
 	{
-		*result_listener << "\nMismatch number of expected relations\n"
-			<< "  Expected: " << expectedRelations.size() << "\n"
+		*result_listener << "\nMismatch number of expected lines\n"
+			<< "  Expected: " << expectedLines.size() << "\n"
 			<< "  Actual:   " << (lines.size() - 3) << "\n";
-		describeLines(expectedRelations, lines, result_listener);
+		describeLines(expectedLines, lines, result_listener);
 		return false;
 	}
-	*/
-	for (const auto& relation : expectedRelations)
-		if (std::find(lines.begin(), lines.end(), relation) == lines.end())
+	for (const auto& line : expectedLines)
+		if (std::find(lines.begin(), lines.end(), line) == lines.end())
 		{
-			*result_listener << "\nDidn't find expected relation: " << relation << "\n";
-			describeLines(expectedRelations, lines, result_listener);
+			*result_listener << "\nDidn't find expected line: " << line << "\n";
+			describeLines(expectedLines, lines, result_listener);
 			return false;
 		}
 	return true;
@@ -57,22 +69,22 @@ struct ClassDiagramMT : public CTagsMT
 	std::ostringstream diagram;
 };
 
-TEST_F(ClassDiagramMT, generateDiagramForSingleTag)
+TEST_F(ClassDiagramMT, generateDiagramForSingleTag_baseClasses)
 {
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
 	EXPECT_THAT(
 		diagram.str(),
-		HasRelations(std::vector<std::string>({
+		HasLines(std::vector<std::string>({
 			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag"
 		})));
 }
 
-TEST_F(ClassDiagramMT, generateDiagramWithMembersForSingleTag)
+TEST_F(ClassDiagramMT, generateDiagramForSingleTag_members)
 {
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
 	EXPECT_THAT(
 		diagram.str(),
-		HasRelations(std::vector<std::string>({
+		HasLines(std::vector<std::string>({
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
 
@@ -87,12 +99,12 @@ TEST_F(ClassDiagramMT, generateDiagramWithMembersForSingleTag)
 			})));
 }
 
-TEST_F(ClassDiagramMT, generateDiagramForMultipleTags)
+TEST_F(ClassDiagramMT, generateDiagramForMultipleTags_baseClasses)
 {
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName(".*Reader"));
 	EXPECT_THAT(
 		diagram.str(), 
-		HasRelations(std::vector<std::string>({
+		HasLines(std::vector<std::string>({
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::TagFileReader",
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::MultipleTagFilesReader",
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::FileScopedTagFilteringReader"
@@ -104,7 +116,7 @@ TEST_F(ClassDiagramMT, generateDiagramForTagsWithDifferentBases)
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("(.*Reader|.*Selector)"));
 	EXPECT_THAT(
 		diagram.str(),
-		HasRelations(std::vector<std::string>({
+		HasLines(std::vector<std::string>({
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::TagFileReader",
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::MultipleTagFilesReader",
 			"CTagsPlugin::ITagsReader <|-- CTagsPlugin::FileScopedTagFilteringReader",
