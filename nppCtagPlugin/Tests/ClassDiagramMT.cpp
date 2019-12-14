@@ -84,9 +84,7 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag_members)
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
 	EXPECT_THAT(
 		diagram.str(),
-		IsLines(std::vector<std::string>({
-			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag",
-
+		HasLines(std::vector<std::string>({
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
 
@@ -106,7 +104,9 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag)
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::CppTag"));
 	EXPECT_THAT(
 		diagram.str(),
-		HasLines(std::vector<std::string>({
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag",
+
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
 			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
 
