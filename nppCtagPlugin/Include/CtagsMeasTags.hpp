@@ -27,6 +27,22 @@ struct ParseTagsHierarchyTime
 	}
 };
 
+struct GenerateClassInDiagramTime
+{
+	static inline const char* name()
+	{
+		return "GenerateClassDescriptionInDiagram";
+	}
+};
+
+struct GenerateClassDiagramTime
+{
+	static inline const char* name()
+	{
+		return "GenerateClassDiagramTime";
+	}
+};
+
 struct ChildrenTagsCallCount
 {
 	static inline const char* name()

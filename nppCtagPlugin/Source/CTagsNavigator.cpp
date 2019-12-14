@@ -10,6 +10,8 @@
 #include "CppIsTagWithAtt.hpp"
 #include "TagNotFoundException.hpp"
 #include "ContainerTagsReader.hpp"
+#include "CtagsMeasTags.hpp"
+#include "Samples.hpp"
 #include "Log.hpp"
 
 namespace CTagsPlugin
@@ -167,6 +169,8 @@ void CTagsNavigator::onTagsLoaded()
 ClassDiagram::Class CTagsNavigator::classInDiagram(const Tag& p_tag)
 {
 	LOG_INFO << "export class " << p_tag.getName() << " to class diagram";
+	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
+
 	ClassDiagram::Class tag(p_tag);
 	for (const Tag& base : p_tag.baseTags(*m_tagsReader))
 		tag.addBase(base);
@@ -178,6 +182,8 @@ ClassDiagram::Class CTagsNavigator::classInDiagram(const Tag& p_tag)
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude)
 {
 	LOG_INFO << "export class diagram";
+	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
+
 	ClassDiagram diagram(p_out);
 	for (const Tag& tag : m_tagsReader->findTag(p_tagsToInclude))
 		diagram.add(classInDiagram(tag));
