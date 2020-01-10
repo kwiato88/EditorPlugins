@@ -91,7 +91,7 @@ void ConfigGetter::setMandatoryOptions()
     setOptionIfNotPresent("Tags.selectTagsView", "gridView");
     setOptionIfNotPresent("Tags.tagsReader",     "internal");
 	setOptionIfNotPresent("Tags.filterFileScoped", "false");
-	setOptionIfNotPresent("Tags.useCache",       "false");
+	setOptionIfNotPresent("Tags.useCache",       "true");
 	setOptionIfNotPresent("Logs.enabled",        "false");
 	setOptionIfNotPresent("Logs.severity",       "info");
     setOptionIfNotPresent("Fields.access",       "true");
