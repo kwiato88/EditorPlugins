@@ -342,6 +342,7 @@ void CTagsController::tagClassDiagram()
 {
 	try
 	{
+		//TODO: consider removing info messages
 		auto plantUmlFilePath(getPlantUmlScriptPath());
 		std::ofstream file(plantUmlFilePath);
 		m_tagsNavigator.exportClassDiagram(file, getCurrentWord());
