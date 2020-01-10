@@ -121,6 +121,28 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag)
 			})));
 }
 
+TEST_F(ClassDiagramMT, generateDiagramForSingleTagGivenByName)
+{
+	tagsNavigator.exportClassDiagram(diagram, "CppTag");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag",
+
+			"\"CTagsPlugin::CppTag\" :  + Kind",
+			"\"CTagsPlugin::CppTag\" :  + Access",
+
+			"\"CTagsPlugin::CppTag\" :  + Tag * clone (...)",
+			"\"CTagsPlugin::CppTag\" :  + size_t size (...)",
+
+			"\"CTagsPlugin::CppTag\" :  + Kind kind",
+			"\"CTagsPlugin::CppTag\" :  + Access access",
+			"\"CTagsPlugin::CppTag\" :  + string signature",
+			"\"CTagsPlugin::CppTag\" :  + string type",
+			"\"CTagsPlugin::CppTag\" :  + vector<std::string> baseClasses",
+			})));
+}
+
 TEST_F(ClassDiagramMT, generateDiagramForMultipleTags_baseClasses)
 {
 	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName(".*Reader"));

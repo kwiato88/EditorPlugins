@@ -182,11 +182,18 @@ ClassDiagram::Class CTagsNavigator::classInDiagram(const Tag& p_tag)
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude)
 {
 	LOG_INFO << "export class diagram";
-	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
+	Meas::ExecutionTimeSample<GenerateClassDiagramTime> meas;
 
 	ClassDiagram diagram(p_out);
 	for (const Tag& tag : m_tagsReader->findTag(p_tagsToInclude))
 		diagram.add(classInDiagram(tag));
+}
+
+void CTagsNavigator::exportClassDiagram(std::ostream& p_out, const std::string& p_tagName)
+{
+	LOG_INFO << "export class diagram for tag with name: " << p_tagName;
+	ClassDiagram diagram(p_out);
+	diagram.add(classInDiagram(selectTag(getComplexTags(p_tagName))));
 }
 
 } /* namespace CTagsPlugin */

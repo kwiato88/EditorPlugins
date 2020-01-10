@@ -50,6 +50,7 @@ public:
 	void onTagsLoaded();
 
 	void exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude);
+	void exportClassDiagram(std::ostream& p_out, const std::string& p_tagName);
 
 private:
     Location getCurrentLocation() const;
