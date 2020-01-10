@@ -51,9 +51,19 @@ struct Percent
 	static std::string print()
 	{
 		std::ostringstream buff;
-		buff << Counter<NumeratorTag>::print() << " " << Counter<DenominatorTag>::print()
-			<< " [" << value() << "]";
+		buff << Counter<NumeratorTag>::print() << " " << Counter<DenominatorTag>::print() << " [";
+		appendValue(buff);
+		buff << "]";
 		return buff.str();
+	}
+
+private:
+	static void appendValue(std::ostream& p_buff)
+	{
+		if (Counter<DenominatorTag>::get() == 0)
+			p_buff << "NAN - division by 0";
+		else
+			p_buff << value();
 	}
 };
 
