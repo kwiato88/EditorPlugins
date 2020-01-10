@@ -299,11 +299,26 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-	tagsController->classDiagram();
+	try {
+		Plugin::WinCommand cmd("D:\\test.txt", "");
+		cmd.execute();
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("ERROR", e.what());
+	}
 }
 
 void TagsPlugin::test2()
 {
+	try {
+		Plugin::WinCommand cmd("D:\\test.png", "");
+		cmd.execute();
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("ERROR", e.what());
+	}
 }
 
 void TagsPlugin::nextTag()

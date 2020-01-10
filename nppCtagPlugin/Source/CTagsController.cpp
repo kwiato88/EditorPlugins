@@ -19,6 +19,10 @@ std::string getFileDir(std::string p_filePath)
 {
     return p_filePath.substr(0, p_filePath.find_last_of("\\"));
 }
+std::string swapExtension(const std::string& p_path, const std::string& p_newExt)
+{
+	return p_path.substr(0, p_path.rfind(".")) + "." + p_newExt;
+}
 }  // namespace
 
 CTagsController::CTagsController(
@@ -348,7 +352,7 @@ void CTagsController::tagClassDiagram()
 			std::string("-jar ") + m_config.getPlantUmlPath() + " " + plantUmlFilePath
 		)->execute();
 		m_ui.infoMessage("Class diagram", "Diagram PNG saved");
-		//todo: open png
+		m_cmdFactory(swapExtension(plantUmlFilePath, "png"), "")->execute();
 	}
 	catch (Plugin::UserInputError& e)
 	{
