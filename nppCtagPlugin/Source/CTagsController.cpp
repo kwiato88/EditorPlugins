@@ -348,6 +348,7 @@ void CTagsController::tagClassDiagram()
 			std::string("-jar ") + m_config.getPlantUmlPath() + " " + plantUmlFilePath
 		)->execute();
 		m_ui.infoMessage("Class diagram", "Diagram PNG saved");
+		//todo: open png
 	}
 	catch (Plugin::UserInputError& e)
 	{

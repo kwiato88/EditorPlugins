@@ -168,8 +168,9 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Tag hierarchy"), fun_tagHier, NULL);
 	setCommand(TEXT("Cpp search"), fun_cppSearch, &cppSearchSk);
 	setSeparator();
-	setCommand(TEXT("Generate current tag class diagram"), fun_tagClassDiagram, NULL);
-	setCommand(TEXT("Generate class diagram"), fun_classDiagram, NULL);
+	//todo: reconsider names and functions order
+	setCommand(TEXT("Tag class diagram"), fun_tagClassDiagram, NULL);
+	setCommand(TEXT("Class diagram"), fun_classDiagram, NULL);
 	setSeparator();
 	setCommand(TEXT("Set tags files"), fun_setTagsFiles, &setTagFilesSk);
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
