@@ -334,6 +334,11 @@ std::string CTagsController::getTagNamePattern() const
 	return pattern;
 }
 
+void CTagsController::tagClassDiagram()
+{
+	//TODO:
+}
+
 void CTagsController::classDiagram()
 {
 	try

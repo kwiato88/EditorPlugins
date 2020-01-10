@@ -69,6 +69,14 @@ void fun_tagHier()
 {
 	g_plugin.tagHierarchy();
 }
+void fun_classDiagram()
+{
+	g_plugin.matchedTagsClassDiagram();
+}
+void fun_tagClassDiagram()
+{
+	g_plugin.tagClassDiagram();
+}
 void fun_clearTags()
 {
     g_plugin.clearTags();
@@ -159,6 +167,9 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Tag info"), fun_tagInfo, &tagInfoSk);
 	setCommand(TEXT("Tag hierarchy"), fun_tagHier, NULL);
 	setCommand(TEXT("Cpp search"), fun_cppSearch, &cppSearchSk);
+	setSeparator();
+	setCommand(TEXT("Generate current tag class diagram"), fun_tagClassDiagram, NULL);
+	setCommand(TEXT("Generate class diagram"), fun_classDiagram, NULL);
 	setSeparator();
 	setCommand(TEXT("Set tags files"), fun_setTagsFiles, &setTagFilesSk);
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
@@ -319,6 +330,14 @@ void TagsPlugin::cppSearch()
 void TagsPlugin::tagHierarchy()
 {
 	tagsController->tagHierarchy();
+}
+void TagsPlugin::tagClassDiagram()
+{
+	tagsController->tagClassDiagram();
+}
+void TagsPlugin::matchedTagsClassDiagram()
+{
+	tagsController->classDiagram();
 }
 void TagsPlugin::clearTags()
 {

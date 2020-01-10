@@ -34,7 +34,7 @@ private:
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("CTags Plugin");
 
-class TagsPlugin : public BasePluginWithUI<16>//13 vs 16
+class TagsPlugin : public BasePluginWithUI<19>//16 vs 19
 {
 public:
 	TagsPlugin();
@@ -57,6 +57,8 @@ public:
     void tagInfo();
 	void cppSearch();
 	void tagHierarchy();
+	void tagClassDiagram();
+	void matchedTagsClassDiagram();
 	void clearTags();
 	void setTagsFiles();
 	void generateTagsFile();
