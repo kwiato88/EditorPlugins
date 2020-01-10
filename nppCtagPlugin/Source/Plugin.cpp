@@ -299,8 +299,19 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
+	ui.infoMessage("test open", "try to open D:\\test.txt");
 	try {
 		Plugin::WinCommand cmd("D:\\test.txt", "");
+		cmd.execute();
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("ERROR", e.what());
+	}
+
+	ui.infoMessage("test open", "try to open D:\\test.png");
+	try {
+		Plugin::WinCommand cmd("D:\\test.png", "");
 		cmd.execute();
 	}
 	catch (std::exception& e)
@@ -311,8 +322,19 @@ void TagsPlugin::test1()
 
 void TagsPlugin::test2()
 {
+	ui.infoMessage("test open", "try to open C:\\test.txt");
 	try {
-		Plugin::WinCommand cmd("D:\\test.png", "");
+		Plugin::WinCommand cmd("C:\\test.txt", "");
+		cmd.execute();
+	}
+	catch (std::exception& e)
+	{
+		ui.errorMessage("ERROR", e.what());
+	}
+
+	ui.infoMessage("test open", "try to open C:\\test.png");
+	try {
+		Plugin::WinCommand cmd("C:\\test.png", "");
 		cmd.execute();
 	}
 	catch (std::exception& e)
