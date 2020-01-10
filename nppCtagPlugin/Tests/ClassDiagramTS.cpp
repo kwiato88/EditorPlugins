@@ -7,7 +7,7 @@ namespace CTagsPlugin
 {
 
 using namespace ::testing;
-
+using Attribute = TagAttributes::Attribute;
 namespace
 {
 
@@ -15,7 +15,8 @@ struct TestTag : public Tag
 {
 	TestTag() : Tag() {}
 	TestTag(const TestTag& p_other) : Tag(p_other) {}
-	TestTag(const std::string& p_name) : Tag()
+	TestTag(const std::string& p_name)
+		: Tag()
 	{
 		name = p_name;
 	}
@@ -24,7 +25,17 @@ struct TestTag : public Tag
 	{
 		return new TestTag(*this);
 	}
+	TagAttributes getAttributes() const
+	{
+		return Tag::getAttributes() += attributes;
+	}
+	TestTag& with(Attribute p_type, const std::string& p_value)
+	{
+		attributes.set(p_type, p_value);
+		return *this;
+	}
 
+	TagAttributes attributes;
 };
 
 }
@@ -61,7 +72,9 @@ TEST_F(ClassDiagramTS, classWithOneBaseShoulHaveRelation)
 		ClassDiagram diagram{ buff };
 		diagram.add(derived);
 	}
-	ASSERT_EQ(beginMarker + "base <|-- derived\n" + endMarker, buff.str());
+	ASSERT_EQ(beginMarker
+		+ "base <|-- derived\n"
+		+ endMarker, buff.str());
 }
 
 TEST_F(ClassDiagramTS, classWith2BaseShoulHave2Relations)
@@ -74,7 +87,10 @@ TEST_F(ClassDiagramTS, classWith2BaseShoulHave2Relations)
 		ClassDiagram diagram{ buff };
 		diagram.add(derived);
 	}
-	ASSERT_EQ(beginMarker + "base <|-- derived\n" + "base1 <|-- derived\n" + endMarker, buff.str());
+	ASSERT_EQ(beginMarker
+		+ "base <|-- derived\n"
+		+ "base1 <|-- derived\n"
+		+ endMarker, buff.str());
 }
 
 TEST_F(ClassDiagramTS, 2classWithOneBaseShoulHave2Relations)
@@ -91,7 +107,10 @@ TEST_F(ClassDiagramTS, 2classWithOneBaseShoulHave2Relations)
 
 		diagram.add(derived2);
 	}
-	ASSERT_EQ(beginMarker + "base1 <|-- derived1\n" + "base1 <|-- derived2\n" + endMarker, buff.str());
+	ASSERT_EQ(beginMarker
+		+ "base1 <|-- derived1\n"
+		+ "base1 <|-- derived2\n"
+		+ endMarker, buff.str());
 }
 
 TEST_F(ClassDiagramTS, 2classWith2BaseShoulHave4Relations)
@@ -111,8 +130,10 @@ TEST_F(ClassDiagramTS, 2classWith2BaseShoulHave4Relations)
 		diagram.add(derived2);
 	}
 	ASSERT_EQ(beginMarker
-		+ "base1 <|-- derived1\n" + "base2 <|-- derived1\n"
-		+ "base1 <|-- derived2\n" + "base3 <|-- derived2\n"
+		+ "base1 <|-- derived1\n"
+		+ "base2 <|-- derived1\n"
+		+ "base1 <|-- derived2\n"
+		+ "base3 <|-- derived2\n"
 		+ endMarker, buff.str());
 }
 
@@ -128,7 +149,8 @@ TEST_F(ClassDiagramTS, shouldNotDuplicateClasses)
 		diagram.add(derived);
 	}
 	ASSERT_EQ(beginMarker
-		+ "base1 <|-- derived\n" + "base2 <|-- derived\n"
+		+ "base1 <|-- derived\n"
+		+ "base2 <|-- derived\n"
 		+ endMarker, buff.str());
 }
 
@@ -143,7 +165,7 @@ TEST_F(ClassDiagramTS, classWith1Member)
 	}
 	ASSERT_EQ(
 		beginMarker
-		+ "parentClass : member\n"
+		+ "\"parentClass\" :  member\n"
 		+ endMarker, buff.str());
 }
 
@@ -159,8 +181,8 @@ TEST_F(ClassDiagramTS, classWith2Members)
 	}
 	ASSERT_EQ(
 		beginMarker
-		+ "parentClass : member1\n"
-		+ "parentClass : member2\n"
+		+ "\"parentClass\" :  member1\n"
+		+ "\"parentClass\" :  member2\n"
 		+ endMarker, buff.str());
 }
 
@@ -183,11 +205,11 @@ TEST_F(ClassDiagramTS, 2classWithMembers)
 	}
 	ASSERT_EQ(
 		beginMarker
-		+ "parent1 : member1\n"
-		+ "parent1 : member2\n"
-		+ "parent2 : member1\n"
-		+ "parent2 : member2\n"
-		+ "parent2 : member3\n"
+		+ "\"parent1\" :  member1\n"
+		+ "\"parent1\" :  member2\n"
+		+ "\"parent2\" :  member1\n"
+		+ "\"parent2\" :  member2\n"
+		+ "\"parent2\" :  member3\n"
 		+ endMarker, buff.str());
 }
 
@@ -203,8 +225,134 @@ TEST_F(ClassDiagramTS, classWithMemberAndBase)
 	}
 	ASSERT_EQ(
 		beginMarker
-		+ "parent : member\n"
+		+ "\"parent\" :  member\n"
 		+ "base <|-- parent\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, memberWithUnderscore)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "m_member" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  m_member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, memberWithType)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "memberType"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  memberType member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, membersWithSpecialCharacters)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "memberType*"));
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "memberType&"));
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "size_t"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  memberType* member\n"
+		+ "\"parentClass\" :  memberType& member\n"
+		+ "\"parentClass\" :  size_t member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, membersWithSpacesinType)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member" }.with(Attribute::Type, "memberType *"));
+		parent.addMember(TestTag{ "member" }.with(Attribute::Type, "memberType &"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  memberType * member\n"
+		+ "\"parentClass\" :  memberType & member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, templateMember)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "type<other>"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  type<other> member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, memberHasTemplateParameterWithNamespace)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member"}.with(Attribute::Type, "type<name::other>"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  type<name::other> member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, memberAccesAtt)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member" }.with(Attribute::Type, "type").with(Attribute::Access, "+"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  + type member\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, functionMemberIsFollowedByBrackets)
+{
+	{
+		ClassDiagram::Class parent{ TestTag{"parentClass"} };
+		parent.addMember(TestTag{ "member" }.with(Attribute::Type, "type").with(Attribute::Kind, "f"));
+
+		ClassDiagram diagram{ buff };
+		diagram.add(parent);
+	}
+	ASSERT_EQ(
+		beginMarker
+		+ "\"parentClass\" :  type member (...)\n"
 		+ endMarker, buff.str());
 }
 

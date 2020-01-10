@@ -85,17 +85,17 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag_members)
 	EXPECT_THAT(
 		diagram.str(),
 		HasLines(std::vector<std::string>({
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
+			"\"CTagsPlugin::CppTag\" :  + Kind",
+			"\"CTagsPlugin::CppTag\" :  + Access",
 
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::clone",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::size",
+			"\"CTagsPlugin::CppTag\" :  + Tag * clone (...)",
+			"\"CTagsPlugin::CppTag\" :  + size_t size (...)",
 
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::kind",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::access",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::signature",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::type",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::baseClasses",
+			"\"CTagsPlugin::CppTag\" :  + Kind kind",
+			"\"CTagsPlugin::CppTag\" :  + Access access",
+			"\"CTagsPlugin::CppTag\" :  + string signature",
+			"\"CTagsPlugin::CppTag\" :  + string type",
+			"\"CTagsPlugin::CppTag\" :  + vector<std::string> baseClasses",
 			})));
 }
 
@@ -107,17 +107,17 @@ TEST_F(ClassDiagramMT, generateDiagramForSingleTag)
 		IsLines(std::vector<std::string>({
 			"CTagsPlugin::Tag <|-- CTagsPlugin::CppTag",
 
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Kind",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::Access",
+			"\"CTagsPlugin::CppTag\" :  + Kind",
+			"\"CTagsPlugin::CppTag\" :  + Access",
 
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::clone",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::size",
+			"\"CTagsPlugin::CppTag\" :  + Tag * clone (...)",
+			"\"CTagsPlugin::CppTag\" :  + size_t size (...)",
 
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::kind",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::access",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::signature",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::type",
-			"CTagsPlugin::CppTag : CTagsPlugin::CppTag::baseClasses",
+			"\"CTagsPlugin::CppTag\" :  + Kind kind",
+			"\"CTagsPlugin::CppTag\" :  + Access access",
+			"\"CTagsPlugin::CppTag\" :  + string signature",
+			"\"CTagsPlugin::CppTag\" :  + string type",
+			"\"CTagsPlugin::CppTag\" :  + vector<std::string> baseClasses",
 			})));
 }
 
@@ -139,16 +139,16 @@ TEST_F(ClassDiagramMT, generateDiagramForMultipleTags_members)
 	EXPECT_THAT(
 		diagram.str(),
 		HasLines(std::vector<std::string>({
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::kind",
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::access",
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::inherits",
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::prototype",
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::typeref",
-			"CTagsPlugin::Fields : CTagsPlugin::Fields::file",
+			"\"CTagsPlugin::Fields\" :  + bool kind",
+			"\"CTagsPlugin::Fields\" :  + bool access",
+			"\"CTagsPlugin::Fields\" :  + bool inherits",
+			"\"CTagsPlugin::Fields\" :  + bool prototype",
+			"\"CTagsPlugin::Fields\" :  + bool typeref",
+			"\"CTagsPlugin::Fields\" :  + bool file",
 
-			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::clone",
-			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::size",
-			"CTagsPlugin::GenericKindTag : CTagsPlugin::GenericKindTag::kind",
+			"\"CTagsPlugin::GenericKindTag\" :  + Tag * clone (...)",
+			"\"CTagsPlugin::GenericKindTag\" :  + size_t size (...)",
+			"\"CTagsPlugin::GenericKindTag\" :  + string kind"
 			})));
 }
 
