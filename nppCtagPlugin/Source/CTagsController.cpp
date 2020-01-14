@@ -4,6 +4,7 @@
 #include "CTagsGenerator.hpp"
 #include "OpenFileException.hpp"
 #include "ComplexTagWithMatchingName.hpp"
+#include "Sleep.hpp"
 #include "ShellCommandException.hpp"
 #include "TagsReaderException.hpp"
 #include "TagNotFoundException.hpp"
@@ -352,6 +353,7 @@ void CTagsController::tagClassDiagram()
 			"java",
 			std::string("-jar ") + m_config.getPlantUmlPath() + " " + plantUmlFilePath
 		)->execute();
+		Plugin::sleep(5000u);
 		m_ui.infoMessage("Class diagram", "Diagram PNG saved");
 		m_cmdFactory(swapExtension(plantUmlFilePath, "png"), "")->execute();
 	}

@@ -9,6 +9,7 @@ add_library(
     STATIC
     Source/ShellCommand.cpp
     Source/WinCommand.cpp
+	Source/Sleep.cpp
     Source/NppEditor.cpp
     Source/WinApiUI.cpp
     Source/WinApiUIFileSystem.cpp
