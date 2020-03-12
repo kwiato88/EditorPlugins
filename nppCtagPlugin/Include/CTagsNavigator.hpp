@@ -63,6 +63,7 @@ private:
 
     Navigator& m_navigator;
 	Plugin::Editor& m_editor;
+	const IConfiguration& m_config;
     std::unique_ptr<ITagsSelector> m_tagsSelector;
 	std::unique_ptr<ITagHierarchySelector> m_hierSelector;
 	ChildrenTags m_childrenTags;

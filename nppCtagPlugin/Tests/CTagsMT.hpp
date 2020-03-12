@@ -42,6 +42,8 @@ private:
 class ConfigStub : public IConfiguration
 {
 public:
+	ConfigStub();
+
 	void loadConfigFile(const std::string& p_configFilePath);
 	void saveConfigFile(const std::string& p_configFilePath);
 
@@ -58,6 +60,8 @@ public:
 	ClassDiagramConfig getClassDiagramConfig() const;
 	bool isLoggerEnabled() const;
 	Logger::Level getLogSeverity() const;
+
+	ClassDiagramConfig classDiagramConfig;
 };
 
 struct CTagsMT : public Test

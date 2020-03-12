@@ -188,4 +188,68 @@ TEST_F(ClassDiagramMT, generateDiagramForTagsWithDifferentBases)
 			})));
 }
 
+TEST_F(ClassDiagramMT, generateFullUpHierarchyOnly)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.includeMembers = false;
+
+	tagsNavigator.exportClassDiagram(diagram, "CompositeTagPrinter");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::ITagPrinter <|-- CTagsPlugin::TagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::CompositeTagPrinter"
+			})));
+}
+
+TEST_F(ClassDiagramMT, generateDirectInheritedOnly)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
+	confg.classDiagramConfig.includeMembers = false;
+
+	tagsNavigator.exportClassDiagram(diagram, "CompositeTagPrinter");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::CompositeTagPrinter"
+			})));
+}
+
+TEST_F(ClassDiagramMT, generateMemebersOnly)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::none;
+	confg.classDiagramConfig.includeMembers = true;
+
+	tagsNavigator.exportClassDiagram(diagram, "CompositeTagPrinter");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"\"CTagsPlugin::CompositeTagPrinter\" :  - Printers m_printers",
+			"\"CTagsPlugin::CompositeTagPrinter\" :  CompositeTagPrinter (...)",
+			"\"CTagsPlugin::CompositeTagPrinter\" :  vector<std::string> print (...)"
+			})));
+}
+
+TEST_F(ClassDiagramMT, generateFullUpHierarchyAndMemebers)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.includeMembers = true;
+
+	tagsNavigator.exportClassDiagram(diagram, "CompositeTagPrinter");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::ITagPrinter <|-- CTagsPlugin::TagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::CompositeTagPrinter",
+
+			"\"CTagsPlugin::CompositeTagPrinter\" :  - Printers m_printers",
+			"\"CTagsPlugin::CompositeTagPrinter\" :  CompositeTagPrinter (...)",
+			"\"CTagsPlugin::CompositeTagPrinter\" :  vector<std::string> print (...)"
+			})));
+}
+
 }

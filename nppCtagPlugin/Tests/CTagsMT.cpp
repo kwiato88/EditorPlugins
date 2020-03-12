@@ -20,6 +20,12 @@ int TagsSelectorProxy::selectTag(const std::vector<TagHolder>& p_tags)
 	return selector.selectTag(p_tags);
 }
 
+ConfigStub::ConfigStub()
+{
+	classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
+	classDiagramConfig.includeMembers = true;
+}
 void ConfigStub::loadConfigFile(const std::string&) {}
 void ConfigStub::saveConfigFile(const std::string&) {}
 std::string ConfigStub::getCtagsPath() const { return ""; }
@@ -32,14 +38,7 @@ Fields ConfigStub::getSupportedExtensionFileds() const { return Fields{}; }
 bool ConfigStub::shouldFilterFileScopedTags() const { return false; }
 bool ConfigStub::shouldCacheTags() const { return false; }
 std::string ConfigStub::getPlantUmlPath() const { return ""; }
-ClassDiagramConfig ConfigStub::getClassDiagramConfig() const
-{
-	ClassDiagramConfig config = {};
-	config.derivedTags = ClassDiagramConfig::Hierarchy::none;
-	config.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
-	config.includeMembers = true;
-	return config;
-}
+ClassDiagramConfig ConfigStub::getClassDiagramConfig() const { return classDiagramConfig; }
 bool ConfigStub::isLoggerEnabled() const { return false; }
 Logger::Level ConfigStub::getLogSeverity() const { return Logger::Level(); }
 

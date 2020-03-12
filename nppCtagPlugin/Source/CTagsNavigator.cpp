@@ -58,6 +58,89 @@ std::vector<TagHolder> findTag(std::shared_ptr<ITagsReader> p_tagsReader, const 
 }
 }
 
+class ClassDiagramBuilder
+{
+public:
+	ClassDiagramBuilder(
+		const ClassDiagramConfig& p_config, ClassDiagram& p_diagram,
+		const Tag& p_tag, const std::vector<TagHolder>& p_children,
+		const TagHierarchy& p_hier)
+		: ClassDiagramBuilder(p_config, p_diagram, p_tag, p_children, p_hier.upHierarchy, p_hier.downHierarchy)
+	{}
+
+	ClassDiagramBuilder(
+		const ClassDiagramConfig& p_config, ClassDiagram& p_diagram,
+		const Tag& p_tag, const std::vector<TagHolder>& p_children,
+		const TagHierarchyItem& p_upHier, const TagHierarchyItem& p_downHier)
+		: config(p_config), diagram(p_diagram), tag(p_tag), children(p_children),
+		upHier(p_upHier), downHier(p_downHier)
+	{}
+
+	void append()
+	{
+		if (config.includeMembers)
+			appendMembers();
+		if (config.inheritedTags == ClassDiagramConfig::Hierarchy::direct)
+			appendDirectInherited();
+		if (config.inheritedTags == ClassDiagramConfig::Hierarchy::full)
+			appendInheritedHierarchy();
+		if (config.derivedTags == ClassDiagramConfig::Hierarchy::direct)
+			appendDirectDerived();
+		if (config.derivedTags == ClassDiagramConfig::Hierarchy::full)
+			appendDerivedHierarchy();
+
+		diagram.add(tag);
+	}
+
+private:
+	void appendMembers()
+	{
+		for (const Tag& child : children)
+			tag.addMember(child);
+	}
+	ClassDiagramConfig fullInheritedHierConfigOnly() const
+	{
+		ClassDiagramConfig upHierOnly;
+		upHierOnly.includeMembers = false;
+		upHierOnly.inheritedTags = ClassDiagramConfig::Hierarchy::full;
+		upHierOnly.derivedTags = ClassDiagramConfig::Hierarchy::none;
+		return upHierOnly;
+	}
+	void appendInheritedHierarchy()
+	{
+		for (const auto& base : upHier.children)
+		{
+			tag.addBase(base.value);
+
+			ClassDiagramBuilder baseBuilder(fullInheritedHierConfigOnly(), diagram,
+				base.value, {}, base, TagHierarchyItem());
+			baseBuilder.append();
+		}
+	}
+	void appendDirectInherited()
+	{
+		for (const Tag& base : upHier.childrenValues())
+			tag.addBase(base);
+	}
+	void appendDerivedHierarchy()
+	{
+		//TODO:
+	}
+	void appendDirectDerived()
+	{
+		//TODO:
+	}
+
+private:
+	ClassDiagramConfig config;
+	ClassDiagram& diagram;
+
+	ClassDiagram::Class tag;
+	std::vector<TagHolder> children;
+	const TagHierarchyItem& upHier;
+	const TagHierarchyItem& downHier;
+};
+
 CTagsNavigator::CTagsNavigator(
 	Navigator& p_navigator,
 	Plugin::Editor& p_editor,
@@ -67,6 +150,7 @@ CTagsNavigator::CTagsNavigator(
 	const IConfiguration& p_config)
  : m_navigator(p_navigator),
    m_editor(p_editor),
+   m_config(p_config),
    m_tagsSelector(std::move(p_tagsSelector)),
    m_hierSelector(std::move(p_hierSelector)),
    m_childrenTags(p_tagsReader, p_config),
@@ -193,7 +277,12 @@ void CTagsNavigator::exportClassDiagram(std::ostream& p_out, const std::string& 
 {
 	LOG_INFO << "export class diagram for tag with name: " << p_tagName;
 	ClassDiagram diagram(p_out);
-	diagram.add(classInDiagram(selectTag(getComplexTags(p_tagName))));
+	//TODO: consider refactor
+	//TODO: measure time GenerateClassInDiagramTime
+	const auto tag = selectTag(getComplexTags(p_tagName));
+	const auto hier = m_tagsHierarchy.get(tag, *m_tagsReader);
+	ClassDiagramBuilder builder(m_config.getClassDiagramConfig(), diagram, tag, m_childrenTags.get(tag), hier);
+	builder.append();
 }
 
 } /* namespace CTagsPlugin */
