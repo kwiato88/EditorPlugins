@@ -168,9 +168,8 @@ void TagsPlugin::initMenu()
 	setCommand(TEXT("Tag hierarchy"), fun_tagHier, NULL);
 	setCommand(TEXT("Cpp search"), fun_cppSearch, &cppSearchSk);
 	setSeparator();
-	//TODO: reconsider names and functions order
-	setCommand(TEXT("Tag class diagram"), fun_tagClassDiagram, NULL);
-	setCommand(TEXT("Class diagram"), fun_classDiagram, NULL);
+	setCommand(TEXT("Class diagram (current tag)"), fun_tagClassDiagram, NULL);
+	setCommand(TEXT("Class diagram (tags by pattern)"), fun_classDiagram, NULL);
 	setSeparator();
 	setCommand(TEXT("Set tags files"), fun_setTagsFiles, &setTagFilesSk);
 	setCommand(TEXT("Generate tags file"), fun_generateTagsFile, &generateTagSk);
@@ -347,12 +346,10 @@ void TagsPlugin::nextTag()
 {
     tagsController->next();
 }
-
 void TagsPlugin::previousTag()
 {
     tagsController->previous();
 }
-
 void TagsPlugin::findTag()
 {
     tagsController->find();
@@ -381,17 +378,14 @@ void TagsPlugin::clearTags()
 {
     tagsController->clear();
 }
-
 void TagsPlugin::setTagsFiles()
 {
     tagsController->setTagFiles();
 }
-
 void TagsPlugin::generateTagsFile()
 {
     tagsController->generateTags();
 }
-
 void TagsPlugin::info()
 {
     std::string l_info = "Project:    CTags plugin for notepad++\n\nVersion:    1.8.1\n\nPage:    https://kwiato88.github.io/EditorPlugins/";

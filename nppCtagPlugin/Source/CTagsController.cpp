@@ -343,7 +343,6 @@ void CTagsController::tagClassDiagram()
 {
 	try
 	{
-		//TODO: consider removing info messages
 		auto plantUmlFilePath(getPlantUmlScriptPath());
 		std::ofstream file(plantUmlFilePath);
 		m_tagsNavigator.exportClassDiagram(file, getCurrentWord());
@@ -387,7 +386,9 @@ void CTagsController::classDiagram()
 			"java",
 			std::string("-jar ") + m_config.getPlantUmlPath() + " " + plantUmlFilePath
 		)->execute();
+		Plugin::sleep(5000u);
 		m_ui.infoMessage("Class diagram", "Diagram PNG saved");
+		m_cmdFactory(swapExtension(plantUmlFilePath, "png"), "")->execute();
 	}
 	catch (Plugin::UserInputError& e)
 	{
