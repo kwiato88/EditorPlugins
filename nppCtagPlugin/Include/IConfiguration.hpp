@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Fields.hpp"
+#include "ClassDiagramConfig.hpp"
 #include "Logger.hpp"
 
 namespace CTagsPlugin
@@ -35,6 +36,7 @@ struct IConfiguration
 	virtual bool shouldFilterFileScopedTags() const = 0;
 	virtual bool shouldCacheTags() const = 0;
 	virtual std::string getPlantUmlPath() const = 0;
+	virtual ClassDiagramConfig getClassDiagramConfig() const = 0;
 	virtual bool isLoggerEnabled() const = 0;
 	virtual Logger::Level getLogSeverity() const = 0;
 };

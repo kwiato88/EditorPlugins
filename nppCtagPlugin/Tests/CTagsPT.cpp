@@ -58,6 +58,7 @@ public:
 	bool shouldFilterFileScopedTags() const;
 	bool shouldCacheTags() const;
 	std::string getPlantUmlPath() const;
+	ClassDiagramConfig getClassDiagramConfig() const;
 	bool isLoggerEnabled() const;
 	Logger::Level getLogSeverity() const;
 };
@@ -74,6 +75,14 @@ Fields ConfigStub::getSupportedExtensionFileds() const { return Fields{}; }
 bool ConfigStub::shouldFilterFileScopedTags() const { return false; }
 bool ConfigStub::shouldCacheTags() const { return false; }
 std::string ConfigStub::getPlantUmlPath() const { return ""; }
+ClassDiagramConfig ConfigStub::getClassDiagramConfig() const
+{
+	ClassDiagramConfig config = {};
+	config.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	config.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
+	config.includeMembers = true;
+	return config;
+}
 bool ConfigStub::isLoggerEnabled() const { return false; }
 Logger::Level ConfigStub::getLogSeverity() const { return Logger::Level(); }
 

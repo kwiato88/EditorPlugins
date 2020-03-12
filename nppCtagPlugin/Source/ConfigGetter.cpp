@@ -199,6 +199,15 @@ std::string ConfigGetter::getPlantUmlPath() const
 	return getParam("ClassDiagram.plantUmlJarPath", "plantuml.jar");
 }
 
+ClassDiagramConfig ConfigGetter::getClassDiagramConfig() const
+{
+	ClassDiagramConfig config = {};
+	config.derivedTags = ClassDiagramConfig::Hierarchy::none;
+	config.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
+	config.includeMembers = true;
+	return config;
+}
+
 bool ConfigGetter::isLoggerEnabled() const
 {
 	return toBool(getOption("Logs.enabled").get());

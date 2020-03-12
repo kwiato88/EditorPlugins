@@ -55,6 +55,7 @@ public:
 	bool shouldFilterFileScopedTags() const;
 	bool shouldCacheTags() const;
 	std::string getPlantUmlPath() const;
+	ClassDiagramConfig getClassDiagramConfig() const;
 	bool isLoggerEnabled() const;
 	Logger::Level getLogSeverity() const;
 };
