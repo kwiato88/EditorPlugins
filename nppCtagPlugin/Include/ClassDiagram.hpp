@@ -16,7 +16,7 @@ public:
 	{
 		friend class ClassDiagram;
 	public:
-		Class(const Tag& p_tag);
+		explicit Class(const Tag& p_tag);
 		void addBase(const Tag& p_base);
 		void addMember(const Tag& p_member);
 	private:
