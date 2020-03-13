@@ -56,6 +56,15 @@ bool toBool(const std::string& p_value)
     return valueOr(p_value, conv, false);
 }
 
+ClassDiagramConfig::Hierarchy toClassDiagramHierarchy(const std::string& p_hier)
+{
+	static const std::map<std::string, ClassDiagramConfig::Hierarchy> conv = boost::assign::map_list_of
+		("none", ClassDiagramConfig::Hierarchy::none)
+		("direct", ClassDiagramConfig::Hierarchy::direct)
+		("full", ClassDiagramConfig::Hierarchy::full);
+	return valueOr(p_hier, conv, ClassDiagramConfig::Hierarchy::none);
+}
+
 }
 
 void ConfigGetter::loadConfigFile(const std::string& p_configFilePath)
@@ -100,6 +109,10 @@ void ConfigGetter::setMandatoryOptions()
     setOptionIfNotPresent("Fields.prototype",    "false");
     setOptionIfNotPresent("Fields.typeref",      "true");
 	setOptionIfNotPresent("Fields.file",         "true");
+	setOptionIfNotPresent("ClassDiagram.plantUmlJarPath", "plantuml.jar");
+	setOptionIfNotPresent("ClassDiagram.derived",   "none");
+	setOptionIfNotPresent("ClassDiagram.inherited", "direct");
+	setOptionIfNotPresent("ClassDiagram.members",   "true");
 }
 
 void ConfigGetter::setOptionIfNotPresent(const std::string& p_name, const std::string& p_value)
@@ -202,9 +215,9 @@ std::string ConfigGetter::getPlantUmlPath() const
 ClassDiagramConfig ConfigGetter::getClassDiagramConfig() const
 {
 	ClassDiagramConfig config = {};
-	config.derivedTags = ClassDiagramConfig::Hierarchy::none;
-	config.inheritedTags = ClassDiagramConfig::Hierarchy::direct;
-	config.includeMembers = true;
+	config.derivedTags = toClassDiagramHierarchy(getParam("ClassDiagram.derived", "none"));
+	config.inheritedTags = toClassDiagramHierarchy(getParam("ClassDiagram.inherited", "direct"));
+	config.includeMembers = toBool(getParam("ClassDiagram.members", "true"));
 	return config;
 }
 
