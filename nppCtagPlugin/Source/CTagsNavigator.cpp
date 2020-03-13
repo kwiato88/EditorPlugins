@@ -72,7 +72,7 @@ public:
 		const ClassDiagramConfig& p_config, ClassDiagram& p_diagram,
 		const Tag& p_tag, const std::vector<TagHolder>& p_children,
 		const TagHierarchyItem& p_upHier, const TagHierarchyItem& p_downHier)
-		: config(p_config), diagram(p_diagram), tag(p_tag), children(p_children),
+		: config(p_config), diagram(p_diagram), tag(p_tag), tagDesc(p_tag), children(p_children),
 		upHier(p_upHier), downHier(p_downHier)
 	{}
 
@@ -89,14 +89,14 @@ public:
 		if (config.derivedTags == ClassDiagramConfig::Hierarchy::full)
 			appendDerivedHierarchy();
 
-		diagram.add(tag);
+		diagram.add(tagDesc);
 	}
 
 private:
 	void appendMembers()
 	{
 		for (const Tag& child : children)
-			tag.addMember(child);
+			tagDesc.addMember(child);
 	}
 	ClassDiagramConfig fullInheritedHierConfigOnly() const
 	{
@@ -110,7 +110,7 @@ private:
 	{
 		for (const auto& base : upHier.children)
 		{
-			tag.addBase(base.value);
+			tagDesc.addBase(base.value);
 
 			ClassDiagramBuilder baseBuilder(fullInheritedHierConfigOnly(), diagram,
 				base.value, {}, base, TagHierarchyItem());
@@ -120,22 +120,45 @@ private:
 	void appendDirectInherited()
 	{
 		for (const Tag& base : upHier.childrenValues())
-			tag.addBase(base);
+			tagDesc.addBase(base);
+	}
+	ClassDiagramConfig fullDerivedHierConfigOnly() const
+	{
+		ClassDiagramConfig downHierOnly;
+		downHierOnly.includeMembers = false;
+		downHierOnly.inheritedTags = ClassDiagramConfig::Hierarchy::none;
+		downHierOnly.derivedTags = ClassDiagramConfig::Hierarchy::full;
+		return downHierOnly;
 	}
 	void appendDerivedHierarchy()
 	{
-		//TODO:
+		for (const auto& derived : downHier.children)
+		{
+			ClassDiagram::Class derivedDesc(derived.value);
+			derivedDesc.addBase(tag);
+			diagram.add(derivedDesc);
+
+			ClassDiagramBuilder baseBuilder(fullDerivedHierConfigOnly(), diagram,
+				derived.value, {}, TagHierarchyItem(), derived);
+			baseBuilder.append();
+		}
 	}
 	void appendDirectDerived()
 	{
-		//TODO:
+		for (const Tag& derived : downHier.childrenValues())
+		{
+			ClassDiagram::Class derivedDesc(derived);
+			derivedDesc.addBase(tag);
+			diagram.add(derivedDesc);
+		}
 	}
 
 private:
 	ClassDiagramConfig config;
 	ClassDiagram& diagram;
 
-	ClassDiagram::Class tag;
+	const Tag& tag;
+	ClassDiagram::Class tagDesc;
 	std::vector<TagHolder> children;
 	const TagHierarchyItem& upHier;
 	const TagHierarchyItem& downHier;
