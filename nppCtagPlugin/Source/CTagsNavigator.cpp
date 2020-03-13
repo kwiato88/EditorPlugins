@@ -299,9 +299,9 @@ void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsTo
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, const std::string& p_tagName)
 {
 	LOG_INFO << "export class diagram for tag with name: " << p_tagName;
+	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
+
 	ClassDiagram diagram(p_out);
-	//TODO: consider refactor
-	//TODO: measure time GenerateClassInDiagramTime
 	const auto tag = selectTag(getComplexTags(p_tagName));
 	const auto hier = m_tagsHierarchy.get(tag, *m_tagsReader);
 	ClassDiagramBuilder builder(m_config.getClassDiagramConfig(), diagram, tag, m_childrenTags.get(tag), hier);
