@@ -283,4 +283,21 @@ TEST_F(ClassDiagramMT, generateFullDownHierarchyOnly)
 			})));
 }
 
+TEST_F(ClassDiagramMT, generateFullClassDiagram)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.includeMembers = true;
+
+	tagsNavigator.exportClassDiagram(diagram, "TagPrinter");
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::ITagPrinter <|-- CTagsPlugin::TagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::CompositeTagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::GenericKindTagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::Cpp::TagPrinter"
+			})));
+}
+
 }

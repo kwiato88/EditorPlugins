@@ -273,39 +273,33 @@ void CTagsNavigator::onTagsLoaded()
 	m_tagsHierarchy.clear();
 }
 
-ClassDiagram::Class CTagsNavigator::classInDiagram(const Tag& p_tag)
+void CTagsNavigator::appendClassToDiagram(const Tag& p_tag, ClassDiagram& p_diagram)
 {
 	LOG_INFO << "export class " << p_tag.getName() << " to class diagram";
 	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
 
-	ClassDiagram::Class tag(p_tag);
-	for (const Tag& base : p_tag.baseTags(*m_tagsReader))
-		tag.addBase(base);
-	for (const Tag& child : m_childrenTags.get(p_tag))
-		tag.addMember(child);
-	return tag;
+	const auto hier = m_tagsHierarchy.get(p_tag, *m_tagsReader);
+	ClassDiagramBuilder builder(m_config.getClassDiagramConfig(), p_diagram, p_tag, m_childrenTags.get(p_tag), hier);
+	builder.append();
 }
 
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, TagMatcher p_tagsToInclude)
 {
-	LOG_INFO << "export class diagram";
+	LOG_INFO << "export class diagram for matched tags";
 	Meas::ExecutionTimeSample<GenerateClassDiagramTime> meas;
 
 	ClassDiagram diagram(p_out);
 	for (const Tag& tag : m_tagsReader->findTag(p_tagsToInclude))
-		diagram.add(classInDiagram(tag));
+		appendClassToDiagram(tag, diagram);
 }
 
 void CTagsNavigator::exportClassDiagram(std::ostream& p_out, const std::string& p_tagName)
 {
 	LOG_INFO << "export class diagram for tag with name: " << p_tagName;
-	Meas::ExecutionTimeSample<GenerateClassInDiagramTime> meas;
 
 	ClassDiagram diagram(p_out);
 	const auto tag = selectTag(getComplexTags(p_tagName));
-	const auto hier = m_tagsHierarchy.get(tag, *m_tagsReader);
-	ClassDiagramBuilder builder(m_config.getClassDiagramConfig(), diagram, tag, m_childrenTags.get(tag), hier);
-	builder.append();
+	appendClassToDiagram(tag, diagram);
 }
 
 } /* namespace CTagsPlugin */
