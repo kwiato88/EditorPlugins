@@ -289,14 +289,49 @@ TEST_F(ClassDiagramMT, generateFullClassDiagram)
 	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::full;
 	confg.classDiagramConfig.includeMembers = true;
 
-	tagsNavigator.exportClassDiagram(diagram, "TagPrinter");
+	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::TagPrinter"));
 	EXPECT_THAT(
 		diagram.str(),
 		IsLines(std::vector<std::string>({
 			"CTagsPlugin::ITagPrinter <|-- CTagsPlugin::TagPrinter",
+
 			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::CompositeTagPrinter",
 			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::GenericKindTagPrinter",
-			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::Cpp::TagPrinter"
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::Cpp::TagPrinter",
+
+			"\"CTagsPlugin::TagPrinter\" :  TagPrinter (...)",
+
+			"\"CTagsPlugin::TagPrinter\" :  vector<std::string> print (...)",
+			"\"CTagsPlugin::TagPrinter\" :  vector<std::string> titles (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string name (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string file (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string path (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string addr (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string kind (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string access (...)",
+			"\"CTagsPlugin::TagPrinter\" :  string type (...)",
+
+			"\"CTagsPlugin::TagPrinter\" :  # const IConfiguration & m_config"
+			})));
+}
+
+TEST_F(ClassDiagramMT, generateFullClassDiagramWitTwoLevelHierarchy)
+{
+	confg.classDiagramConfig.derivedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.inheritedTags = ClassDiagramConfig::Hierarchy::full;
+	confg.classDiagramConfig.includeMembers = true;
+
+	tagsNavigator.exportClassDiagram(diagram, ComplexTagWithMatchingName("CTagsPlugin::Cpp::TagPrinter"));
+	EXPECT_THAT(
+		diagram.str(),
+		IsLines(std::vector<std::string>({
+			"CTagsPlugin::ITagPrinter <|-- CTagsPlugin::TagPrinter",
+			"CTagsPlugin::TagPrinter <|-- CTagsPlugin::Cpp::TagPrinter",
+
+			"\"CTagsPlugin::Cpp::TagPrinter\" :  TagPrinter (...)",
+			"\"CTagsPlugin::Cpp::TagPrinter\" :  string kind (...)",
+			"\"CTagsPlugin::Cpp::TagPrinter\" :  string access (...)",
+			"\"CTagsPlugin::Cpp::TagPrinter\" :  string type (...)"
 			})));
 }
 
