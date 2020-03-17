@@ -2,7 +2,7 @@
 
 #include <ostream>
 #include <sstream>
-#include <list>
+#include <map>
 
 #include "Tag.hpp"
 
@@ -30,11 +30,10 @@ public:
 	void add(const Class& p_class);
 
 private:
-	bool isAlreadyIncluded(const Class& p_class) const;
-	void append(const Class& p_class);
+	bool isLongerThanStored(const Class& p_class) const;
 
 	std::ostream& out;
-	std::list<std::string> addedClasses;
+	std::map<std::string, std::string> addedClasses;
 };
 
 }

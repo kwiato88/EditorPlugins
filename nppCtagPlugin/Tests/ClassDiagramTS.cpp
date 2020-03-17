@@ -154,6 +154,56 @@ TEST_F(ClassDiagramTS, shouldNotDuplicateClasses)
 		+ endMarker, buff.str());
 }
 
+TEST_F(ClassDiagramTS, shouldOverrideClassesWithTheSameName)
+{
+	{
+		ClassDiagram::Class class1{ TestTag{"class1"} };
+		class1.addBase(TestTag{ "base1" });
+		class1.addBase(TestTag{ "base2" });
+
+		ClassDiagram::Class class2{ TestTag{"class1"} };
+		class2.addBase(TestTag{ "base1" });
+		class2.addBase(TestTag{ "base2" });
+		class2.addMember(TestTag{ "member1" });
+		class2.addMember(TestTag{ "member2" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(class1);
+		diagram.add(class2);
+	}
+	ASSERT_EQ(beginMarker
+		+ "base1 <|-- class1\n"
+		+ "base2 <|-- class1\n"
+		+ "\"class1\" :  member1\n"
+		+ "\"class1\" :  member2\n"
+		+ endMarker, buff.str());
+}
+
+TEST_F(ClassDiagramTS, shouldKeepLongerDesciptionWhenGiveTwiceTheSameClass)
+{
+	{
+		ClassDiagram::Class class1{ TestTag{"class1"} };
+		class1.addBase(TestTag{ "base1" });
+		class1.addBase(TestTag{ "base2" });
+		class1.addMember(TestTag{ "member1" });
+		class1.addMember(TestTag{ "member2" });
+
+		ClassDiagram::Class class2{ TestTag{"class1"} };
+		class2.addBase(TestTag{ "base1" });
+		class2.addBase(TestTag{ "base2" });
+
+		ClassDiagram diagram{ buff };
+		diagram.add(class1);
+		diagram.add(class2);
+	}
+	ASSERT_EQ(beginMarker
+		+ "base1 <|-- class1\n"
+		+ "base2 <|-- class1\n"
+		+ "\"class1\" :  member1\n"
+		+ "\"class1\" :  member2\n"
+		+ endMarker, buff.str());
+}
+
 TEST_F(ClassDiagramTS, classWith1Member)
 {
 	{

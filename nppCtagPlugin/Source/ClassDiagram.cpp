@@ -76,24 +76,22 @@ ClassDiagram::ClassDiagram(std::ostream& p_out)
 
 ClassDiagram::~ClassDiagram()
 {
+	for (const auto& c : addedClasses)
+		out << c.second;
 	out << "@enduml\n";
 }
 
 void ClassDiagram::add(const Class& p_class)
 {
-	if (!isAlreadyIncluded(p_class))
-		append(p_class);
+	if(isLongerThanStored(p_class))
+		addedClasses[p_class.name] = p_class.buff.str();
 }
 
-bool ClassDiagram::isAlreadyIncluded(const Class& p_class) const
+bool ClassDiagram::isLongerThanStored(const Class& p_class) const
 {
-	return std::find(addedClasses.begin(), addedClasses.end(), p_class.name) != addedClasses.end();
-}
-
-void ClassDiagram::append(const Class& p_class)
-{
-	addedClasses.push_back(p_class.name);
-	out << p_class.buff.str();
+	auto classDesc = addedClasses.find(p_class.name);
+	return classDesc == addedClasses.end()
+		|| p_class.buff.str().size() > classDesc->second.size();
 }
 
 }
