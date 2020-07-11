@@ -12,6 +12,7 @@
 #include "MessageHandler.hpp"
 #include "Commands.hpp"
 #include "Results.hpp"
+#include "findFile.hpp"
 
 namespace NppPlugin
 {
@@ -40,6 +41,7 @@ private:
 	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
 
 	WinApi::UIFileSystem files;
+	
     std::vector<std::string> m_searchDirs;
 	Messaging::Handlers handlers;
 };

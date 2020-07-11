@@ -111,11 +111,11 @@ struct AlwaysTrue
 
 }
 
-Files::FileSystemDir::FileSystemDir(const std::string& p_path)
+Dirs::FileSystemDir::FileSystemDir(const std::string& p_path)
 	: path(p_path)
 {}
 
-std::vector<boost::filesystem::path> Files::FileSystemDir::getFiles(const Files::Pattern & p_pattern)
+std::vector<boost::filesystem::path> Dirs::FileSystemDir::getFiles(const Pattern & p_pattern)
 {
 	try
 	{
@@ -131,10 +131,10 @@ std::vector<boost::filesystem::path> Files::FileSystemDir::getFiles(const Files:
 	}
 }
 
-Files::CachedDir::CachedDir(const std::string& p_path)
+Dirs::CachedDir::CachedDir(const std::string& p_path)
 	: path(p_path)
 {}
-std::vector<boost::filesystem::path> Files::CachedDir::getFromCachedFiles(const Files::Pattern& p_pattern)
+std::vector<boost::filesystem::path> Dirs::CachedDir::getFromCachedFiles(const Pattern& p_pattern)
 {
 	try
 	{
@@ -149,14 +149,14 @@ std::vector<boost::filesystem::path> Files::CachedDir::getFromCachedFiles(const 
 		return {};
 	}
 }
-std::vector<boost::filesystem::path> Files::CachedDir::getFiles(const Files::Pattern& p_pattern)
+std::vector<boost::filesystem::path> Dirs::CachedDir::getFiles(const Pattern& p_pattern)
 {
 	if (allFiles.empty())
 		allFiles = findFilesImpl(path, AlwaysTrue{});
 	return getFromCachedFiles(p_pattern);
 }
 
-Files::Dir::Dir(const std::string& p_path, bool p_useCache)
+Dirs::Dir::Dir(const std::string& p_path, bool p_useCache)
 	: fileSystemDir(p_path), cachedDir(p_path)
 {
 	if (p_useCache)
@@ -164,20 +164,20 @@ Files::Dir::Dir(const std::string& p_path, bool p_useCache)
 	else
 		impl = std::bind(&Dir::getFromFileSystem, this, std::placeholders::_1);
 }
-std::vector<boost::filesystem::path> Files::Dir::getFiles(const Files::Pattern& p_pattern)
+std::vector<boost::filesystem::path> Dirs::Dir::getFiles(const Pattern& p_pattern)
 {
 	return impl(p_pattern);
 }
-std::vector<boost::filesystem::path> Files::Dir::getFromCached(const Files::Pattern& p_pattern)
+std::vector<boost::filesystem::path> Dirs::Dir::getFromCached(const Pattern& p_pattern)
 {
 	return cachedDir.getFiles(p_pattern);
 }
-std::vector<boost::filesystem::path> Files::Dir::getFromFileSystem(const Files::Pattern& p_pattern)
+std::vector<boost::filesystem::path> Dirs::Dir::getFromFileSystem(const Pattern& p_pattern)
 {
 	return fileSystemDir.getFiles(p_pattern);
 }
 
-std::vector<boost::filesystem::path> Files::get(const Pattern& p_pattern, const std::string& p_dir)
+std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern, const std::string& p_dir)
 {
 	if(dirs.count(p_dir) == 0)
 		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
@@ -188,8 +188,8 @@ std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, con
 	bool p_performCaseSensitiveSearch,
 	bool p_regualExpresionSearch)
 {
-	Files::Dir dir(p_dir, false);
-	dir.getFiles(Files::Pattern{ p_pattern, p_performCaseSensitiveSearch, p_regualExpresionSearch });
+	Dirs::Dir dir(p_dir, false);
+	dir.getFiles(Dirs::Pattern{ p_pattern, p_performCaseSensitiveSearch, p_regualExpresionSearch });
 }
 
 std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files)
