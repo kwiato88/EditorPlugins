@@ -36,6 +36,7 @@ OpenFilePlugin::OpenFilePlugin()
 
 void OpenFilePlugin::init()
 {
+	//TODO: add config file
 	handlers.addHandler<OpenFileCommand::SetSearchDirs, OpenFileResult::Basic>(
 		OpenFileCommand::SetSearchDirs::Id(),
 		[&](const auto& p) {return handleSetSearchDirs(p); });
@@ -67,7 +68,7 @@ void OpenFilePlugin::open()
 
 void OpenFilePlugin::openFile()
 {
-    WinApi::OpenFileDialog dialog(hModule, npp.npp);
+    WinApi::OpenFileDialog dialog(hModule, npp.npp, searchDirs);
     dialog.setSearchDirs(getSerachDirs());
     int result = dialog.show();
     if(result == WinApi::Dialog::RESULT_OK)
@@ -87,6 +88,9 @@ std::vector<std::string> OpenFilePlugin::getSerachDirs()
 
 void OpenFilePlugin::setDirs()
 {
+	//TODO: clear cache
+	//TODO: only here or also somewhere else?
+	//TODO: add meassage to clear cache?
 	searchDirsPaths = files.selectDirsPaths(searchDirsPaths, getFileDir(npp.getFile()));
 }
 
@@ -104,6 +108,7 @@ void OpenFilePlugin::setDirsSafe()
 
 OpenFileResult::Basic OpenFilePlugin::handleSetSearchDirs(const OpenFileCommand::SetSearchDirs& p_cmd)
 {
+	//TODO: clear cache
 	searchDirsPaths = p_cmd.dirsPaths;
 	return OpenFileResult::Basic{ OpenFileResult::Result::Success };
 }

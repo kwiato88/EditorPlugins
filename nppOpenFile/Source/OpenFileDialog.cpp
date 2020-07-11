@@ -19,8 +19,9 @@ namespace WinApi
 
 OpenFileDialog::OpenFileDialog(
         WinApi::InstanceHandle p_hInstance,
-        WinApi::Handle p_parentWindow)
- : Dialog(p_hInstance, p_parentWindow, ResourceId(ID_OPEN_FILE_DIALOG))
+        WinApi::Handle p_parentWindow,
+        Dirs& p_searchDirs)
+ : Dialog(p_hInstance, p_parentWindow, ResourceId(ID_OPEN_FILE_DIALOG)), m_searchDirs(p_searchDirs)
 {
 	m_gridLabels = { "File", "Path" };
     registerHandler(MsgMatchers::ButtonClick(IDOK),     std::bind(&OpenFileDialog::onOkClick, this));
@@ -69,17 +70,17 @@ void OpenFileDialog::onSearchClick()
 {
 	s_lastUsedNamePattern = m_fileNamePattern.getContent();
 	m_gridRows.clear();
-	for (const auto& dir : m_searchDirs)
+	for (const auto& dir : m_searchDirsPaths)
 		boost::range::copy(
-			toSelectItems(findFiles(s_lastUsedNamePattern, dir, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked())),
+			toSelectItems(m_searchDirs.getFiles(Dirs::Pattern{ s_lastUsedNamePattern, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked() }, dir)),
 			std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
 	redraw();
 }
 
-void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_dirs)
+void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_paths)
 {
-    m_searchDirs = p_dirs;
+	m_searchDirsPaths = p_paths;
 }
 
 std::string OpenFileDialog::getSelectedFile() const
