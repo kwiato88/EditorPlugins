@@ -3,7 +3,9 @@
 #include <commctrl.h>
 #include <richedit.h>
 #include <iterator>
+#include <algorithm>
 #include <boost/range/algorithm/copy.hpp>
+#include <boost/range/algorithm/transform.hpp>
 
 #include "OpenFileDialog.hpp"
 #include "OpenFileDialogDef.h"
@@ -16,6 +18,19 @@
 
 namespace WinApi
 {
+
+std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files)
+{
+    std::vector<std::vector<std::string>> selectionItems;
+    boost::range::transform(p_files, std::back_inserter(selectionItems),
+        [](const boost::filesystem::path& p)
+        {
+			return std::vector<std::string>{ p.filename().string(), p.string() };
+        });
+    std::sort(selectionItems.begin(), selectionItems.end(),
+        [](const std::vector<std::string>& lhs, const std::vector<std::string>& rhs) { return lhs.at(1) < rhs.at(1); } );
+    return selectionItems;
+}
 
 OpenFileDialog::OpenFileDialog(
         WinApi::InstanceHandle p_hInstance,

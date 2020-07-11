@@ -3,7 +3,6 @@
 #include <regex>
 #include <exception>
 #include <utility>
-#include <boost/range/algorithm/transform.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
@@ -182,17 +181,4 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern, co
 	if(dirs.count(p_dir) == 0)
 		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
 	return dirs.at(p_dir).getFiles(p_pattern);
-}
-
-std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files)
-{
-    std::vector<std::vector<std::string>> selectionItems;
-    boost::range::transform(p_files, std::back_inserter(selectionItems),
-        [](const boost::filesystem::path& p)
-        {
-			return std::vector<std::string>{ p.filename().string(), p.string() };
-        });
-    std::sort(selectionItems.begin(), selectionItems.end(),
-        [](const std::vector<std::string>& lhs, const std::vector<std::string>& rhs) { return lhs.at(1) < rhs.at(1); } );
-    return selectionItems;
 }

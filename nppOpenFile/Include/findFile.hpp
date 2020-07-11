@@ -1,5 +1,4 @@
-#ifndef _FIND_FILE_HPP
-#define _FIND_FILE_HPP
+#pragma once
 
 #include <vector>
 #include <string>
@@ -56,7 +55,3 @@ public:
 private:
 	std::map<std::string, Dir> dirs;
 };
-
-std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files);
-
-#endif // _FIND_FILE_HPP
