@@ -31,6 +31,15 @@ std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_dir, con
     return foundFiles;
 }
 
+template<typename Condition>
+std::vector<boost::filesystem::path> matching(const std::vector<boost::filesystem::path>& p_files, const Condition& p_cond)
+{
+	std::vector<boost::filesystem::path> matched;
+	std::copy_if(p_files.begin(), p_files.end(), std::back_inserter(matched),
+		[&](const auto& file) { return p_cond.isTrue(file.filename().string()); });
+	return matched;
+}
+
 class NameMatchingRegex
 {
 public:
@@ -92,13 +101,21 @@ private:
 	NameMatchingPatternCaseSensitive matcher;
 };
 
+struct AlwaysTrue
+{
+	bool isTrue(const std::string&) const
+	{
+		return true;
+	}
+};
+
 }
 
-Files::Dir::Dir(const std::string& p_path)
+Files::FileSystemDir::FileSystemDir(const std::string& p_path)
 	: path(p_path)
 {}
 
-std::vector<boost::filesystem::path> Files::Dir::getFiles(const Files::Pattern & p_pattern)
+std::vector<boost::filesystem::path> Files::FileSystemDir::getFiles(const Files::Pattern & p_pattern)
 {
 	try
 	{
@@ -114,10 +131,56 @@ std::vector<boost::filesystem::path> Files::Dir::getFiles(const Files::Pattern &
 	}
 }
 
+Files::CachedDir::CachedDir(const std::string& p_path)
+	: path(p_path)
+{}
+std::vector<boost::filesystem::path> Files::CachedDir::getFromCachedFiles(const Files::Pattern& p_pattern)
+{
+	try
+	{
+		if (p_pattern.regularExpression)
+			return matching(allFiles, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
+		if (p_pattern.caseSensitive)
+			return matching(allFiles, NameMatchingPatternCaseSensitive(p_pattern.pattern));
+		return matching(allFiles, NameMatchingPattern(p_pattern.pattern));
+	}
+	catch (const std::exception&)
+	{
+		return {};
+	}
+}
+std::vector<boost::filesystem::path> Files::CachedDir::getFiles(const Files::Pattern& p_pattern)
+{
+	if (allFiles.empty())
+		allFiles = findFilesImpl(path, AlwaysTrue{});
+	return getFromCachedFiles(p_pattern);
+}
+
+Files::Dir::Dir(const std::string& p_path, bool p_useCache)
+	: fileSystemDir(p_path), cachedDir(p_path)
+{
+	if (p_useCache)
+		impl = std::bind(&Dir::getFromCached, this, std::placeholders::_1);
+	else
+		impl = std::bind(&Dir::getFromFileSystem, this, std::placeholders::_1);
+}
+std::vector<boost::filesystem::path> Files::Dir::getFiles(const Files::Pattern& p_pattern)
+{
+	return impl(p_pattern);
+}
+std::vector<boost::filesystem::path> Files::Dir::getFromCached(const Files::Pattern& p_pattern)
+{
+	return cachedDir.getFiles(p_pattern);
+}
+std::vector<boost::filesystem::path> Files::Dir::getFromFileSystem(const Files::Pattern& p_pattern)
+{
+	return fileSystemDir.getFiles(p_pattern);
+}
+
 std::vector<boost::filesystem::path> Files::get(const Pattern& p_pattern, const std::string& p_dir)
 {
 	if(dirs.count(p_dir) == 0)
-		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir))));
+		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
 	return dirs.at(p_dir).getFiles(p_pattern);
 }
 
@@ -125,7 +188,7 @@ std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, con
 	bool p_performCaseSensitiveSearch,
 	bool p_regualExpresionSearch)
 {
-	Files::Dir dir(p_dir);
+	Files::Dir dir(p_dir, false);
 	dir.getFiles(Files::Pattern{ p_pattern, p_performCaseSensitiveSearch, p_regualExpresionSearch });
 }
 
