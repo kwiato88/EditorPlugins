@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <boost/filesystem.hpp>
 
 class Files
@@ -15,8 +16,19 @@ public:
 		bool regularExpression;
 	};
 	std::vector<boost::filesystem::path> get(const Pattern& p_pattern,	const std::string& p_dir);
-private:
 
+	class Dir
+	{
+	public:
+		explicit Dir(const std::string& p_path);
+		explicit Dir(const Dir&) = default;
+		explicit Dir(Dir&&) = default;
+		std::vector<boost::filesystem::path> getFiles(const Files::Pattern& p_pattern);
+	private:
+		std::string path;
+	};
+private:
+	std::map<std::string, Dir> dirs;
 };
 
 std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir,
