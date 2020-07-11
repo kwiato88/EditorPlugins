@@ -13,7 +13,7 @@ namespace
 {
 
 template<typename Condition>
-std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_dir, const Condition& p_cond)
+std::vector<boost::filesystem::path> findMatchingFiles(const std::string& p_dir, const Condition& p_cond)
 {
     using namespace boost::filesystem;
     std::vector<path> foundFiles;
@@ -120,10 +120,10 @@ std::vector<boost::filesystem::path> Dirs::FileSystemDir::getFiles(const Pattern
 	try
 	{
 		if (p_pattern.regularExpression)
-			return findFilesImpl(path, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
+			return findMatchingFiles(path, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
 		if (p_pattern.caseSensitive)
-			return findFilesImpl(path, NameMatchingPatternCaseSensitive(p_pattern.pattern));
-		return findFilesImpl(path, NameMatchingPattern(p_pattern.pattern));
+			return findMatchingFiles(path, NameMatchingPatternCaseSensitive(p_pattern.pattern));
+		return findMatchingFiles(path, NameMatchingPattern(p_pattern.pattern));
 	}
 	catch (std::exception&)
 	{
@@ -152,7 +152,7 @@ std::vector<boost::filesystem::path> Dirs::CachedDir::getFromCachedFiles(const P
 std::vector<boost::filesystem::path> Dirs::CachedDir::getFiles(const Pattern& p_pattern)
 {
 	if (allFiles.empty())
-		allFiles = findFilesImpl(path, AlwaysTrue{});
+		allFiles = findMatchingFiles(path, AlwaysTrue{});
 	return getFromCachedFiles(p_pattern);
 }
 
@@ -182,14 +182,6 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern, co
 	if(dirs.count(p_dir) == 0)
 		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
 	return dirs.at(p_dir).getFiles(p_pattern);
-}
-
-std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir,
-	bool p_performCaseSensitiveSearch,
-	bool p_regualExpresionSearch)
-{
-	Dirs::Dir dir(p_dir, false);
-	dir.getFiles(Dirs::Pattern{ p_pattern, p_performCaseSensitiveSearch, p_regualExpresionSearch });
 }
 
 std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files)
