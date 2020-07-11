@@ -41,8 +41,8 @@ private:
 	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
 
 	WinApi::UIFileSystem files;
-	
-    std::vector<std::string> m_searchDirs;
+	Dirs searchDirs;
+    std::vector<std::string> searchDirsPaths;
 	Messaging::Handlers handlers;
 };
 
