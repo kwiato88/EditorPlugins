@@ -88,9 +88,13 @@ std::vector<std::string> OpenFilePlugin::getSerachDirs()
 
 void OpenFilePlugin::setDirs()
 {
-	//TODO: clear cache
-	//TODO: only here or also somewhere else?
 	//TODO: add meassage to clear cache?
+	//TODO: get rid of dirs paths from plugin
+	//  Dirs::setDirs - rebuild map
+	//  Dirs::applyDirs - remove old dirs, add new dirs
+	//  Dirs::getFiles(Pattern) - search all configured dirs
+
+	// Dirs::setDirs
 	searchDirsPaths = files.selectDirsPaths(searchDirsPaths, getFileDir(npp.getFile()));
 }
 
@@ -108,7 +112,7 @@ void OpenFilePlugin::setDirsSafe()
 
 OpenFileResult::Basic OpenFilePlugin::handleSetSearchDirs(const OpenFileCommand::SetSearchDirs& p_cmd)
 {
-	//TODO: clear cache
+	//TODO: Dirs::setDirs
 	searchDirsPaths = p_cmd.dirsPaths;
 	return OpenFileResult::Basic{ OpenFileResult::Result::Success };
 }
@@ -120,6 +124,7 @@ OpenFileResult::Files OpenFilePlugin::handleFindFiles(const OpenFileCommand::Fin
 {
 	try
 	{
+		//TODO: Dirs::applyDirs
 		std::vector<std::string> dirsToCheck = p_cmd.dirsPaths.empty() ? searchDirsPaths : p_cmd.dirsPaths;
 		std::vector<std::string> foundFiles;
 
