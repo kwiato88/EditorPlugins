@@ -30,87 +30,109 @@ std::vector<boost::filesystem::path> findFilesImpl(const std::string& p_dir, con
     return foundFiles;
 }
 
-std::regex buildRegex(const std::string& p_matchString, bool p_isCaseSensitive)
+class NameMatchingRegex
 {
-	if (p_isCaseSensitive)
-		return std::regex(p_matchString);
-	return std::regex(p_matchString, std::regex::icase);
-}
-
-struct NameMatchingRegex
-{
+public:
 	NameMatchingRegex(const std::string& p_pattern, bool p_isCaseSensitive)
 		: reg(std::move(buildRegex(p_pattern, p_isCaseSensitive)))
-	{}
-	std::regex reg;
+	{}	
 
 	bool isTrue(const std::string& p_name) const
 	{
 		return std::regex_match(p_name, reg);
 	}
+
+private:
+	static std::regex buildRegex(const std::string& p_matchString, bool p_isCaseSensitive)
+	{
+		if (p_isCaseSensitive)
+			return std::regex(p_matchString);
+		return std::regex(p_matchString, std::regex::icase);
+	}
+
+	std::regex reg;
 };
 
-template<typename T>
-bool contains(const std::string& p_name, const T& p_tokens)
+class  NameMatchingPatternCaseSensitive
 {
-	return std::all_of(p_tokens.begin(), p_tokens.end(),
-		[&](const auto& token)
-		{
-			return p_name.find(token) != std::string::npos;
-		});
-}
-
-struct NameMatchingPatternCaseSensitive
-{
+public:
 	NameMatchingPatternCaseSensitive(const std::string& p_patterns)
 		: patterns(p_patterns), separator(" ")
 	{}
-	std::string patterns;
-	boost::char_separator<char> separator;
 
 	bool isTrue(const std::string& p_name) const
 	{
 		boost::tokenizer<boost::char_separator<char>> searchItems(patterns, separator);
-		return contains(p_name, searchItems);
+		return std::all_of(searchItems.begin(), searchItems.end(),
+			[&](const auto& token)
+			{
+				return p_name.find(token) != std::string::npos;
+			});
 	}
+
+private:
+	std::string patterns;
+	boost::char_separator<char> separator;
 };
 
-struct NameMatchingPattern
+class NameMatchingPattern
 {
+public:
 	NameMatchingPattern(const std::string& p_patterns)
-		: patterns(p_patterns), separator(" ")
-	{
-		boost::to_lower(patterns);
-	}
-	std::string patterns;
-	boost::char_separator<char> separator;
+		: matcher(boost::to_lower_copy<std::string>(p_patterns))
+	{}
 
 	bool isTrue(const std::string& p_name) const
 	{
-		boost::tokenizer<boost::char_separator<char>> searchItems(patterns, separator);
-		auto lowerCaseName = boost::to_lower_copy<std::string>(p_name);
-		return contains(lowerCaseName, searchItems);
+		return matcher.isTrue(boost::to_lower_copy<std::string>(p_name));
 	}
+
+private:
+	NameMatchingPatternCaseSensitive matcher;
 };
 
+}
+
+class Dir
+{
+public:
+	explicit Dir(const std::string& p_path);
+	std::vector<boost::filesystem::path> getFiles(const Files::Pattern& p_pattern);
+private:
+	std::string path;
+};
+
+Dir::Dir(const std::string& p_path)
+	: path(p_path)
+{}
+
+std::vector<boost::filesystem::path> Dir::getFiles(const Files::Pattern & p_pattern)
+{
+	try
+	{
+		if (p_pattern.regularExpression)
+			return findFilesImpl(path, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
+		if (p_pattern.caseSensitive)
+			return findFilesImpl(path, NameMatchingPatternCaseSensitive(p_pattern.pattern));
+		return findFilesImpl(path, NameMatchingPattern(p_pattern.pattern));
+	}
+	catch (std::exception&)
+	{
+		return {};
+	}
+}
+
+std::vector<boost::filesystem::path> Files::get(const Pattern& p_pattern, const std::string& p_dir)
+{
+	return {};
 }
 
 std::vector<boost::filesystem::path> findFiles(const std::string& p_pattern, const std::string& p_dir,
 	bool p_performCaseSensitiveSearch,
 	bool p_regualExpresionSearch)
 {
-    try
-    {
-		if(p_regualExpresionSearch)
-			return findFilesImpl(p_dir, NameMatchingRegex(p_pattern, p_performCaseSensitiveSearch));
-		if(p_performCaseSensitiveSearch)
-			return findFilesImpl(p_dir, NameMatchingPatternCaseSensitive(p_pattern));
-		return findFilesImpl(p_dir, NameMatchingPattern(p_pattern));
-    }
-    catch(std::exception&)
-    {
-        return std::vector<boost::filesystem::path>();
-    }
+	Dir dir(p_dir);
+	dir.getFiles(Files::Pattern{ p_pattern, p_performCaseSensitiveSearch, p_regualExpresionSearch });
 }
 
 std::vector<std::vector<std::string>> toSelectItems(const std::vector<boost::filesystem::path>& p_files)
