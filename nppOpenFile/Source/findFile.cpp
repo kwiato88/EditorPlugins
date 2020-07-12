@@ -189,7 +189,7 @@ std::vector<boost::filesystem::path> Dirs::Dir::getFromFileSystem(const Pattern&
 std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern, const std::string& p_dir)
 {
 	if(dirs.count(p_dir) == 0)
-		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
+		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, useCache))));
 	return dirs.at(p_dir).getFiles(p_pattern);
 }
 
@@ -208,5 +208,15 @@ void Dirs::applyDirs(const std::set<std::string>& p_dirsPaths)
 	for (const auto& dir : substract(configuredDris, p_dirsPaths))
 		dirs.erase(dir);
 	for(const auto& dir : substract(p_dirsPaths, configuredDris))
-		dirs.insert(std::make_pair(dir, std::move(Dir(dir, false))));
+		dirs.insert(std::make_pair(dir, std::move(Dir(dir, useCache))));
+}
+
+void Dirs::withCache()
+{
+	useCache = true;
+}
+
+void Dirs::withoutCache()
+{
+	useCache = false;
 }

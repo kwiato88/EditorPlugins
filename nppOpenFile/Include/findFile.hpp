@@ -18,7 +18,10 @@ public:
 	std::vector<boost::filesystem::path> getFiles(const Pattern& p_pattern,	const std::string& p_dir);
 	std::vector<boost::filesystem::path> getFiles(const Pattern& p_pattern);
 	void applyDirs(const std::set<std::string>& p_dirsPaths);
+	void withCache();
+	void withoutCache();
 
+private:
 	class FileSystemDir
 	{
 	public:
@@ -55,6 +58,7 @@ public:
 		FileSystemDir fileSystemDir;
 		CachedDir cachedDir;
 	};
-private:
+
 	std::map<std::string, Dir> dirs;
+	bool useCache{ true };
 };
