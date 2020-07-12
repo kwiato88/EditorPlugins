@@ -5,6 +5,7 @@
 #include <utility>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include "findFile.hpp"
 
@@ -135,24 +136,24 @@ Dirs::CachedDir::CachedDir(const std::string& p_path)
 {}
 std::vector<boost::filesystem::path> Dirs::CachedDir::getFromCachedFiles(const Pattern& p_pattern)
 {
+	if (p_pattern.regularExpression)
+		return matching(allFiles, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
+	if (p_pattern.caseSensitive)
+		return matching(allFiles, NameMatchingPatternCaseSensitive(p_pattern.pattern));
+	return matching(allFiles, NameMatchingPattern(p_pattern.pattern));
+}
+std::vector<boost::filesystem::path> Dirs::CachedDir::getFiles(const Pattern& p_pattern)
+{
 	try
 	{
-		if (p_pattern.regularExpression)
-			return matching(allFiles, NameMatchingRegex(p_pattern.pattern, p_pattern.caseSensitive));
-		if (p_pattern.caseSensitive)
-			return matching(allFiles, NameMatchingPatternCaseSensitive(p_pattern.pattern));
-		return matching(allFiles, NameMatchingPattern(p_pattern.pattern));
+		if (allFiles.empty())
+			allFiles = findMatchingFiles(path, AlwaysTrue{});
+		return getFromCachedFiles(p_pattern);
 	}
 	catch (const std::exception&)
 	{
 		return {};
 	}
-}
-std::vector<boost::filesystem::path> Dirs::CachedDir::getFiles(const Pattern& p_pattern)
-{
-	if (allFiles.empty())
-		allFiles = findMatchingFiles(path, AlwaysTrue{});
-	return getFromCachedFiles(p_pattern);
 }
 
 Dirs::Dir::Dir(const std::string& p_path, bool p_useCache)
@@ -181,4 +182,12 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern, co
 	if(dirs.count(p_dir) == 0)
 		dirs.insert(std::make_pair(p_dir, std::move(Dir(p_dir, false))));
 	return dirs.at(p_dir).getFiles(p_pattern);
+}
+
+std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern)
+{
+	std::vector<boost::filesystem::path> matching;
+	for (auto& dir : dirs)
+		boost::range::copy(dir.second.getFiles(p_pattern), std::back_inserter(matching));
+	return matching;
 }
