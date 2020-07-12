@@ -50,4 +50,15 @@ struct FindFiles
 	bool caseSensitiveSearch;
 };
 
+struct ClearCache
+{
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & p_ar, const unsigned int version)
+	{
+	}
+
+	static long Id() { return 4; }
+};
+
 }

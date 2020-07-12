@@ -39,6 +39,7 @@ private:
 	OpenFileResult::Basic handleSetSearchDirs(const OpenFileCommand::SetSearchDirs&);
 	OpenFileResult::SearchDirs  handleGetSearchDirs(const OpenFileCommand::GetSearchDirs&);
 	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
+	OpenFileResult::Basic handleClearCache(const OpenFileCommand::ClearCache&);
 
 	WinApi::UIFileSystem files;
 	Dirs searchDirs;

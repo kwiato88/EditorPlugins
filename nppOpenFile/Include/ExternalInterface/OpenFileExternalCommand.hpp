@@ -25,6 +25,10 @@ public:
 	*/
 	std::vector<std::string> findFiles(const std::vector<std::string>& p_serachDirs,
 		const std::string& p_fileNamePatter, bool p_caseSesitive);
+	/**
+	* @throws NppPlugin::ExternalCommandFailure
+	*/
+	void clearCache();
 
 private:
     NppPlugin::ExternalCommand cmd;

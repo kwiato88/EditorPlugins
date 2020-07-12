@@ -47,6 +47,9 @@ void OpenFilePlugin::init()
 	handlers.addHandler<OpenFileCommand::FindFiles, OpenFileResult::Files>(
 		OpenFileCommand::FindFiles::Id(),
 		[&](const auto& p) {return handleFindFiles(p); });
+	handlers.addHandler<OpenFileCommand::ClearCache, OpenFileResult::Basic>(
+		OpenFileCommand::ClearCache::Id(),
+		[&](const auto& p) {return handleClearCache(p); });
 }
 
 void OpenFilePlugin::initMenu()
@@ -116,6 +119,13 @@ OpenFileResult::SearchDirs  OpenFilePlugin::handleGetSearchDirs(const OpenFileCo
 {
 	auto dirs = searchDirs.getDirsPaths();
 	return OpenFileResult::SearchDirs{ std::vector<std::string>(dirs.begin(), dirs.end()) };
+}
+OpenFileResult::Basic OpenFilePlugin::handleClearCache(const OpenFileCommand::ClearCache&)
+{
+	auto paths = searchDirs.getDirsPaths();
+	searchDirs.applyDirs({});
+	searchDirs.applyDirs(paths);
+	return OpenFileResult::Basic{ OpenFileResult::Result::Success };
 }
 OpenFileResult::Files OpenFilePlugin::handleFindFiles(const OpenFileCommand::FindFiles& p_cmd)
 {
