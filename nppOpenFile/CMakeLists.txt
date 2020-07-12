@@ -10,6 +10,7 @@ add_library(
     Source/dllmain.cpp
     Source/OpenFilePlugin.cpp
     Source/findFile.cpp
+	Source/OpenFileConfig.cpp
     Source/OpenFileDialog.cpp
     # RESOURCES
     Resource/OpenFileDialog.rc

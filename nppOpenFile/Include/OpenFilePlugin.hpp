@@ -13,6 +13,7 @@
 #include "Commands.hpp"
 #include "Results.hpp"
 #include "findFile.hpp"
+#include "OpenFileConfig.hpp"
 
 namespace NppPlugin
 {
@@ -23,6 +24,7 @@ class OpenFilePlugin : public BasePluginWithUI<2>
 {
 public:
 	OpenFilePlugin();
+	void detach() override;
 
 	void open();
 	void setDirsSafe();
@@ -30,6 +32,7 @@ public:
 protected:
 	void init() override;
 	void initMenu() override;
+	void onNppHandleSet() override;
 	void handleMsgToPlugin(CommunicationInfo& p_message) override;
 	
 private:
@@ -44,6 +47,8 @@ private:
 	WinApi::UIFileSystem files;
 	Dirs searchDirs;
 	Messaging::Handlers handlers;
+	std::string configFilePath;
+	Config config;
 };
 
 } // namespace NppPlugin

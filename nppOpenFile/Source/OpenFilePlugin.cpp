@@ -51,6 +51,21 @@ void OpenFilePlugin::init()
 		[&](const auto& p) {return handleClearCache(p); });
 }
 
+void OpenFilePlugin::detach()
+{
+	config.save(configFilePath);
+}
+
+void OpenFilePlugin::onNppHandleSet()
+{
+	configFilePath = getPluginsConfigDir() + "\\nppOpenFilePlugin.ini";
+	config.load(configFilePath);
+	if (config.shouldUseCache())
+		searchDirs.withCache();
+	else
+		searchDirs.withoutCache();
+}
+
 void OpenFilePlugin::initMenu()
 {
 	setCommand(TEXT("Open File"),       fun_open,   NULL);
