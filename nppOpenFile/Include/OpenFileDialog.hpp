@@ -19,7 +19,6 @@ class OpenFileDialog : public Dialog
 public:
     OpenFileDialog(WinApi::InstanceHandle p_hInstance, WinApi::Handle p_parentWindow, Dirs& p_searchDirs);
 
-    void setSearchDirs(const std::vector<std::string>& p_paths);
     std::string getSelectedFile() const;
 
 private:
@@ -42,7 +41,6 @@ private:
 
     std::vector<std::string> m_gridLabels;
     std::vector<std::vector<std::string> > m_gridRows;
-    std::vector<std::string> m_searchDirsPaths;
     std::string m_selectedFile;
 	Dirs m_searchDirs;
 

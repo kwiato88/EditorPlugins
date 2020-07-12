@@ -18,6 +18,7 @@ public:
 	std::vector<boost::filesystem::path> getFiles(const Pattern& p_pattern,	const std::string& p_dir);
 	std::vector<boost::filesystem::path> getFiles(const Pattern& p_pattern);
 	void applyDirs(const std::set<std::string>& p_dirsPaths);
+	std::set<std::string> getDirsPaths() const;
 	void withCache();
 	void withoutCache();
 

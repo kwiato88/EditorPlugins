@@ -37,6 +37,7 @@ OpenFilePlugin::OpenFilePlugin()
 void OpenFilePlugin::init()
 {
 	//TODO: add config file
+	//TODO: add meassage to clear cache?
 	handlers.addHandler<OpenFileCommand::SetSearchDirs, OpenFileResult::Basic>(
 		OpenFileCommand::SetSearchDirs::Id(),
 		[&](const auto& p) {return handleSetSearchDirs(p); });
@@ -68,8 +69,8 @@ void OpenFilePlugin::open()
 
 void OpenFilePlugin::openFile()
 {
+	ensureSearchDirsAreNotEmpty();
     WinApi::OpenFileDialog dialog(hModule, npp.npp, searchDirs);
-    dialog.setSearchDirs(getSerachDirs());
     int result = dialog.show();
     if(result == WinApi::Dialog::RESULT_OK)
     {
@@ -77,25 +78,20 @@ void OpenFilePlugin::openFile()
     }
 }
 
-std::vector<std::string> OpenFilePlugin::getSerachDirs()
+void OpenFilePlugin::ensureSearchDirsAreNotEmpty()
 {
-	if (searchDirsPaths.empty())
+	if (searchDirs.getDirsPaths().empty())
 		setDirs();
-	if (searchDirsPaths.empty())
-		throw std::runtime_error("No search dirs selected");
-	return searchDirsPaths;
 }
 
 void OpenFilePlugin::setDirs()
 {
-	//TODO: add meassage to clear cache?
-	//TODO: get rid of dirs paths from plugin
-	//  Dirs::setDirs - rebuild map
-	//  Dirs::applyDirs - remove old dirs, add new dirs
-	//  Dirs::getFiles(Pattern) - search all configured dirs
-
-	// Dirs::setDirs
-	searchDirsPaths = files.selectDirsPaths(searchDirsPaths, getFileDir(npp.getFile()));
+	auto oldPaths = searchDirs.getDirsPaths();
+	auto newPaths = files.selectDirsPaths(std::vector<std::string>(oldPaths.begin(), oldPaths.end()), getFileDir(npp.getFile()));
+	if (newPaths.empty())
+		throw std::runtime_error("No search dirs selected");
+	searchDirs.applyDirs({});
+	searchDirs.applyDirs(std::set<std::string>(newPaths.begin(), newPaths.end()));
 }
 
 void OpenFilePlugin::setDirsSafe()
@@ -112,28 +108,26 @@ void OpenFilePlugin::setDirsSafe()
 
 OpenFileResult::Basic OpenFilePlugin::handleSetSearchDirs(const OpenFileCommand::SetSearchDirs& p_cmd)
 {
-	//TODO: Dirs::setDirs
-	searchDirsPaths = p_cmd.dirsPaths;
+	searchDirs.applyDirs({});
+	searchDirs.applyDirs(std::set<std::string>(p_cmd.dirsPaths.begin(), p_cmd.dirsPaths.end()));
 	return OpenFileResult::Basic{ OpenFileResult::Result::Success };
 }
 OpenFileResult::SearchDirs  OpenFilePlugin::handleGetSearchDirs(const OpenFileCommand::GetSearchDirs&)
 {
-	return OpenFileResult::SearchDirs{ searchDirsPaths };
+	auto dirs = searchDirs.getDirsPaths();
+	return OpenFileResult::SearchDirs{ std::vector<std::string>(dirs.begin(), dirs.end()) };
 }
 OpenFileResult::Files OpenFilePlugin::handleFindFiles(const OpenFileCommand::FindFiles& p_cmd)
 {
 	try
 	{
-		//TODO: Dirs::applyDirs
-		std::vector<std::string> dirsToCheck = p_cmd.dirsPaths.empty() ? searchDirsPaths : p_cmd.dirsPaths;
+		if (!p_cmd.dirsPaths.empty())
+			searchDirs.applyDirs(std::set<std::string>(p_cmd.dirsPaths.begin(), p_cmd.dirsPaths.end()));
+		auto files = searchDirs.getFiles(Dirs::Pattern{ p_cmd.fileNamePattern, p_cmd.caseSensitiveSearch, true });
 		std::vector<std::string> foundFiles;
+		std::transform(files.begin(), files.end(), std::back_inserter(foundFiles),
+			[&](const auto& f) { return f.string(); });
 
-		for (const auto& dir : dirsToCheck)
-		{
-			auto files = searchDirs.getFiles(Dirs::Pattern{ p_cmd.fileNamePattern, p_cmd.caseSensitiveSearch, true }, dir);
-			std::transform(files.begin(), files.end(), std::back_inserter(foundFiles),
-				[&](const auto& f) { return f.string(); });
-		}
 		return OpenFileResult::Files{ OpenFileResult::Result::Success, foundFiles };
 	}
 	catch (std::exception&)

@@ -35,14 +35,13 @@ protected:
 private:
 	void openFile();
 	void setDirs();
-	std::vector<std::string> getSerachDirs();
+	void ensureSearchDirsAreNotEmpty();
 	OpenFileResult::Basic handleSetSearchDirs(const OpenFileCommand::SetSearchDirs&);
 	OpenFileResult::SearchDirs  handleGetSearchDirs(const OpenFileCommand::GetSearchDirs&);
 	OpenFileResult::Files handleFindFiles(const OpenFileCommand::FindFiles&);
 
 	WinApi::UIFileSystem files;
 	Dirs searchDirs;
-    std::vector<std::string> searchDirsPaths;
 	Messaging::Handlers handlers;
 };
 

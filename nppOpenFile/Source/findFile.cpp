@@ -201,10 +201,16 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern)
 	return matching;
 }
 
-void Dirs::applyDirs(const std::set<std::string>& p_dirsPaths)
+std::set<std::string> Dirs::getDirsPaths() const
 {
 	std::set<std::string> configuredDris;
 	boost::range::copy(dirs | boost::adaptors::map_keys, std::inserter(configuredDris, configuredDris.begin()));
+	return configuredDris;
+}
+
+void Dirs::applyDirs(const std::set<std::string>& p_dirsPaths)
+{
+	std::set<std::string> configuredDris(getDirsPaths());
 	for (const auto& dir : substract(configuredDris, p_dirsPaths))
 		dirs.erase(dir);
 	for(const auto& dir : substract(p_dirsPaths, configuredDris))

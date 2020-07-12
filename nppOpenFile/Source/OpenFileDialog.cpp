@@ -85,17 +85,11 @@ void OpenFileDialog::onSearchClick()
 {
 	s_lastUsedNamePattern = m_fileNamePattern.getContent();
 	m_gridRows.clear();
-	for (const auto& dir : m_searchDirsPaths)
-		boost::range::copy(
-			toSelectItems(m_searchDirs.getFiles(Dirs::Pattern{ s_lastUsedNamePattern, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked() }, dir)),
-			std::back_inserter(m_gridRows));
+	boost::range::copy(
+		toSelectItems(m_searchDirs.getFiles(Dirs::Pattern{ s_lastUsedNamePattern, m_isCaseSensitiveSearch.isChecked(), m_useRegeq.isChecked() })),
+		std::back_inserter(m_gridRows));
     m_gridControl.addRows(m_gridRows);
 	redraw();
-}
-
-void OpenFileDialog::setSearchDirs(const std::vector<std::string>& p_paths)
-{
-	m_searchDirsPaths = p_paths;
 }
 
 std::string OpenFileDialog::getSelectedFile() const
