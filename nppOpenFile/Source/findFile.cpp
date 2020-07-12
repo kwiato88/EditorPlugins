@@ -6,6 +6,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptors.hpp>
 
 #include "findFile.hpp"
 
@@ -38,6 +39,14 @@ std::vector<boost::filesystem::path> matching(const std::vector<boost::filesyste
 	std::copy_if(p_files.begin(), p_files.end(), std::back_inserter(matched),
 		[&](const auto& file) { return p_cond.isTrue(file.filename().string()); });
 	return matched;
+}
+
+std::set<std::string> substract(const std::set<std::string>& p_first, const std::set<std::string>& p_second)
+{
+	std::set<std::string> diff;
+	std::set_difference(p_first.begin(), p_first.end(), p_second.begin(), p_second.end(),
+		std::inserter(diff, diff.begin()));
+	return diff;
 }
 
 class NameMatchingRegex
@@ -190,4 +199,14 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern)
 	for (auto& dir : dirs)
 		boost::range::copy(dir.second.getFiles(p_pattern), std::back_inserter(matching));
 	return matching;
+}
+
+void Dirs::applyDirs(const std::set<std::string>& p_dirsPaths)
+{
+	std::set<std::string> configuredDris;
+	boost::range::copy(dirs | boost::adaptors::map_keys, std::inserter(configuredDris, configuredDris.begin()));
+	for (const auto& dir : substract(configuredDris, p_dirsPaths))
+		dirs.erase(dir);
+	for(const auto& dir : substract(p_dirsPaths, configuredDris))
+		dirs.insert(std::make_pair(dir, std::move(Dir(dir, false))));
 }
