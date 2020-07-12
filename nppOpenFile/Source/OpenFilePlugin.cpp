@@ -37,7 +37,6 @@ OpenFilePlugin::OpenFilePlugin()
 void OpenFilePlugin::init()
 {
 	//TODO: add config file
-	//TODO: add meassage to clear cache?
 	handlers.addHandler<OpenFileCommand::SetSearchDirs, OpenFileResult::Basic>(
 		OpenFileCommand::SetSearchDirs::Id(),
 		[&](const auto& p) {return handleSetSearchDirs(p); });
