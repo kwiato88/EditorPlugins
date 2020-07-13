@@ -218,17 +218,17 @@ std::vector<boost::filesystem::path> Dirs::getFiles(const Pattern& p_pattern)
 
 std::set<std::string> Dirs::getDirsPaths() const
 {
-	std::set<std::string> configuredDris;
-	boost::range::copy(dirs | boost::adaptors::map_keys, std::inserter(configuredDris, configuredDris.begin()));
-	return configuredDris;
+	std::set<std::string> configuredDirs;
+	boost::range::copy(dirs | boost::adaptors::map_keys, std::inserter(configuredDirs, configuredDirs.begin()));
+	return configuredDirs;
 }
 
 void Dirs::applyDirs(const std::set<std::string>& p_dirsPaths)
 {
-	std::set<std::string> configuredDris(getDirsPaths());
-	for (const auto& dir : substract(configuredDris, p_dirsPaths))
+	std::set<std::string> configuredDirs(getDirsPaths());
+	for (const auto& dir : substract(configuredDirs, p_dirsPaths))
 		dirs.erase(dir);
-	for(const auto& dir : substract(p_dirsPaths, configuredDris))
+	for(const auto& dir : substract(p_dirsPaths, configuredDirs))
 		dirs.insert(std::make_pair(dir, std::move(Dir(dir, useCache))));
 }
 
