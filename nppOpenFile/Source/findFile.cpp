@@ -166,13 +166,28 @@ std::vector<boost::filesystem::path> Dirs::CachedDir::getFiles(const Pattern& p_
 }
 
 Dirs::Dir::Dir(const std::string& p_path, bool p_useCache)
-	: fileSystemDir(p_path), cachedDir(p_path)
+	: fileSystemDir(p_path), cachedDir(p_path), useCache(p_useCache)
 {
-	if (p_useCache)
+	init();
+}
+Dirs::Dir::Dir(const Dir& p_other)
+	: fileSystemDir(p_other.fileSystemDir), cachedDir(p_other.cachedDir), useCache(p_other.useCache)
+{
+	init();
+}
+Dirs::Dir::Dir(Dir&& p_other)
+	: fileSystemDir(std::move(p_other.fileSystemDir)), cachedDir(std::move(p_other.cachedDir)), useCache(std::move(useCache))
+{
+	init();
+}
+void Dirs::Dir::init()
+{
+	if (useCache)
 		impl = std::bind(&Dir::getFromCached, this, std::placeholders::_1);
 	else
 		impl = std::bind(&Dir::getFromFileSystem, this, std::placeholders::_1);
 }
+
 std::vector<boost::filesystem::path> Dirs::Dir::getFiles(const Pattern& p_pattern)
 {
 	return impl(p_pattern);

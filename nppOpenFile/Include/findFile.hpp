@@ -49,15 +49,17 @@ private:
 	{
 	public:
 		explicit Dir(const std::string& p_path, bool p_useCache);
-		explicit Dir(const Dir&) = default;
-		explicit Dir(Dir&&) = default;
+		Dir(const Dir&);
+		Dir(Dir&&);
 		std::vector<boost::filesystem::path> getFiles(const Pattern& p_pattern);
 	private:
+		void init();
 		std::vector<boost::filesystem::path> getFromCached(const Pattern& p_pattern);
 		std::vector<boost::filesystem::path> getFromFileSystem(const Pattern& p_pattern);
 		std::function<std::vector<boost::filesystem::path>(const Pattern& p_pattern)> impl;
 		FileSystemDir fileSystemDir;
 		CachedDir cachedDir;
+		bool useCache;
 	};
 
 	std::map<std::string, Dir> dirs;

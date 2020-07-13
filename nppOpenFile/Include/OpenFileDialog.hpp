@@ -42,7 +42,7 @@ private:
     std::vector<std::string> m_gridLabels;
     std::vector<std::vector<std::string> > m_gridRows;
     std::string m_selectedFile;
-	Dirs m_searchDirs;
+	Dirs& m_searchDirs;
 
 	static std::string s_lastUsedNamePattern;
 };
