@@ -52,11 +52,13 @@ public:
 	ToPtree& add(const std::string& name, const T& object)
 	{
 		tree.put<T>(name, object);
+		return *this;
 	}
 	template <typename T>
 	ToPtree& add(const std::string& name, const std::vector<T>& container)
 	{
 		tree.add_child(name, PtreeUtils::toPtree(container));
+		return *this;
 	}
 	inline boost::property_tree::ptree get() const { return tree; }
 private:

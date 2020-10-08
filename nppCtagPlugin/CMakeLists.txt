@@ -157,6 +157,7 @@ add_executable(
     Tests/TestsCppTagBuilder.cpp
     Tests/TestsTagBuilder.cpp
     Tests/ClassDiagramTS.cpp
+	Tests/CodecTS.cpp
 )
 
 target_include_directories(

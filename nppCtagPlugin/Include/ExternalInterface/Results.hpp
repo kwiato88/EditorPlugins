@@ -24,7 +24,7 @@ struct Basic
 	{
 		p_ar & res;
 	}
-	inline boost::property_tree::ptree exportMsg()
+	inline boost::property_tree::ptree exportMsg() const
 	{
 		PtreeUtils::ToPtree printer;
 		return printer.add("result", res == Result::Success ? "Success" : "Failure").get();
@@ -38,6 +38,10 @@ struct Basic
 		else
 			res = Result::Failure;
 	}
+	inline bool operator==(const Basic& other) const
+	{
+		return res == other.res;
+	}
 
 	Result res;
 };
@@ -50,7 +54,7 @@ struct TagFiles
 	{
 		p_ar & filesPaths;
 	}
-	inline boost::property_tree::ptree exportMsg()
+	inline boost::property_tree::ptree exportMsg() const
 	{
 		PtreeUtils::ToPtree printer;
 		return printer.add("filesPaths", filesPaths).get();
@@ -59,6 +63,10 @@ struct TagFiles
 	{
 		PtreeUtils::FromPtree printer(p_msg);
 		filesPaths = printer.get<std::vector<std::string>>("filesPaths");
+	}
+	inline bool operator==(const TagFiles& other) const
+	{
+		return filesPaths == other.filesPaths;
 	}
 
 	std::vector<std::string> filesPaths;
@@ -72,7 +80,7 @@ struct Test
     {
       p_ar & value;
     }
-	inline boost::property_tree::ptree exportMsg()
+	inline boost::property_tree::ptree exportMsg() const
 	{
 		PtreeUtils::ToPtree printer;
 		return printer.add("value", value).get();
@@ -81,6 +89,10 @@ struct Test
 	{
 		PtreeUtils::FromPtree printer(p_msg);
 		value = printer.get<int>("value");
+	}
+	inline bool operator==(const Test& other) const
+	{
+		return value == other.value;
 	}
 
     int value;
