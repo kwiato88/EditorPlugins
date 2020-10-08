@@ -187,11 +187,21 @@ void CTagsNavigator::goTo(const std::string& p_tagName)
 	LOG_INFO << "go to tag by name: " << p_tagName;
     goTo(selectTag(findTag(m_tagsReader, p_tagName)));
 }
+Location CTagsNavigator::tagLocation(const std::string& p_tagName)
+{
+	LOG_INFO << "get to tag location by name: " << p_tagName;
+	return convertToLocation(selectTag(findTag(m_tagsReader, p_tagName)));
+}
 
 void CTagsNavigator::goToChildTag(const std::string& p_parentTagName)
 {
 	LOG_INFO << "go to child tag. Parent tag name: " << p_parentTagName;
     goTo(selectTag(getChildrenTags(selectTag(getComplexTags(p_parentTagName)))));
+}
+Location CTagsNavigator::childTagLocation(const std::string& p_parentTagName)
+{
+	LOG_INFO << "get child tag location. Parent tag name: " << p_parentTagName;
+	return convertToLocation(selectTag(getChildrenTags(selectTag(getComplexTags(p_parentTagName)))));
 }
 
 Location CTagsNavigator::getCurrentLocation() const
@@ -265,6 +275,12 @@ void CTagsNavigator::goToTagInHierarchy(const std::string& p_currentTagName)
 
 	ContainerTagsReader complexTags(m_tagsReader->findTag([&](const auto& t) { return t.isComplex(); }));
 	goTo(selectTag(m_tagsHierarchy.get(selectTag(getComplexTags(p_currentTagName)), complexTags)));
+}
+Location CTagsNavigator::tagInHierarchyLocation(const std::string& p_currentTagName)
+{
+	LOG_INFO << "get tag in hierarchy location. Hierarchy for tag with name: " << p_currentTagName;
+	ContainerTagsReader complexTags(m_tagsReader->findTag([&](const auto& t) { return t.isComplex(); }));
+	return convertToLocation(selectTag(m_tagsHierarchy.get(selectTag(getComplexTags(p_currentTagName)), complexTags)));
 }
 
 void CTagsNavigator::onTagsLoaded()

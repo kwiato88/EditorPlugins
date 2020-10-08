@@ -34,10 +34,12 @@ public:
      * @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
      */
     void goTo(const std::string& p_tagName);
+	Location tagLocation(const std::string& p_tagName);
     /*
      * @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
      */
     void goToChildTag(const std::string& p_parentTagName);
+	Location childTagLocation(const std::string& p_parentTagName);
 	/*
 	* @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
 	*/
@@ -46,6 +48,7 @@ public:
 	* @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
 	*/
 	void goToTagInHierarchy(const std::string& p_currentTagName);
+	Location tagInHierarchyLocation(const std::string& p_currentTagName);
 
 	void onTagsLoaded();
 
