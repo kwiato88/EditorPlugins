@@ -63,7 +63,7 @@ private:
     Navigator m_locationsNavigator;
 	CTagsNavigator m_tagsNavigator;
 	Plugin::CommandFactory m_cmdFactory;
-	Messaging::Handlers m_handlers;
+	Messaging::HandlersWithDefaultCodec m_handlers;
 
     void showTagInfo(const std::string& p_tagName);
     void gnerateTags(std::string p_outFile,std::vector<std::string> p_sourceDirs);
