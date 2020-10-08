@@ -259,6 +259,11 @@ void CTagsNavigator::goToTag(TagMatcher p_matcher)
 	LOG_INFO << "go to tag by matcher";
 	goTo(selectTag(m_tagsReader->findTag(p_matcher)));
 }
+Location CTagsNavigator::tagLocation(TagMatcher p_matcher)
+{
+	LOG_INFO << "get tag location by matcher";
+	return convertToLocation(selectTag(m_tagsReader->findTag(p_matcher)));
+}
 
 TagHolder CTagsNavigator::selectTag(const TagHierarchy& p_hier)
 {

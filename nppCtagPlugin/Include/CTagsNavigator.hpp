@@ -44,6 +44,7 @@ public:
 	* @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
 	*/
 	void goToTag(TagMatcher p_matcher);
+	Location tagLocation(TagMatcher p_matcher);
 	/*
 	* @throws: TagNotFoundException, OpenFileException, TagsReaderException, LocationSetterException
 	*/
