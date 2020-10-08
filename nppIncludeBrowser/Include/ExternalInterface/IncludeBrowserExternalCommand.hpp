@@ -21,7 +21,7 @@ public:
 	void clear();
 
 private:
-    NppPlugin::ExternalCommand cmd;
+    NppPlugin::ExternalCommand<Messaging::Codec> cmd;
 };
 
 }

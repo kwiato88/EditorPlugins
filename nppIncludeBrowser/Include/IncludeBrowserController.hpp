@@ -58,7 +58,7 @@ private:
     MultipleFilesBrowser m_browser;
     std::set<std::string> m_sourceDirs;
 	std::shared_ptr<IFileHierarchySelector> m_fileSelector;
-	Messaging::Handlers m_handlers;
+	Messaging::HandlersWithDefaultCodec m_handlers;
 };
 
 } // namespace IncludeBrowser

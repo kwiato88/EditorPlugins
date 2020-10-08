@@ -46,7 +46,7 @@ private:
 
 	WinApi::UIFileSystem files;
 	Dirs searchDirs;
-	Messaging::Handlers handlers;
+	Messaging::HandlersWithDefaultCodec handlers;
 	std::string configFilePath;
 	Config config;
 };

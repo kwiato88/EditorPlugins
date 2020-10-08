@@ -31,7 +31,7 @@ public:
 	void clearCache();
 
 private:
-    NppPlugin::ExternalCommand cmd;
+    NppPlugin::ExternalCommand<Messaging::Codec> cmd;
 };
 
 }
