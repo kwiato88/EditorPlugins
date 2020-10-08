@@ -87,6 +87,7 @@ target_include_directories(
     nppCTagsExternalIf
     PUBLIC
     ../PluginInterface
+	../Utils/Include
     ../Utils/Include/ExternalInterface
     Include/ExternalInterface
     D:/boost_1_61_0

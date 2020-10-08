@@ -39,13 +39,12 @@ private:
     SpecificHandler handler;
 };
 
-void ignoreTransaction(const Transaction&);
-
 template<typename CodecT = Codec>
 class Handlers
 {
 public:
-	Handlers(Hanlder p_default = &ignoreTransaction) : deafultHandler(p_default) {}
+	Handlers(Hanlder p_default) : deafultHandler(p_default) {}
+	Handlers() : deafultHandler([](Transaction&) {}) {}
 
 	void handle(long p_messageId, Transaction& p_message)
 	{

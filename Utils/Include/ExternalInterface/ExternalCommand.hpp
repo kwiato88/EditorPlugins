@@ -16,6 +16,7 @@ struct ExternalCommandFailure : public std::runtime_error
     {}
 };
 
+template<typename CodecT = Messaging::Codec>
 class ExternalCommand
 {
 public:
@@ -28,14 +29,14 @@ public:
     {
         try
         {
-            auto command = Messaging::encode(p_command);
+            auto command = CodecT::encode(p_command);
             Messaging::Transaction transaction = {};
             transaction.command.size = command.size();
             transaction.command.data = command.data();
 
             sendTransaction(&transaction, Command::Id());
         }
-        catch(boost::archive::archive_exception& e)
+        catch(std::exception& e)
         {
             throw ExternalCommandFailure(std::string("Ecode command failed. ") + e.what());
         }
@@ -46,8 +47,8 @@ public:
     {
         try
         {
-            auto command = Messaging::encode(p_command);
-            Messaging::BufferType resultBuff(2048, 0);
+            auto command = CodecT::encode(p_command);
+			CodecT::BufferType resultBuff(5000, 0);
         
             Messaging::Transaction transaction = {};
             transaction.command.size = command.size();
@@ -56,9 +57,9 @@ public:
             transaction.result.data = resultBuff.data();
 
             sendTransaction(&transaction, Command::Id());
-            return Messaging::decode<Result>(transaction.result.data, transaction.result.size);
+            return CodecT::decode<Result>(transaction.result.data, transaction.result.size);
         }
-        catch(boost::archive::archive_exception& e)
+        catch(std::exception& e)
         {
             throw ExternalCommandFailure(std::string("Ecode/Decode failed. ") + e.what());
         }
