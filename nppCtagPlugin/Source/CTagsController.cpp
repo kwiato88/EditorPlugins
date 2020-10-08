@@ -53,6 +53,8 @@ CTagsController::CTagsController(
 		Command::SetTagFiles::Id(), [&](const auto& p) { return handleSetTagFiles(p); });
     m_handlers.addHandler<Command::GetTagFiles, Result::TagFiles>(
 		Command::GetTagFiles::Id(), [&](const auto& p) { return handleGetTagFiles(p); });
+	m_handlers.addHandler<Command::GetTagLocation, Result::Location>(
+		Command::GetTagLocation::Id(), [&](const auto& p) { return handleGetTagLocation(p); });
 	m_handlers.addHandler<Command::Test, Result::Test>(
 		Command::Test::Id(), [&](const auto& p) { return handleTestCommand(p); });
 }
@@ -316,6 +318,33 @@ void CTagsController::tagHierarchy()
 void CTagsController::handleTransaction(long p_id, Messaging::Transaction& p_trans)
 {
 	m_handlers.handle(p_id, p_trans);
+}
+
+Location CTagsController::getTagLocation(const Command::GetTagLocation& p_msg)
+{
+	switch (p_msg.mode)
+	{
+	case Command::GetTagLocation::Search::ByName: return m_tagsNavigator.tagLocation(p_msg.tagName);
+	case Command::GetTagLocation::Search::ByParentName: return m_tagsNavigator.childTagLocation(p_msg.tagName);
+	case Command::GetTagLocation::Search::InTagHierachy: return m_tagsNavigator.tagInHierarchyLocation(p_msg.tagName);
+	default: return Location{};
+	}
+}
+Result::Location CTagsController::handleGetTagLocation(const Command::GetTagLocation& p_msg)
+{
+	try
+	{
+		auto location = getTagLocation(p_msg);
+		Result::Location result = {};
+		result.filePath = location.filePath;
+		result.line = location.lineNumber;
+		return result;
+	}
+	catch (std::exception& e)
+	{
+		LOG_WARN << "Error during geting tag location: " << typeid(e).name() << ". Details: " << e.what();
+		return Result::Location{};
+	}
 }
 
 void CTagsController::onTagsLoaded()

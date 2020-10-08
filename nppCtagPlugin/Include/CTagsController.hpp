@@ -73,6 +73,8 @@ private:
     Result::Basic handleSetTagFiles(const Command::SetTagFiles&);
     Result::TagFiles handleGetTagFiles(const Command::GetTagFiles&);
 	Result::Test handleTestCommand(const Command::Test&);
+	Result::Location handleGetTagLocation(const Command::GetTagLocation&);
+	Location getTagLocation(const Command::GetTagLocation&);
 
     std::string getCurrentWord() const;
     std::vector<std::string> getSourceDirs() const;
