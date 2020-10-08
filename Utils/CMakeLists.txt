@@ -17,6 +17,7 @@ add_library(
     Source/Log.cpp
     Source/NppPlugin.cpp
     Source/MessageHandler.cpp
+	Source/PtreeUtils.cpp
 )
 
 target_include_directories(
