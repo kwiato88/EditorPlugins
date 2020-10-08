@@ -32,7 +32,7 @@ public:
     Result::Test testCommand(const Command::Test& p_com);
 
 private:
-    NppPlugin::ExternalCommand cmd;
+    NppPlugin::ExternalCommand<Messaging::Codec> cmd;
 };
 
 }
