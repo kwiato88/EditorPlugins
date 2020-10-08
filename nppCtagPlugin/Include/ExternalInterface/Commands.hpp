@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <boost/serialization/access.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include "PtreeUtils.hpp"
@@ -39,7 +40,7 @@ struct GenerateTags
 	static long Id() { return 1; }
 
     std::string tagFilePath;
-    std::vector<std::string> sourceDirsPaths;
+	std::vector<std::string> sourceDirsPaths;
 };
 
 struct SetTagFiles
@@ -89,6 +90,63 @@ struct GetTagFiles
 	}
 
     static long Id() { return 3; }
+};
+
+struct GetTagLocation
+{
+	enum class Search
+	{
+		ByName,
+		ByParentName,
+		InTagHierachy
+	};
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & p_ar, const unsigned int version)
+	{
+		p_ar & tagName;
+		p_ar & mode;
+	}
+	inline boost::property_tree::ptree exportMsg() const
+	{
+		PtreeUtils::ToPtree printer;
+		return printer.add("tagName", tagName).add("mode", modeStr()).get();
+	}
+	inline void importMsg(const boost::property_tree::ptree& p_msg)
+	{
+		PtreeUtils::FromPtree printer(p_msg);
+		tagName = printer.get<std::string>("tagName");
+		mode = modeFromStr(printer.get<std::string>("mode"));
+	}
+	inline bool operator==(const GetTagLocation& other) const
+	{
+		return tagName == other.tagName && mode == other.mode;
+	}
+
+	static long Id() { return 4; }
+
+	std::string tagName;
+	Search mode;
+
+	inline std::string modeStr() const
+	{
+		switch (mode)
+		{
+		case Search::ByName: return "ByName";
+		case Search::ByParentName: return "ByParentName";
+		case Search::InTagHierachy: return "InTagHierachy";
+		default: return "ByName";
+		}
+	}
+	inline Search modeFromStr(const std::string& p_mode) const
+	{
+		static const std::map<std::string, Search> conv{
+			{"ByName", Search::ByName}, {"ByParentName", Search::ByParentName}, {"InTagHierachy", Search::InTagHierachy} };
+		auto found = conv.find(p_mode);
+		if (found != conv.end())
+			return found->second;
+		return Search::ByName;
+	}
 };
 
 struct Test

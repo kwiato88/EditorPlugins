@@ -89,4 +89,24 @@ TEST(CodecTS, importExportResultTest)
 	ASSERT_EQ(msg, decoded(msg));
 }
 
+TEST(CodecTS, importExportGetTagLocation)
+{
+	Command::GetTagLocation msg;
+	msg.tagName = "name1";
+	msg.mode = Command::GetTagLocation::Search::ByParentName;
+
+	ASSERT_EQ(msg, imported(msg));
+	ASSERT_EQ(msg, decoded(msg));
+}
+
+TEST(CodecTS, importExportLocation)
+{
+	Result::Location msg;
+	msg.filePath = "dir\\file.cpp";
+	msg.line = 102;
+
+	ASSERT_EQ(msg, imported(msg));
+	ASSERT_EQ(msg, decoded(msg));
+}
+
 }

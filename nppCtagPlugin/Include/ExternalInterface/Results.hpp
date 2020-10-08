@@ -72,6 +72,35 @@ struct TagFiles
 	std::vector<std::string> filesPaths;
 };
 
+struct Location
+{
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & p_ar, const unsigned int version)
+	{
+		p_ar & filePath;
+		p_ar & line;
+	}
+	inline boost::property_tree::ptree exportMsg() const
+	{
+		PtreeUtils::ToPtree printer;
+		return printer.add("filePath", filePath).add("line", line).get();
+	}
+	inline void importMsg(const boost::property_tree::ptree& p_msg)
+	{
+		PtreeUtils::FromPtree printer(p_msg);
+		filePath = printer.get<std::string>("filePath");
+		line = printer.get<int>("line");
+	}
+	inline bool operator==(const Location& other) const
+	{
+		return filePath == other.filePath && line == other.line;
+	}
+
+	std::string filePath;
+	int line;
+};
+
 struct Test
 {
     friend class boost::serialization::access;
