@@ -18,6 +18,7 @@
 #include "Commands.hpp"
 #include "Results.hpp"
 #include "Command.hpp"
+#include "JsonCodec.hpp"
 
 namespace CTagsPlugin
 {
@@ -63,7 +64,7 @@ private:
     Navigator m_locationsNavigator;
 	CTagsNavigator m_tagsNavigator;
 	Plugin::CommandFactory m_cmdFactory;
-	Messaging::HandlersWithDefaultCodec m_handlers;
+	Messaging::Handlers<Messaging::JsonCodec> m_handlers;
 
     void showTagInfo(const std::string& p_tagName);
     void gnerateTags(std::string p_outFile,std::vector<std::string> p_sourceDirs);

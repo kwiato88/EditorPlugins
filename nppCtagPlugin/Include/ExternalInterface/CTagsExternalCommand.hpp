@@ -5,6 +5,7 @@
 #include "Commands.hpp"
 #include "Results.hpp"
 #include "ExternalCommand.hpp"
+#include "JsonCodec.hpp"
 
 namespace CTagsPlugin
 {
@@ -32,7 +33,7 @@ public:
     Result::Test testCommand(const Command::Test& p_com);
 
 private:
-    NppPlugin::ExternalCommand<Messaging::Codec> cmd;
+    NppPlugin::ExternalCommand<Messaging::JsonCodec> cmd;
 };
 
 }
