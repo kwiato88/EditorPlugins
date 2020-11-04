@@ -18,6 +18,8 @@ add_library(
     Source/NppPlugin.cpp
     Source/MessageHandler.cpp
 	Source/PtreeUtils.cpp
+	Source/CommandHandler.cpp
+	Source/CommandHandlers.cpp
 )
 
 target_include_directories(
