@@ -240,12 +240,14 @@ TEST(CppIsTagWithAttTS, shouldMatchTagByKind)
 {
 	ASSERT_TRUE(buildMatcher({ CppTag::Kind::Function })(buildTag(CppTag::Kind::Function)));
 	ASSERT_TRUE(buildMatcher({ CppTag::Kind::LocalVar, CppTag::Kind::Macro })(buildTag(CppTag::Kind::Macro)));
+	ASSERT_TRUE(buildMatcher(std::initializer_list<CppTag::Kind>{})(buildTag(CppTag::Kind::LocalVar)));
 }
 
 TEST(CppIsTagWithAttTS, shouldMatchTagByAccess)
 {
 	ASSERT_TRUE(buildMatcher({ CppTag::Access::Protected })(buildTag(CppTag::Access::Protected)));
 	ASSERT_TRUE(buildMatcher({ CppTag::Access::Private, CppTag::Access::Public})(buildTag(CppTag::Access::Public)));
+	ASSERT_TRUE(buildMatcher(std::initializer_list<CppTag::Access>{})(buildTag(CppTag::Access::Private)));
 }
 
 TEST(CppIsTagWithAttTS, shouldMatchTagByNameKindAccess)
@@ -266,13 +268,11 @@ TEST(CppIsTagWithAttTS, tagNameNotMatched)
 
 TEST(CppIsTagWithAttTS, tagKindNotMatched)
 {
-	ASSERT_FALSE(buildMatcher(std::initializer_list<CppTag::Kind>())(buildTag(CppTag::Kind::Function)));
 	ASSERT_FALSE(buildMatcher({ CppTag::Kind::LocalVar, CppTag::Kind::Macro, CppTag::Kind::Class })(buildTag(CppTag::Kind::Struct)));
 }
 
 TEST(CppIsTagWithAttTS, tagAccessNotMatched)
 {
-	ASSERT_FALSE(buildMatcher(std::initializer_list<CppTag::Access>())(buildTag(CppTag::Access::Private)));
 	ASSERT_FALSE(buildMatcher({ CppTag::Access::Private, CppTag::Access::Protected })(buildTag(CppTag::Access::Public)));
 }
 

@@ -27,8 +27,8 @@ bool IsTagWithAtt::operator()(const Tag& p_tag) const
 	if (typeid(CppTag) != typeid(p_tag))
 		return false;
 	const CppTag& tag = static_cast<const CppTag&>(p_tag);
-	return contains(m_allowedAcces, tag.access)
-		&& contains(m_allowedKinds, tag.kind)
+	return (m_allowedAcces.empty() || contains(m_allowedAcces, tag.access))
+		&& (m_allowedKinds.empty() || contains(m_allowedKinds, tag.kind))
 		&& std::regex_match(tag.name, m_namePattern);
 }
 

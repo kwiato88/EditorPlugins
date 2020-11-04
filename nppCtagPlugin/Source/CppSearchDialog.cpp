@@ -61,20 +61,7 @@ void CppSearchDialog::updateSelectedKinds()
 {
 	if (m_anyKind.isChecked())
 	{
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::None);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Macro);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Enumeration);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::EnumerationValue);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Typedef);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Function);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Class);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Struct);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Union);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Member);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Variable);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::Namespace);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::LocalVar);
-		m_selectedKindTypes.insert(CTagsPlugin::CppTag::Kind::FunctionParameter);
+		m_selectedKindTypes = std::set<CTagsPlugin::CppTag::Kind>();
 		return;
 	}
 	addIfChecked(m_classStruct, m_selectedKindTypes, CTagsPlugin::CppTag::Kind::Class);
@@ -92,10 +79,7 @@ void CppSearchDialog::updateSelectedAccesses()
 {
 	if (m_anyAccess.isChecked())
 	{
-		m_selectedAccessTypes.insert(CTagsPlugin::CppTag::Access::Public);
-		m_selectedAccessTypes.insert(CTagsPlugin::CppTag::Access::Protected);
-		m_selectedAccessTypes.insert(CTagsPlugin::CppTag::Access::Private);
-		m_selectedAccessTypes.insert(CTagsPlugin::CppTag::Access::None);
+		m_selectedAccessTypes = std::set<CTagsPlugin::CppTag::Access>();
 		return;
 	}
 	addIfChecked(m_public, m_selectedAccessTypes, CTagsPlugin::CppTag::Access::Public);
