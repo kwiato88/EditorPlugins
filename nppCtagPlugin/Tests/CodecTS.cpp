@@ -99,6 +99,15 @@ TEST(CodecTS, importExportGetTagLocation)
 	ASSERT_EQ(msg, decoded(msg));
 }
 
+TEST(CodecTS, importExportGetTagWithAttributesLocation)
+{
+	Command::GetTagWithAttributesLocation msg;
+	msg.withNamePattern(".*::someName").Private().Protected().Function().Member();
+
+	ASSERT_EQ(msg, imported(msg));
+	ASSERT_EQ(msg, decoded(msg));
+}
+
 TEST(CodecTS, importExportLocation)
 {
 	Result::Location msg;

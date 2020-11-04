@@ -149,6 +149,73 @@ struct GetTagLocation
 	}
 };
 
+struct GetTagWithAttributesLocation
+{
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive & p_ar, const unsigned int version)
+	{
+		p_ar & name;
+		p_ar & kind;
+		p_ar & access;
+	}
+
+	inline boost::property_tree::ptree exportMsg() const
+	{
+		PtreeUtils::ToPtree printer;
+		return printer.add("name", name).add("kind", kind).add("access", access).get();
+	}
+	inline void importMsg(const boost::property_tree::ptree& p_msg)
+	{
+		PtreeUtils::FromPtree printer(p_msg);
+		name = printer.get<std::string>("name");
+		kind= printer.get<std::vector<std::string>>("kind");
+		access = printer.get<std::vector<std::string>>("access");
+	}
+	inline bool operator==(const GetTagWithAttributesLocation& other) const
+	{
+		return name == other.name && kind == other.kind && access == other.access;
+	}
+
+	static long Id() { return 5; }
+
+	inline GetTagWithAttributesLocation& withNamePattern(const std::string& p_pattern)
+	{
+		name = p_pattern;
+		return *this;
+	}
+	inline GetTagWithAttributesLocation& withKind(const std::string& p_kind)
+	{
+		kind.push_back(p_kind);
+		return *this;
+	}
+	inline GetTagWithAttributesLocation& withAccess(const std::string& p_access)
+	{
+		access.push_back(p_access);
+		return *this;
+	}
+	inline GetTagWithAttributesLocation& Makro() { return withKind("d"); }
+	inline GetTagWithAttributesLocation& Enumeration() { return withKind("g"); }
+	inline GetTagWithAttributesLocation& EnumerationVal() { return withKind("e"); }
+	inline GetTagWithAttributesLocation& TypeAlias() { return withKind("t"); }
+	inline GetTagWithAttributesLocation& Function() { return withKind("f"); }
+	inline GetTagWithAttributesLocation& Class() { return withKind("c"); }
+	inline GetTagWithAttributesLocation& Struct() { return withKind("s"); }
+	inline GetTagWithAttributesLocation& Union() { return withKind("u"); }
+	inline GetTagWithAttributesLocation& Member() { return withKind("m"); }
+	inline GetTagWithAttributesLocation& Variable() { return withKind("v"); }
+	inline GetTagWithAttributesLocation& Namespace() { return withKind("n"); }
+	inline GetTagWithAttributesLocation& LocalVar() { return withKind("l"); }
+	inline GetTagWithAttributesLocation& FunctionParam() { return withKind("z"); }
+	inline GetTagWithAttributesLocation& Public() { return withAccess("public"); }
+	inline GetTagWithAttributesLocation& Protected() { return withAccess("protected"); }
+	inline GetTagWithAttributesLocation& Private() { return withAccess("private"); }
+
+	std::string name;
+	std::vector<std::string> kind;
+	std::vector<std::string> access;
+};
+
 struct Test
 {
     friend class boost::serialization::access;
