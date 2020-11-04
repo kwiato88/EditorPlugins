@@ -52,6 +52,7 @@ public:
 	void classDiagram();
 
 	void handleTransaction(long p_id, Messaging::Transaction& p_trans);
+	std::string handleCommand(const std::string& p_input);
 	void onTagsLoaded();
 
 private:

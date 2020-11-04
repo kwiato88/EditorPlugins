@@ -298,25 +298,9 @@ void TagsPlugin::handleMsgToPlugin(CommunicationInfo& p_message)
 
 void TagsPlugin::test1()
 {
-	ui.infoMessage("test open", "try to open D:\\test.txt");
-	try {
-		Plugin::WinCommand cmd("D:\\test.txt", "");
-		cmd.execute();
-	}
-	catch (std::exception& e)
-	{
-		ui.errorMessage("ERROR", e.what());
-	}
-
-	ui.infoMessage("test open", "try to open D:\\test.png");
-	try {
-		Plugin::WinCommand cmd("D:\\test.png", "");
-		cmd.execute();
-	}
-	catch (std::exception& e)
-	{
-		ui.errorMessage("ERROR", e.what());
-	}
+	auto input = ui.query("Type command", "", "");
+	auto output = tagsController->handleCommand(input);
+	ui.infoMessage("CMD", output);
 }
 
 void TagsPlugin::test2()

@@ -469,4 +469,10 @@ void CTagsController::classDiagram()
 	}
 }
 
+std::string CTagsController::handleCommand(const std::string& p_input)
+{
+	//TODO:
+	return p_input;
+}
+
 } /* namespace CTagsPlugin */
