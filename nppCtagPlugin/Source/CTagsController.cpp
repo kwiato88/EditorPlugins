@@ -1,9 +1,12 @@
 #include <functional>
 #include <fstream>
+#include <set>
 #include "CTagsController.hpp"
 #include "CTagsGenerator.hpp"
 #include "OpenFileException.hpp"
 #include "ComplexTagWithMatchingName.hpp"
+#include "CppTag.hpp"
+#include "CppIsTagWithAtt.hpp"
 #include "Sleep.hpp"
 #include "ShellCommandException.hpp"
 #include "TagsReaderException.hpp"
@@ -23,6 +26,25 @@ std::string getFileDir(std::string p_filePath)
 std::string swapExtension(const std::string& p_path, const std::string& p_newExt)
 {
 	return p_path.substr(0, p_path.rfind(".")) + "." + p_newExt;
+}
+Result::Location toResultLocation(const Location& location)
+{
+	Result::Location result = {};
+	result.filePath = location.filePath;
+	result.line = location.lineNumber;
+	return result;
+}
+TagMatcher getTagMatcher(const CTagsPlugin::Command::GetTagWithAttributesLocation &msg)
+{
+	//TODO: extract to other file
+	std::set<CTagsPlugin::CppTag::Access> access;
+	std::transform(msg.access.begin(), msg.access.end(), std::inserter(access, access.begin()),
+		[](const auto& p) { return CTagsPlugin::CppTag::Access::None; /*TODO:*/ });
+	std::set<CTagsPlugin::CppTag::Kind> kind;
+	std::transform(msg.kind.begin(), msg.kind.end(), std::inserter(kind, kind.begin()),
+		[](const auto& p) { return CTagsPlugin::CppTag::Kind::None; /*TODO:*/ });
+
+	return CTagsPlugin::Cpp::IsTagWithAtt(msg.name, kind, access);
 }
 }  // namespace
 
@@ -55,6 +77,8 @@ CTagsController::CTagsController(
 		Command::GetTagFiles::Id(), [&](const auto& p) { return handleGetTagFiles(p); });
 	m_handlers.addHandler<Command::GetTagLocation, Result::Location>(
 		Command::GetTagLocation::Id(), [&](const auto& p) { return handleGetTagLocation(p); });
+	m_handlers.addHandler<Command::GetTagWithAttributesLocation, Result::Location>(
+		Command::GetTagWithAttributesLocation::Id(), [&](const auto& p) { return handleGetWithAttrLocation(p); });
 	m_handlers.addHandler<Command::Test, Result::Test>(
 		Command::Test::Id(), [&](const auto& p) { return handleTestCommand(p); });
 }
@@ -334,11 +358,20 @@ Result::Location CTagsController::handleGetTagLocation(const Command::GetTagLoca
 {
 	try
 	{
-		auto location = getTagLocation(p_msg);
-		Result::Location result = {};
-		result.filePath = location.filePath;
-		result.line = location.lineNumber;
-		return result;
+		return toResultLocation(getTagLocation(p_msg));
+	}
+	catch (std::exception& e)
+	{
+		LOG_WARN << "Error during geting tag location: " << typeid(e).name() << ". Details: " << e.what();
+		return Result::Location{};
+	}
+}
+
+Result::Location CTagsController::handleGetWithAttrLocation(const Command::GetTagWithAttributesLocation& p_msg)
+{
+	try
+	{
+		return toResultLocation(m_tagsNavigator.tagLocation(getTagMatcher(p_msg)));
 	}
 	catch (std::exception& e)
 	{

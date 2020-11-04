@@ -73,6 +73,7 @@ private:
     Result::Basic handleSetTagFiles(const Command::SetTagFiles&);
     Result::TagFiles handleGetTagFiles(const Command::GetTagFiles&);
 	Result::Test handleTestCommand(const Command::Test&);
+	Result::Location handleGetWithAttrLocation(const Command::GetTagWithAttributesLocation&);
 	Result::Location handleGetTagLocation(const Command::GetTagLocation&);
 	Location getTagLocation(const Command::GetTagLocation&);
 
