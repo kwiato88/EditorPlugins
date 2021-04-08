@@ -28,7 +28,7 @@ std::list<std::string> findTtcnIncludes(const std::string& p_line)
     return findIncludes<FindTtcnInclude>(p_line);
 }
 
-TEST(FindIncludeTS, shouldFindCppInclude)
+TEST(FindCppIncludeTS, shouldFindInclude)
 {
     ASSERT_THAT(findCppIncludes("#include <iostream>"),       ElementsAre("iostream"));
     ASSERT_THAT(findCppIncludes("#include \"iostream\""),     ElementsAre("iostream"));
@@ -36,7 +36,7 @@ TEST(FindIncludeTS, shouldFindCppInclude)
     ASSERT_THAT(findCppIncludes("#include \"iostream.hpp\""), ElementsAre("iostream.hpp"));
 }
 
-TEST(FindIncludeTS, shouldFindCppIncludeWintSpecialChar)
+TEST(FindCppIncludeTS, shouldFindIncludeWintSpecialChar)
 {
     ASSERT_THAT(findCppIncludes("#include <__iostream_>"),    ElementsAre("__iostream_"));
     ASSERT_THAT(findCppIncludes("#include \"__iostream_\""),  ElementsAre("__iostream_"));
@@ -44,7 +44,7 @@ TEST(FindIncludeTS, shouldFindCppIncludeWintSpecialChar)
     ASSERT_THAT(findCppIncludes("#include \"__iost_ream.h\""), ElementsAre("__iost_ream.h"));
 }
 
-TEST(FindIncludeTS, shouldFindCppIncludeInLineWithSpaces)
+TEST(FindCppIncludeTS, shouldFindIncludeInLineWithSpaces)
 {
     ASSERT_THAT(findCppIncludes(" #include <iostream>"),          ElementsAre("iostream"));
     ASSERT_THAT(findCppIncludes(" #include <iostream> "),         ElementsAre("iostream"));
@@ -53,7 +53,7 @@ TEST(FindIncludeTS, shouldFindCppIncludeInLineWithSpaces)
     ASSERT_THAT(findCppIncludes("   #include  \"iostream\"    "), ElementsAre("iostream"));
 }
 
-TEST(FindIncludeTS, shouldNotFindCppInclude)
+TEST(FindCppIncludeTS, shouldNotFindInclude)
 {
 	ASSERT_THAT(findCppIncludes(""), ElementsAre());
     
@@ -85,7 +85,7 @@ TEST(FindIncludeTS, shouldNotFindCppInclude)
 	ASSERT_THAT(findCppIncludes("#include <dir\\>"), ElementsAre());
 }
 
-TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)
+TEST(FindCppIncludeTS, shouldFindIncludeInLineWithInlineComment)
 {
     ASSERT_THAT(findCppIncludes("#include <iostream> //ad"),  ElementsAre("iostream"));
     ASSERT_THAT(findCppIncludes("#include <iostream> /* ad"), ElementsAre("iostream"));
@@ -98,7 +98,7 @@ TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)
 	ASSERT_THAT(findCppIncludes("#include <os/iostream>/* ad"), ElementsAre("iostream"));
 }
 
-TEST(FindIncludeTs, shouldFindFileFromGivenPath)
+TEST(FindCppIncludeTs, shouldFindFileFromGivenPath)
 {
 	ASSERT_THAT(findCppIncludes("#include <dir/file.hpp>"), ElementsAre("file.hpp"));
 	ASSERT_THAT(findCppIncludes("#include <dir/1dir2/file.hpp>"), ElementsAre("file.hpp"));
@@ -109,7 +109,7 @@ TEST(FindIncludeTs, shouldFindFileFromGivenPath)
 	ASSERT_THAT(findCppIncludes("#include <\\file1.hpp>"), ElementsAre("file1.hpp"));
 }
 
-TEST(FindIncludeTS, shouldFindTtcnInclude)
+TEST(FindTtcnIncludeTS, shouldFindInclude)
 {
     ASSERT_THAT(findTtcnIncludes("import from moduleName all;"), ElementsAre("moduleName.ttcn3"));
     ASSERT_THAT(findTtcnIncludes("import from moduleName all"),  ElementsAre("moduleName.ttcn3"));
@@ -117,14 +117,14 @@ TEST(FindIncludeTS, shouldFindTtcnInclude)
     ASSERT_THAT(findTtcnIncludes("import from moduleName { function f_executeAaShellCommand }"),  ElementsAre("moduleName.ttcn3"));
 }
 
-TEST(FindIncludeTS, shouldFindTtcnIncludeInLineWithSpaces)
+TEST(FindTtcnIncludeTS, shouldFindIncludeInLineWithSpaces)
 {
     ASSERT_THAT(findTtcnIncludes("  import  from    moduleName   all  ;  "), ElementsAre("moduleName.ttcn3"));
     ASSERT_THAT(findTtcnIncludes(" import  from    moduleName  {  function  f_executeAaShellCommand   } ;  "),  ElementsAre("moduleName.ttcn3"));
 	ASSERT_THAT(findTtcnIncludes("  import  from\tmoduleName   all  ;  "), ElementsAre("moduleName.ttcn3"));
 }
 
-TEST(FindIncludeTS, shouldNotFindTtcnInclude)
+TEST(FindTtcnIncludeTS, shouldNotFindInclude)
 {
 	ASSERT_THAT(findTtcnIncludes(""), ElementsAre());
 	ASSERT_THAT(findTtcnIncludes("from module all;"), ElementsAre());
@@ -138,7 +138,7 @@ TEST(FindIncludeTS, shouldNotFindTtcnInclude)
 	ASSERT_THAT(findTtcnIncludes("/* import from moduleName all;"), ElementsAre());
 }
 
-TEST(FindIncludeTS, shouldFindTtcnIncludeInLineWithInlineComment)
+TEST(FindTtcnIncludeTS, shouldFindIncludeInLineWithInlineComment)
 {
     ASSERT_THAT(findTtcnIncludes("import from moduleName all; //ad"), ElementsAre("moduleName.ttcn3"));
     ASSERT_THAT(findTtcnIncludes("import from moduleName all;//ad"), ElementsAre("moduleName.ttcn3"));
