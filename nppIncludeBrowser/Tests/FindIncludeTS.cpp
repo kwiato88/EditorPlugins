@@ -76,6 +76,13 @@ TEST(FindIncludeTS, shouldNotFindCppInclude)
 	ASSERT_THAT(findCppIncludes(" // #include <iostream>"), ElementsAre());
 	ASSERT_THAT(findCppIncludes("/*#include <iostream>"), ElementsAre());
 	ASSERT_THAT(findCppIncludes(" /* #include <iostream>"), ElementsAre());
+
+	ASSERT_THAT(findCppIncludes("#include <>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include \"\""), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include </>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include <\\>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include <dir/>"), ElementsAre());
+	ASSERT_THAT(findCppIncludes("#include <dir\\>"), ElementsAre());
 }
 
 TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)
@@ -84,6 +91,22 @@ TEST(FindIncludeTS, shouldFindCppIncludeInLineWithInlineComment)
     ASSERT_THAT(findCppIncludes("#include <iostream> /* ad"), ElementsAre("iostream"));
     ASSERT_THAT(findCppIncludes("#include <iostream>//ad"),   ElementsAre("iostream"));
     ASSERT_THAT(findCppIncludes("#include <iostream>/* ad"),  ElementsAre("iostream"));
+
+	ASSERT_THAT(findCppIncludes("#include <os/iostream> //ad"), ElementsAre("iostream"));
+	ASSERT_THAT(findCppIncludes("#include <os/iostream> /* ad"), ElementsAre("iostream"));
+	ASSERT_THAT(findCppIncludes("#include <os/iostream>//ad"), ElementsAre("iostream"));
+	ASSERT_THAT(findCppIncludes("#include <os/iostream>/* ad"), ElementsAre("iostream"));
+}
+
+TEST(FindIncludeTs, shouldFindFileFromGivenPath)
+{
+	ASSERT_THAT(findCppIncludes("#include <dir/file.hpp>"), ElementsAre("file.hpp"));
+	ASSERT_THAT(findCppIncludes("#include <dir/1dir2/file.hpp>"), ElementsAre("file.hpp"));
+	ASSERT_THAT(findCppIncludes("#include </file1.hpp>"), ElementsAre("file1.hpp"));
+
+	ASSERT_THAT(findCppIncludes("#include <dir\\file.hpp>"), ElementsAre("file.hpp"));
+	ASSERT_THAT(findCppIncludes("#include <dir\\1dir2\\file.hpp>"), ElementsAre("file.hpp"));
+	ASSERT_THAT(findCppIncludes("#include <\\file1.hpp>"), ElementsAre("file1.hpp"));
 }
 
 TEST(FindIncludeTS, shouldFindTtcnInclude)
